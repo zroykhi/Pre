@@ -24,8 +24,8 @@ args = parser.parse_args()
 current_idx = 0
 model = ConvolutionalNetwork(num_output=4)
 model.load_state_dict(th.load(args.weights))
-# modified by zhi
-# model.eval()
+# modified by zhi IMPORTANT, if drop rate is not 0, without this prediction is bad
+model.eval()
 
 train_labels, val_labels, test_labels, labels = loadLabels(args.folder)
 
