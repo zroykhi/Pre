@@ -12,7 +12,7 @@ MAX_HEIGHT = CAMERA_RESOLUTION[1]
 ROI = [0, 0, MAX_WIDTH, MAX_HEIGHT]
 
 # Training
-FACTOR = 8  # Resize factor
+FACTOR = 4  # Resize factor
 INPUT_HEIGHT = ROI[3] // FACTOR
 INPUT_WIDTH = ROI[2] // FACTOR
 SPLIT_SEED = 42  # For train/val/test split

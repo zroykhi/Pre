@@ -100,15 +100,15 @@ class MlpNetwork(nn.Module):
 
 # modified by zhi
 class ConvolutionalNetwork(nn.Module):
-    def __init__(self, drop_p=0.2, num_output=4):
+    def __init__(self, drop_p=0.1, num_output=4):
         super(ConvolutionalNetwork, self).__init__()
         self.conv_layers = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=5, stride=1, padding=2),
+            nn.Conv2d(3, 24, kernel_size=5, stride=2, padding=2),
             # nn.BatchNorm2d(20),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
+            nn.MaxPool2d(kernel_size=5, stride=1, padding=2),
 
-            nn.Conv2d(32, 32, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(24, 24, kernel_size=3, stride=1, padding=1),
             # nn.BatchNorm2d(20),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2, padding = 1)
@@ -119,12 +119,12 @@ class ConvolutionalNetwork(nn.Module):
         # Factor = 2
         # self.fc1 = nn.Linear(20 * 12 * 53, 16)
         # Factor = 4
-        self.fc1 = nn.Linear(15200, 64)
+        self.fc1 = nn.Linear(45600, 64)
         #self.fc1 = nn.Linear(20 * 6 * 26, 16)
         self.fc2 = nn.Linear(64, num_output)
         self.drop_p = drop_p
         # modified by zhi
-        self.bn = nn.BatchNorm2d(20)
+        # self.bn = nn.BatchNorm2d(20)
 
     def forward(self, x):
         x = F.dropout(x, p=self.drop_p, training=self.training)
