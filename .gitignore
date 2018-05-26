@@ -11,3 +11,4 @@
 !utils.py
 !__init__.py
 !.gitignore
+!cnn_model_tmp.pth
