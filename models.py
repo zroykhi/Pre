@@ -124,11 +124,11 @@ class ConvolutionalNetwork(nn.Module):
         self.fc2 = nn.Linear(128, num_output)
         self.drop_p = drop_p
         # modified by zhi
-        self.bn1 = nn.BatchNorm2d(3)
+        # self.bn1 = nn.BatchNorm2d(3)
         # self.bn2 = nn.BatchNorm2d(24)
 
     def forward(self, x):
-        x = self.bn1(x)
+        # x = self.bn1(x)
         x = F.dropout(x, p=self.drop_p, training=self.training)
         x = self.conv_layers(x)
         # print(x.shape)
@@ -229,4 +229,6 @@ class cnn_rnn(nn.Module):
         return outputs
 
 newModel = cnn_rnn(cnn,1813,4,4)
-print(newModel)
+# print(newModel)
+
+def rnn(nn.Module):
