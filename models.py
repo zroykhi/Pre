@@ -100,7 +100,7 @@ class MlpNetwork(nn.Module):
 
 # modified by zhi
 class ConvolutionalNetwork(nn.Module):
-    def __init__(self, drop_p=0.2, num_output=4):
+    def __init__(self, drop_p=0.2, num_output=3):
         super(ConvolutionalNetwork, self).__init__()
         self.conv_layers = nn.Sequential(
             nn.Conv2d(3, 24, kernel_size=5, stride=2, padding=2),
@@ -114,12 +114,7 @@ class ConvolutionalNetwork(nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2, padding = 1)
         )
 
-        # Factor = 1
-        # self.fc1 = nn.Linear(20 * 24 * 106, 16)
-        # Factor = 2
-        # self.fc1 = nn.Linear(20 * 12 * 53, 16)
-        # Factor = 4
-        self.fc1 = nn.Linear(45600, 128)
+        self.fc1 = nn.Linear(48960, 128)
         #self.fc1 = nn.Linear(20 * 6 * 26, 16)
         self.fc2 = nn.Linear(128, num_output)
         self.drop_p = drop_p
@@ -231,4 +226,25 @@ class cnn_rnn(nn.Module):
 newModel = cnn_rnn(cnn,1813,4,4)
 # print(newModel)
 
-def rnn(nn.Module):
+class RNN(nn.Module):
+    def __init__(self):
+        super(RNN, self).__init__()
+
+        self.rnn = nn.RNN(
+            input_size=INPUT_SIZE,
+            hidden_size=32,     # rnn hidden unit
+            num_layers=20,       # number of rnn layer
+            batch_first=True,   # input & output will has batch size as 1s dimension. e.g. (batch, time_step, input_size)
+        )
+        self.out = nn.Linear(32, 4)
+
+    def forward(self, x, h_state):
+        # x (batch, time_step, input_size)
+        # h_state (n_layers, batch, hidden_size)
+        # r_out (batch, time_step, hidden_size)
+        r_out, h_state = self.rnn(x, h_state)
+
+        outs = []    # save all predictions
+        for time_step in range(r_out.size(1)):    # calculate output for each time step
+            outs.append(self.out(r_out[:, time_step, :]))
+        return torch.stack(outs, dim=1), h_state

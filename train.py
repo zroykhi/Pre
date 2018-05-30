@@ -20,7 +20,7 @@ VAL_BATCH_SIZE = 64  # Batch size for validation and test data
 
 
 def main(folder, num_epochs=100, batchsize=32,
-         learning_rate=0.0001, seed=42, cuda=False, num_output=4, random_flip=0.5,
+         learning_rate=0.0001, seed=42, cuda=False, num_output=3, random_flip=0.5,
          model_type="cnn", evaluate_print=1, load_model=""):
 
     if not folder.endswith('/'):
@@ -76,7 +76,7 @@ def main(folder, num_epochs=100, batchsize=32,
     # loss_fn = nn.SmoothL1Loss(size_average=False)
     best_error = np.inf
     best_model_path = "{}.pth".format(model_name)
-
+    h_state = None
     # Finally, launch the training loop.
     print("Starting training...")
     # We iterate over epochs:
@@ -100,7 +100,12 @@ def main(folder, num_epochs=100, batchsize=32,
             # modified by zhi
             # print(inputs.shape) # [4, 3, 75, 100]
             # end
-            predictions = model(inputs)
+            # modified by zhi
+            if (model_type == "RNN"):
+                predictions, h_state = rnn(x, h_state)   # rnn output
+                h_state = Variable(h_state.data)
+            else: predictions = model(inputs)
+            # print(predictions.shape)
             loss = loss_fn(predictions, targets)
             loss.backward()
             train_loss += loss.data[0]

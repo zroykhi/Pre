@@ -4,7 +4,8 @@ File containing all the constants used in the different files
 import numpy as np
 
 # Main Constants
-CAMERA_RESOLUTION = (800, 600)
+# CAMERA_RESOLUTION = (800, 600)
+CAMERA_RESOLUTION = (960, 540)
 # Regions of interest
 MAX_WIDTH = CAMERA_RESOLUTION[0]
 MAX_HEIGHT = CAMERA_RESOLUTION[1]
@@ -12,7 +13,7 @@ MAX_HEIGHT = CAMERA_RESOLUTION[1]
 ROI = [0, 0, MAX_WIDTH, MAX_HEIGHT]
 
 # Training
-FACTOR = 4  # Resize factor
+FACTOR = 8  # Resize factor
 INPUT_HEIGHT = ROI[3] // FACTOR
 INPUT_WIDTH = ROI[2] // FACTOR
 SPLIT_SEED = 42  # For train/val/test split

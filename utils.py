@@ -65,14 +65,16 @@ def transformPrediction(y):
     points = y.flatten()
     x = points[0]
     y = points[1]
-    cost=points[2]
-    sint=points[3]
-    norm = np.sqrt(cost*cost+sint*sint)
-    cost=cost/norm
-    sint=sint/norm
-    y = (y * MAX_HEIGHT) + margin_top
-    x = (x * MAX_WIDTH) + margin_left
-    return x, y, cost,sint
+    z = points[2]
+    # modified by zhi
+    # cost=points[2]
+    # sint=points[3]
+    # norm = np.sqrt(cost*cost+sint*sint)
+    # cost=cost/norm
+    # sint=sint/norm
+    # y = (y * MAX_HEIGHT) + margin_top
+    # x = (x * MAX_WIDTH) + margin_left
+    return x, y, z# cost,sint
 
 
 def loadLabels(folder):
@@ -81,7 +83,10 @@ def loadLabels(folder):
     labels = json.load(open(folder + 'labels.json'))
 
     images = list(labels.keys())
-    images.sort(key=lambda name: int(name.split('.jpg')[0]))
+    # modified by zhi
+    # images.sort(key=lambda name: int(name.split('.jpg')[0]))
+    images.sort(key=lambda name: int(name.strip().replace('"',"")))
+    # print(images)
 
     # Split the data into three subsets
     train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.4, random_state=SPLIT_SEED)
@@ -109,7 +114,9 @@ class JsonDataset(Dataset):
         :param index: (int)
         :return: (PyTorch Tensor, PyTorch Tensor)
         """
+        # modified by zhi
         image = self.keys[index]
+        image += ".png"
         margin_left, margin_top = 0, 0
         im = cv2.imread(self.folder + image)
 
@@ -117,7 +124,8 @@ class JsonDataset(Dataset):
         if self.preprocess:
             margin_left, margin_top, _, _ = ROI
             im = preprocessImage(im, INPUT_WIDTH, INPUT_HEIGHT)
-
+        # modified by zhi
+        image = image.replace(".png","")
         labels = np.array(self.labels[image]).astype(np.float32)
         # modified by zhi
         # labels[0] = labels[0] - 50
