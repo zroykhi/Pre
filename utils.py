@@ -127,21 +127,6 @@ class JsonDataset(Dataset):
         # modified by zhi
         image = image.replace(".png","")
         labels = np.array(self.labels[image]).astype(np.float32)
-        # modified by zhi
-        # labels[0] = labels[0] - 50
-        # labels[1] = labels[1] - 60
-        # modified end
-        labels[0] = (labels[0] - margin_left) / MAX_WIDTH
-        labels[1] = (labels[1] - margin_top) / MAX_HEIGHT
-
-        #labels[:, 0] = (labels[:, 0] - margin_left) / MAX_WIDTH
-        #labels[:, 1] = (labels[:, 1] - margin_top) / MAX_HEIGHT
-
-        if np.random.random() < self.random_flip:
-            im = cv2.flip(im, 1)
-        #    labels[:, 0] = 1 - labels[:, 0]
-            labels[2] = - labels[2]
-        # Predict 4 values
         y = labels.flatten().astype(np.float32)
 
         # swap color axis because

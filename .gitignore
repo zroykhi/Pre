@@ -12,3 +12,5 @@
 !__init__.py
 !.gitignore
 !cnn_model_tmp.pth
+!model.blend
+!blender_model.py

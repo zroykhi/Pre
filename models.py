@@ -114,7 +114,7 @@ class ConvolutionalNetwork(nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2, padding = 1)
         )
 
-        self.fc1 = nn.Linear(48960, 128)
+        self.fc1 = nn.Linear(12240, 128)
         #self.fc1 = nn.Linear(20 * 6 * 26, 16)
         self.fc2 = nn.Linear(128, num_output)
         self.drop_p = drop_p

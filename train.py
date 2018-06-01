@@ -171,7 +171,7 @@ if __name__ == '__main__':
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
     # modified by zhi
     parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','cnn_rnn'])
-    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-3, type=float)
+    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=5e-5, type=float)
     args = parser.parse_args()
 
     args.cuda = not args.no_cuda and th.cuda.is_available()
