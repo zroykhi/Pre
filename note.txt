@@ -1,0 +1,2 @@
+batch normalization is very important, without it, prediction outcomes sometimes are all the same
+if the leatning rate is too high, the loss can sometimes appears to be nan

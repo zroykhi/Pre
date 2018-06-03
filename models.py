@@ -103,20 +103,20 @@ class ConvolutionalNetwork(nn.Module):
     def __init__(self, drop_p=0.2, num_output=3):
         super(ConvolutionalNetwork, self).__init__()
         self.conv_layers = nn.Sequential(
-            nn.Conv2d(3, 24, kernel_size=5, stride=2, padding=2),
-            # nn.BatchNorm2d(20),
+            nn.Conv2d(3, 20, kernel_size=5, stride=2, padding=2),
+            nn.BatchNorm2d(20),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=5, stride=1, padding=2),
 
-            nn.Conv2d(24, 24, kernel_size=3, stride=1, padding=1),
-            # nn.BatchNorm2d(20),
+            nn.Conv2d(20, 40, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(40),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2, padding = 1)
         )
 
-        self.fc1 = nn.Linear(12240, 128)
+        self.fc1 = nn.Linear(37720, 64)
         #self.fc1 = nn.Linear(20 * 6 * 26, 16)
-        self.fc2 = nn.Linear(128, num_output)
+        self.fc2 = nn.Linear(64, num_output)
         self.drop_p = drop_p
         # modified by zhi
         # self.bn1 = nn.BatchNorm2d(3)

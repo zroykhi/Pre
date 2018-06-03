@@ -93,6 +93,44 @@ for obj in bpy.data.objects:
       c = c + 1
 print('Done!')
 
+"""
+or below
+"""
+import bpy, bgl, blf,sys
+from bpy import data, ops, props, types, context
+from math import degrees
+import json#, GameLogic
+
+cameraNames=''
+for arg in sys.argv:
+    words=arg.split('=')
+    if ( words[0] == 'cameras'):
+     cameraNames = words[1]
+
+print('\nPrint Scenes...')
+sceneKey = bpy.data.scenes.keys()[0]
+print('Using Scene['  + sceneKey + ']')
+paras = {}
+scene = bpy.context.scene
+for i in range(1000):
+    scene.frame_set(i*10)
+    scene.render.filepath = '/home/theo/Study/Cours_en_france/Pre/Code/horizon-detection/3dmodel/img/' + str(i*10)
+    bpy.ops.render.render(write_still=True)
+
+      # get paras
+    loc, rot, scale = bpy.data.objects['boat'].matrix_world.decompose()
+    # r = bpy.data.objects['boat'].rotation_euler
+    rot = rot.to_euler()
+    rot = list(degrees(a) for a in rot)
+    paras.update({i*10:rot})
+    #c = c + 1
+print(paras)
+jsObj = json.dumps(paras)
+
+fileObject = open('/home/theo/Study/Cours_en_france/Pre/Code/horizon-detection/3dmodel/paras.json', 'w')
+fileObject.write(jsObj)
+fileObject.close()
+print('Done!')
 
 """
 try get angle
@@ -125,102 +163,6 @@ controller = GL.getCurrentController()
 obj = controller.owner
 get_rotation(obj)
 
-
-"""
-this works
-"""
-import bpy
-from math import degrees
-import math
-scene = bpy.context.scene
-scene.frame_set(18)
-#if 'Z' in bpy.data.objects['boat'].rotation_mode:
-r = bpy.data.objects['boat'].rotation_euler
-#print(math.degrees(r[0]))
-print(len(r))
-print("%.2f, %.2f, %.2f" % tuple(degrees(a) for a in r))
-#for i in r:
-#    print(i)
-
-print("---------")
-loc, rot, scale = bpy.data.objects['boat'].matrix_world.decompose()
-b = rot.to_euler()
-print("%.2f, %.2f, %.2f" % tuple(degrees(a) for a in b))
-
-"""
-final codes
-"""
-import bpy, bgl, blf,sys
-from bpy import data, ops, props, types, context
-from math import degrees
-import json#, GameLogic
-
-cameraNames=''
-for arg in sys.argv:
-    words=arg.split('=')
-    if ( words[0] == 'cameras'):
-     cameraNames = words[1]
-
-print('\nPrint Scenes...')
-sceneKey = bpy.data.scenes.keys()[0]
-print('Using Scene['  + sceneKey + ']')
-paras = {}
-scene = bpy.context.scene
-for i in range(100):
-    scene.frame_set(i)
-    scene.render.filepath = '/home/theo/Study/Cours_en_france/Pre/Code/horizon-detection/3dmodel/img/' + str(i)
-    bpy.ops.render.render(write_still=True)
-
-      # get paras
-    loc, rot, scale = bpy.data.objects['boat'].matrix_world.decompose()
-    # r = bpy.data.objects['boat'].rotation_euler
-    rot = rot.to_euler()
-    rot = list(degrees(a) for a in rot)
-    paras.update({i:rot})
-    #c = c + 1
-print(paras)
-jsObj = json.dumps(paras)
-
-fileObject = open('/home/theo/Study/Cours_en_france/Pre/Code/horizon-detection/3dmodel/paras.json', 'w')
-fileObject.write(jsObj)
-fileObject.close()
-print('Done!')
-
-"""
-insert keyframe
-"""
-import bpy, bgl, blf,sys
-from bpy import data, ops, props, types, context
-from math import degrees
-import json#, GameLogic
-from mathutils import Euler
-
-cameraNames=''
-for arg in sys.argv:
-    words=arg.split('=')
-    if ( words[0] == 'cameras'):
-     cameraNames = words[1]
-
-print('rendering cameras containing [' + cameraNames + ']')
-
-print('\nPrint Scenes...')
-sceneKey = bpy.data.scenes.keys()[0]
-print('Using Scene['  + sceneKey + ']')
-
-# Loop all objects and try to find Cameras
-print('Looping Cameras')
-c=0
-paras = {}
-obj = bpy.data.objects['boat2']
-scene = bpy.context.scene
-for i in range(10):
-    scene.frame_set(i*10)
-    obj.location = (5, 5, i)
-    obj.rotation_euler = Euler((0.3, 0.3, 8*i), 'XYZ')
-    obj.keyframe_insert(data_path='location', index=2, frame=i)
-    obj.keyframe_insert(data_path='rotation_euler', index=2, frame=i)
-    obj.keyframe_delete('location', frame=i)
-    obj.keyframe_delete('rotation_euler', frame=i)
 
 """
 this is right
@@ -261,3 +203,92 @@ for key in frames:
 
         obj.keyframe_insert(data_path='rotation_euler', index=0, frame=key)
         obj.keyframe_insert(data_path='rotation_euler', index=1, frame=key)
+"""
+this works
+"""
+import bpy
+from math import degrees
+import math
+scene = bpy.context.scene
+scene.frame_set(18)
+#if 'Z' in bpy.data.objects['boat'].rotation_mode:
+r = bpy.data.objects['boat'].rotation_euler
+#print(math.degrees(r[0]))
+print(len(r))
+print("%.2f, %.2f, %.2f" % tuple(degrees(a) for a in r))
+#for i in r:
+#    print(i)
+
+print("---------")
+loc, rot, scale = bpy.data.objects['boat'].matrix_world.decompose()
+b = rot.to_euler()
+print("%.2f, %.2f, %.2f" % tuple(degrees(a) for a in b))
+
+"""
+record parameters
+"""
+import bpy, bgl, blf,sys
+from bpy import data, ops, props, types, context
+from math import degrees
+import json
+
+cameraNames=''
+for arg in sys.argv:
+    words=arg.split('=')
+    if ( words[0] == 'cameras'):
+     cameraNames = words[1]
+
+print('\nPrint Scenes...')
+sceneKey = bpy.data.scenes.keys()[0]
+print('Using Scene['  + sceneKey + ']')
+paras = {}
+scene = bpy.context.scene
+for i in range(1000):
+    scene.frame_set(i*10)
+    scene.render.filepath = '/home/theo/Study/Cours_en_france/Pre/Code/horizon-detection/3dmodel/img/' + str(i)
+    bpy.ops.render.render(write_still=True)
+
+      # get paras
+    loc, rot, scale = bpy.data.objects['boat'].matrix_world.decompose()
+    # r = bpy.data.objects['boat'].rotation_euler
+    rot = rot.to_euler()
+    rot = list(degrees(a) for a in rot)
+    paras.update({i*10:rot})
+print(paras)
+jsObj = json.dumps(paras)
+fileObject = open('/home/theo/Study/Cours_en_france/Pre/Code/horizon-detection/3dmodel/paras.json', 'w')
+fileObject.write(jsObj)
+fileObject.close()
+print('Done!')
+
+
+"""
+insert keyframe
+"""
+from bpy import data, ops, props, types, context
+from math import degrees
+import json
+import bpy, bgl, blf,sys
+import math
+
+paras = json.load(open('/home/theo/Study/Cours_en_france/Pre/Code/horizon-detection/3dmodel/test.json'))
+frames = list(paras.keys())
+frames.sort(key=lambda name: int(name.strip().replace('"',"")))
+obj = bpy.data.objects['boat2']
+scene = bpy.context.scene
+for key in frames:
+    key = str(key)
+    value = paras[key]
+    key = int(key)
+    pi = math.pi
+    scene.frame_set(int(key))
+    #obj.rotation_euler = Euler((value[0], value[1], value[2]), 'XYZ')
+    print(key, value[0], value[1], value[2])
+    obj.rotation_euler = (value[0]*pi/180, value[1]*pi/180, value[2]*pi/180)
+    #obj.keyframe_insert(data_path='location', index=2, frame=key)
+    #obj.keyframe_delete('rotation_euler', frame=key)
+    #obj.keyframe_delete('location', frame=key)
+
+    obj.keyframe_insert(data_path='rotation_euler', index=0, frame=key)
+    obj.keyframe_insert(data_path='rotation_euler', index=1, frame=key)
+    #obj.keyframe_insert(data_path='rotation_euler', index=2, frame=key)
