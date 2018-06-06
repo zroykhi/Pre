@@ -107,11 +107,14 @@ def main(folder, num_epochs=100, batchsize=32,
             # modified by zhi
             if (model_type == "RNN"):
                 predictions, h_state = model(inputs, h_state)   # rnn output
-                h_state = Variable(h_state.data)
+                # h_state = Variable(h_state.data)
+
             else: predictions = model(inputs)
             # print(predictions.shape)
             loss = loss_fn(predictions, targets)
-            loss.backward()
+            # retain_graph=True can save memory, but lstm needs true
+            # loss.backward()
+            loss.backward(retain_graph=True)
             train_loss += loss.data[0]
             optimizer.step()
 

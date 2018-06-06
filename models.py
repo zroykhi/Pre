@@ -272,10 +272,10 @@ class RNN(nn.Module):
     def __init__(self, time_step, batch_size):
         super(RNN, self).__init__()
 
-        self.rnn = nn.RNN(
+        self.rnn = nn.LSTM(
             input_size=3*INPUT_WIDTH*INPUT_HEIGHT,
             hidden_size=128,     # rnn hidden unit
-            num_layers=128,      # number of rnn layer
+            num_layers=64,      # number of rnn layer
             batch_first=True,   # input & output will has batch size as 1s dimension. e.g. (batch, time_step, input_size)
         )
         self.out = nn.Linear(128, 3)
