@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
+from .constants import INPUT_HEIGHT, INPUT_WIDTH
 class MlpNetwork(nn.Module):
     """
     MLP network for detecting the line
@@ -124,6 +125,7 @@ class ConvolutionalNetwork(nn.Module):
 
     def forward(self, x):
         # x = self.bn1(x)
+        # print(type(x))
         x = F.dropout(x, p=self.drop_p, training=self.training)
         x = self.conv_layers(x)
         # print(x.shape)
@@ -131,7 +133,8 @@ class ConvolutionalNetwork(nn.Module):
         x = x.view(x.size(0), -1)
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
-
+        # print(type(x))
+        # print(x.shape)
         return x
 
 Convo1 = torch.nn.Sequential(
@@ -145,106 +148,158 @@ Convo1 = torch.nn.Sequential(
         # torch.nn.Linear(36260, 64),
         # torch.nn.Linear(64, 4)
     )
-class Convo(nn.Module):
-    def __init__(self, drop_p=0.0):
-        super(Convo, self).__init__()
-        self.conv_layers = nn.Sequential(
-            nn.Conv2d(3, 20, kernel_size=7, stride=1, padding=3),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=1, padding=1),
-
-            nn.Conv2d(20, 20, kernel_size=3, stride=1, padding=1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2)
-        )
-        self.fc1 = nn.Linear(36260, 64)
-        self.drop_p = drop_p
-
-    def forward(self, x):
-        x = F.dropout(x, p=self.drop_p, training=self.training)
-        x = self.conv_layers(x)
-        x = x.view(x.size(0), -1)
-        x = F.relu(self.fc1(x))
-
-cnn = Convo()
-# cnn = Convo1
-pretrained_dict = torch.load("best_model.pth")
-cnn_dict = cnn.state_dict()
-# 1. filter out unnecessary keys
-pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in cnn_dict}
-# 2. overwrite entries in the existing state dict
-cnn_dict.update(pretrained_dict)
-# 3. load the new state dict
-cnn.load_state_dict(cnn_dict)
-
-class cnn_rnn(nn.Module):
-    def __init__(self, cnn, num_ftrs, rnn_hidden, rnn_layers):
-        super().__init__()
-        self.cnn = cnn
-        self.rnn = nn.LSTM(num_ftrs, rnn_hidden, rnn_layers)
-        self.fc = nn.Linear(rnn_hidden, 4)
-        self.fc2 = nn.Linear(80, 4)
-
-    def forward(self, inputs):
-        # features = []
-        # for i, inp in enumerate(inputs):
-        #     print(inp.shape) # [3, 75, 100]
-        #     print(inputs.shape) # [4, 3, 75, 100]
-        #     outs = self.cnn.forward(inp)
-        # # outs = self.cnn.forward(inputs)
-        #     # outs = self.cnn.conv_layers(inp)
-        # # outs = self.cnn.conv_layers(inputs)
-        # # outs = outs.view(outs.size(0), -1)
-        # # outs = outs.view(outs.size(0), -1)
-        #     features.append(outs)
-        # print(inputs.shape) # [4, 3, 75, 100]
-        # print(inputs)
-        # features = self.cnn.forward(inputs)
-        features = self.cnn.conv_layers(inputs)
-        # print(features)
-        # print(features.shape) # [4, 20, 37, 49]
-        # print(type(features))
-        features = features.view(features.size(0), features.size(1), -1)
-        # print(features.shape) # [4, 20, 1813]
-        # features = torch.cat(features).view(64, -1, 64)
-        # features = Variable(features)
-        # features = np.array(outs)
-        # features = torch.from_numpy(features).float()
-        # features = Variable(features)
-        # format features and store in Variable
-        # features = torch.stack(features)
-        # pass through LSTM
-        outputs, _ = self.rnn(features)
-        outputs = outputs.view(outputs.size(0), -1)
-        outputs = F.relu(outputs)
-        # print(outputs.shape) # [4, 20, 4]
-        # outputs = self.fc(outputs[-1])
-        outputs = self.fc2(outputs)
-        # print(outputs.shape) # [20, 4]
-        return outputs
-
-newModel = cnn_rnn(cnn,1813,4,4)
+# class Convo(nn.Module):
+#     def __init__(self, drop_p=0.0):
+#         super(Convo, self).__init__()
+#         self.conv_layers = nn.Sequential(
+#             nn.Conv2d(3, 20, kernel_size=7, stride=1, padding=3),
+#             nn.ReLU(inplace=True),
+#             nn.MaxPool2d(kernel_size=3, stride=1, padding=1),
+#
+#             nn.Conv2d(20, 20, kernel_size=3, stride=1, padding=1),
+#             nn.ReLU(inplace=True),
+#             nn.MaxPool2d(kernel_size=3, stride=2)
+#         )
+#         self.fc1 = nn.Linear(36260, 64)
+#         self.drop_p = drop_p
+#
+#     def forward(self, x):
+#         x = F.dropout(x, p=self.drop_p, training=self.training)
+#         x = self.conv_layers(x)
+#         x = x.view(x.size(0), -1)
+#         x = F.relu(self.fc1(x))
+#
+# cnn = Convo()
+# # cnn = Convo1
+# pretrained_dict = torch.load("cnn_model.pth")
+# cnn_dict = cnn.state_dict()
+# # 1. filter out unnecessary keys
+# pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in cnn_dict}
+# # 2. overwrite entries in the existing state dict
+# cnn_dict.update(pretrained_dict)
+# # 3. load the new state dict
+# cnn.load_state_dict(cnn_dict)
+#
+# class cnn_rnn(nn.Module):
+#     def __init__(self, cnn, num_ftrs, rnn_hidden, rnn_layers):
+#         super().__init__()
+#         self.cnn = cnn
+#         self.rnn = nn.LSTM(num_ftrs, rnn_hidden, rnn_layers)
+#         self.fc = nn.Linear(rnn_hidden, 4)
+#         self.fc2 = nn.Linear(80, 4)
+#
+#     def forward(self, inputs):
+#         # features = []
+#         # for i, inp in enumerate(inputs):
+#         #     print(inp.shape) # [3, 75, 100]
+#         #     print(inputs.shape) # [4, 3, 75, 100]
+#         #     outs = self.cnn.forward(inp)
+#         # # outs = self.cnn.forward(inputs)
+#         #     # outs = self.cnn.conv_layers(inp)
+#         # # outs = self.cnn.conv_layers(inputs)
+#         # # outs = outs.view(outs.size(0), -1)
+#         # # outs = outs.view(outs.size(0), -1)
+#         #     features.append(outs)
+#         # print(inputs.shape) # [4, 3, 75, 100]
+#         # print(inputs)
+#         # features = self.cnn.forward(inputs)
+#         features = self.cnn.conv_layers(inputs)
+#         # print(features)
+#         # print(features.shape) # [4, 20, 37, 49]
+#         # print(type(features))
+#         features = features.view(features.size(0), features.size(1), -1)
+#         # print(features.shape) # [4, 20, 1813]
+#         # features = torch.cat(features).view(64, -1, 64)
+#         # features = Variable(features)
+#         # features = np.array(outs)
+#         # features = torch.from_numpy(features).float()
+#         # features = Variable(features)
+#         # format features and store in Variable
+#         # features = torch.stack(features)
+#         # pass through LSTM
+#         outputs, _ = self.rnn(features)
+#         outputs = outputs.view(outputs.size(0), -1)
+#         outputs = F.relu(outputs)
+#         # print(outputs.shape) # [4, 20, 4]
+#         # outputs = self.fc(outputs[-1])
+#         outputs = self.fc2(outputs)
+#         # print(outputs.shape) # [20, 4]
+#         return outputs
+#
+# newModel = cnn_rnn(cnn,1813,4,4)
 # print(newModel)
 
+# class RNN(nn.Module):
+#     def __init__(self):
+#     # def __init__(self, time_step, batch_size):
+#         super(RNN, self).__init__()
+#
+#         self.rnn = nn.RNN(
+#             input_size=3*162*90,
+#             hidden_size=32,     # rnn hidden unit
+#             num_layers=20,       # number of rnn layer
+#             batch_first=True,   # input & output will has batch size as 1s dimension. e.g. (batch, time_step, input_size)
+#         )
+#         self.out = nn.Linear(32, 3)
+#         # self.time_step = time_step
+#         # self.batch_size = batch_size
+#
+#     def forward(self, x, h_state):
+#         # turn into (batch, 3*time_step*input_size)
+#         x = x.view(x.size(0), -1)
+#         # (1, batch, 3*time_step*input_size): a made (batch,time_step, input_size)
+#         x = x[None, :, :]
+#         # x (batch, time_step, input_size)
+#         # h_state (n_layers, batch, hidden_size)
+#         # r_out (batch, time_step, hidden_size)
+#         r_out, h_state = self.rnn(x, h_state)
+#         # print("r_out is", r_out.shape)
+#         outs = []    # save all predictions
+#         for time_step in range(r_out.size(1)):    # calculate output for each time step
+#             outs.append(self.out(r_out[:, time_step, :]))
+#         # print("outs len is: ", len(outs))
+#         # print("outs element len is: ", len(outs[0][0]))
+#         outs = torch.stack(outs, dim=1)
+#         # outs = outs.view(self.time_step*self.batch_size,3)
+#         outs = outs.view(4, 3)
+#         # print("after view: ", outs.shape)
+#         return outs, h_state
+
+# when you use rnn model, train batch size must equal to test's
 class RNN(nn.Module):
-    def __init__(self):
+    # here, time step is batch size
+    # batch size: 3*width*height (photo)
+    def __init__(self, time_step, batch_size):
         super(RNN, self).__init__()
 
         self.rnn = nn.RNN(
-            input_size=INPUT_SIZE,
-            hidden_size=32,     # rnn hidden unit
-            num_layers=20,       # number of rnn layer
+            input_size=3*INPUT_WIDTH*INPUT_HEIGHT,
+            hidden_size=128,     # rnn hidden unit
+            num_layers=128,      # number of rnn layer
             batch_first=True,   # input & output will has batch size as 1s dimension. e.g. (batch, time_step, input_size)
         )
-        self.out = nn.Linear(32, 4)
+        self.out = nn.Linear(128, 3)
+        self.time_step = time_step
+        self.batch_size = batch_size
 
     def forward(self, x, h_state):
+        # turn into (batch, 3*time_step*input_size)
+        x = x.view(x.size(0), -1)
+        # (1, batch, 3*time_step*input_size): a made (batch,time_step, input_size)
+        x = x[None, :, :]
         # x (batch, time_step, input_size)
         # h_state (n_layers, batch, hidden_size)
         # r_out (batch, time_step, hidden_size)
         r_out, h_state = self.rnn(x, h_state)
-
+        # print("r_out is", r_out.shape)
         outs = []    # save all predictions
         for time_step in range(r_out.size(1)):    # calculate output for each time step
             outs.append(self.out(r_out[:, time_step, :]))
-        return torch.stack(outs, dim=1), h_state
+        # print("outs len is: ", len(outs))
+        # print("outs element len is: ", len(outs[0][0]))
+        outs = torch.stack(outs, dim=1)
+        # print(outs.shape)
+        # outs = outs.view(self.time_step,3)
+        outs = outs[0]
+        # print("after view: ", outs.shape)
+        return outs, h_state

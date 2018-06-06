@@ -5,7 +5,7 @@ from __future__ import print_function, division, absolute_import
 
 import argparse
 import time
-
+from .constants import INPUT_WIDTH, INPUT_HEIGHT
 import numpy as np
 import torch as th
 import torch.utils.data
@@ -13,7 +13,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 from .utils import JsonDataset, loadLabels
-from .models import ConvolutionalNetwork, newModel
+from .models import ConvolutionalNetwork, RNN#, newModel
 
 evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
@@ -43,7 +43,9 @@ def main(folder, num_epochs=100, batchsize=32,
     train_loader = th.utils.data.DataLoader(
         JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
         batch_size=batchsize, shuffle=True, **kwargs)
-
+    if model_type == "RNN":
+        global VAL_BATCH_SIZE
+        VAL_BATCH_SIZE = batchsize
     # Random flip also for val ?
     val_loader = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=folder),
                                           batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
@@ -57,6 +59,8 @@ def main(folder, num_epochs=100, batchsize=32,
     # modified by zhi
     elif model_type == "cnn_rnn":
         model = newModel
+    elif model_type == "RNN":
+        model = RNN(batchsize, 3*INPUT_HEIGHT*INPUT_WIDTH)
     else:
         raise ValueError("Model type not supported")
 
@@ -102,7 +106,7 @@ def main(folder, num_epochs=100, batchsize=32,
             # end
             # modified by zhi
             if (model_type == "RNN"):
-                predictions, h_state = rnn(x, h_state)   # rnn output
+                predictions, h_state = model(inputs, h_state)   # rnn output
                 h_state = Variable(h_state.data)
             else: predictions = model(inputs)
             # print(predictions.shape)
@@ -119,7 +123,11 @@ def main(folder, num_epochs=100, batchsize=32,
                 inputs, targets = inputs.cuda(), targets.cuda()
             # Set volatile to True because we don't need to compute gradient
             inputs, targets = Variable(inputs, volatile=True), Variable(targets)
-            predictions = model(inputs)
+            if (model_type == "RNN"):
+                predictions, h_state = model(inputs, h_state)   # rnn output
+                # h_state = Variable(h_state.data)
+            else:
+                predictions = model(inputs)
             loss = loss_fn(predictions, targets)
             val_loss += loss.data[0]
 
@@ -170,8 +178,8 @@ if __name__ == '__main__':
     parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables CUDA training')
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
     # modified by zhi
-    parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','cnn_rnn'])
-    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)
+    parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','cnn_rnn','RNN'])
+    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-6, type=float)
     args = parser.parse_args()
 
     args.cuda = not args.no_cuda and th.cuda.is_available()

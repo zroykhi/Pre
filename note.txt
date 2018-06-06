@@ -1,2 +1,10 @@
 batch normalization is very important, without it, prediction outcomes sometimes are all the same
 if the leatning rate is too high, the loss can sometimes appears to be nan
+
+for rnn model, the parameters below work
+lr = 1e-5,
+hidden_size=32,
+num_layers=32,
+CAMERA_RESOLUTION = (486, 270)
+FACTOR = 3
+batch size is 4
