@@ -1,14 +1,14 @@
 from __future__ import print_function, division, absolute_import
 
 import json
-
+import re
 import cv2
 import numpy as np
 import torch as th
 from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 
-from constants import MAX_WIDTH, MAX_HEIGHT, ROI, INPUT_HEIGHT, INPUT_WIDTH, SPLIT_SEED
+from constants import MAX_WIDTH, MAX_HEIGHT, ROI, INPUT_HEIGHT, INPUT_WIDTH, SPLIT_SEED, TIME_GAP, TOTAL_FRAME
 
 
 def adjustLearningRate(optimizer, epoch, n_epochs, lr_init, batch,
@@ -76,12 +76,18 @@ def transformPrediction(y):
     # x = (x * MAX_WIDTH) + margin_left
     return x, y, z# cost,sint
 
+def addTimeGap(matched):
+    value = int(matched.group('value'))
+    return str(value + TIME_GAP)
+
 
 def loadLabels(folder):
     if not folder.endswith('/'):
         folder += '/'
     labels = json.load(open(folder + 'labels.json'))
-
+    for key, value in labels.items():
+        labels[key][2] = 90
+    # print(labels)
     images = list(labels.keys())
     # modified by zhi
     # images.sort(key=lambda name: int(name.split('.jpg')[0]))
@@ -92,9 +98,25 @@ def loadLabels(folder):
     train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.4, random_state=SPLIT_SEED)
     val_keys, test_keys = train_test_split(tmp_keys, test_size=0.5, random_state=SPLIT_SEED)
 
-    train_labels = {key: labels[key] for key in train_keys}
-    val_labels = {key: labels[key] for key in val_keys}
-    test_labels = {key: labels[key] for key in test_keys}
+    # delete the keys which are overflow after adding time gap of these three type of keys
+    train_keys = [i for i in train_keys if (int(i) < TOTAL_FRAME - TIME_GAP) ]
+    val_keys = [i for i in val_keys if (int(i) < TOTAL_FRAME - TIME_GAP) ]
+    test_keys = [i for i in test_keys if (int(i) < TOTAL_FRAME - TIME_GAP) ]
+    # print("trian keys is", train_keys)
+    # print("val keys is", val_keys)
+    # print("test keys is", test_keys)
+
+    # add time gap in order to predict future state
+    train_future_keys = [re.sub('(?P<value>\d+)', addTimeGap, s) for s in train_keys]
+    val_future_keys = [re.sub('(?P<value>\d+)', addTimeGap, s) for s in val_keys]
+    test_future_keys = [re.sub('(?P<value>\d+)', addTimeGap, s) for s in test_keys]
+    # print("train_future_keys is", train_future_keys)
+    # print("val_future_keys is", val_future_keys)
+    # print("test_future_keys is", test_future_keys)
+
+    train_labels = {key: labels[key] for key in train_future_keys}
+    val_labels = {key: labels[key] for key in val_future_keys}
+    test_labels = {key: labels[key] for key in test_future_keys}
 
     print("{} images".format(len(labels)))
     return train_labels, val_labels, test_labels, labels

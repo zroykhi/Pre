@@ -13,7 +13,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 from .utils import JsonDataset, loadLabels
-from .models import ConvolutionalNetwork, RNN#, newModel
+from .models import ConvolutionalNetwork, RNN, LSTM#, newModel
 
 evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
@@ -61,6 +61,8 @@ def main(folder, num_epochs=100, batchsize=32,
         model = newModel
     elif model_type == "RNN":
         model = RNN(batchsize, 3*INPUT_HEIGHT*INPUT_WIDTH)
+    elif model_type == "LSTM":
+        model = RNN(batchsize, 3*INPUT_HEIGHT*INPUT_WIDTH)
     else:
         raise ValueError("Model type not supported")
 
@@ -80,6 +82,7 @@ def main(folder, num_epochs=100, batchsize=32,
     # loss_fn = nn.SmoothL1Loss(size_average=False)
     best_error = np.inf
     best_model_path = "{}.pth".format(model_name)
+    global h_state
     h_state = None
     # Finally, launch the training loop.
     print("Starting training...")
@@ -106,15 +109,22 @@ def main(folder, num_epochs=100, batchsize=32,
             # end
             # modified by zhi
             if (model_type == "RNN"):
+                # global h_state
                 predictions, h_state = model(inputs, h_state)   # rnn output
-                # h_state = Variable(h_state.data)
-
+                h_state = Variable(h_state)#, requires_grad=True)
+            elif (model_type == "LSTM"):
+                # global h_state
+                predictions = model(inputs)   # rnn output
             else: predictions = model(inputs)
             # print(predictions.shape)
             loss = loss_fn(predictions, targets)
-            # retain_graph=True can save memory, but lstm needs true
-            # loss.backward()
-            loss.backward(retain_graph=True)
+            # zhi add zero_grad
+            # model.zero_grad()
+            # retain_graph=True can save memory, but lstm needs it to be true
+            # if i == 0:
+            #     loss.backward(retain_graph=True)
+            # else: loss.backward()
+            loss.backward()
             train_loss += loss.data[0]
             optimizer.step()
 
@@ -129,6 +139,9 @@ def main(folder, num_epochs=100, batchsize=32,
             if (model_type == "RNN"):
                 predictions, h_state = model(inputs, h_state)   # rnn output
                 # h_state = Variable(h_state.data)
+            elif (model_type == "LSTM"):
+                predictions = model(inputs)   # rnn output
+
             else:
                 predictions = model(inputs)
             loss = loss_fn(predictions, targets)
@@ -176,13 +189,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a line detector')
     parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
     parser.add_argument('--num_epochs', help='Number of epoch', default=50, type=int)
-    parser.add_argument('-bs', '--batchsize', help='Batch size', default=4, type=int)
+    parser.add_argument('-bs', '--batchsize', help='Batch size', default=8, type=int)
     parser.add_argument('--seed', help='Random Seed', default=42, type=int)
     parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables CUDA training')
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
     # modified by zhi
-    parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','cnn_rnn','RNN'])
-    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-6, type=float)
+    parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','cnn_rnn','RNN','LSTM'])
+    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)
     args = parser.parse_args()
 
     args.cuda = not args.no_cuda and th.cuda.is_available()

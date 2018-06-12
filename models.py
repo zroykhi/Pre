@@ -264,9 +264,56 @@ Convo1 = torch.nn.Sequential(
 #         outs = outs.view(4, 3)
 #         # print("after view: ", outs.shape)
 #         return outs, h_state
-
-# when you use rnn model, train batch size must equal to test's
+"""
+when you use rnn model, train batch size must equal to test's
+below rnn h_state is used by next batch
+"""
 class RNN(nn.Module):
+    # here, time step is batch size
+    # batch size: 3*width*height (photo)
+    def __init__(self, time_step, batch_size):
+        super(RNN, self).__init__()
+
+        self.rnn = nn.RNN(
+            input_size=3*INPUT_WIDTH*INPUT_HEIGHT,
+            hidden_size=128,     # rnn hidden unit
+            num_layers=64,      # number of rnn layer
+            batch_first=True,   # input & output will has batch size as 1s dimension. e.g. (batch, time_step, input_size)
+        )
+        self.out = nn.Linear(128, 3)
+        self.time_step = time_step
+        self.batch_size = batch_size
+        # self.max_pool = nn.MaxPool2d(pool_size)
+        self.dropout = nn.Dropout(p=0.25)
+
+    def forward(self, x, h_state):
+        # turn into (batch, 3*time_step*input_size)
+        x = x.view(x.size(0), -1)
+        # (1, batch, 3*time_step*input_size): a made (batch,time_step, input_size)
+        x = x[None, :, :]
+        # x (batch, time_step, input_size)
+        # h_state (n_layers, batch, hidden_size)
+        # r_out (batch, time_step, hidden_size)
+        r_out, h_state = self.rnn(x, h_state)
+        r_out = self.dropout(r_out)
+        # print("r_out is", r_out.shape)
+        outs = []    # save all predictions
+        for time_step in range(r_out.size(1)):    # calculate output for each time step
+            outs.append(self.out(r_out[:, time_step, :]))
+        # print("outs len is: ", len(outs))
+        # print("outs element len is: ", len(outs[0][0]))
+        outs = torch.stack(outs, dim=1)
+        # print(outs.shape)
+        # outs = outs.view(self.time_step,3)
+        outs = outs[0]
+        # print("after view: ", outs.shape)
+        return outs, h_state
+
+"""
+when you use LSTM model, train batch size must equal to test's
+below LSTM h_state is used by next batch
+"""
+class LSTM(nn.Module):
     # here, time step is batch size
     # batch size: 3*width*height (photo)
     def __init__(self, time_step, batch_size):
@@ -282,7 +329,7 @@ class RNN(nn.Module):
         self.time_step = time_step
         self.batch_size = batch_size
 
-    def forward(self, x, h_state):
+    def forward(self, x):
         # turn into (batch, 3*time_step*input_size)
         x = x.view(x.size(0), -1)
         # (1, batch, 3*time_step*input_size): a made (batch,time_step, input_size)
@@ -290,7 +337,7 @@ class RNN(nn.Module):
         # x (batch, time_step, input_size)
         # h_state (n_layers, batch, hidden_size)
         # r_out (batch, time_step, hidden_size)
-        r_out, h_state = self.rnn(x, h_state)
+        r_out, _ = self.rnn(x)
         # print("r_out is", r_out.shape)
         outs = []    # save all predictions
         for time_step in range(r_out.size(1)):    # calculate output for each time step
@@ -302,4 +349,4 @@ class RNN(nn.Module):
         # outs = outs.view(self.time_step,3)
         outs = outs[0]
         # print("after view: ", outs.shape)
-        return outs, h_state
+        return outs#, h_state

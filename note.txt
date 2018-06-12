@@ -8,3 +8,16 @@ num_layers=32,
 CAMERA_RESOLUTION = (486, 270)
 FACTOR = 3
 batch size is 4
+
+difference of LSTM between return hidden state and not return?
+how to add batch normalization to rnn
+
+LSTM模型要设置train.py中loss.backward(retain_graph=True)，并取消转化h_state每一步time step之后的格式，
+# todo
+prendre plusieurs images pour entrainer. bouger le bateau, predire les parameters du bateau quelque seconds plus tard. tester different interval de frame
+donnees pour entrainer et pour tester sont separer.
+
+blender error: RuntimeError: Error: Cannot write a single file with an animation format selected
+solution: change render format to png or jpg
+
+modify learning rate and batch size sometimes can change a lot
