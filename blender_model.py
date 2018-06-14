@@ -292,3 +292,20 @@ for key in frames:
     obj.keyframe_insert(data_path='rotation_euler', index=0, frame=key)
     obj.keyframe_insert(data_path='rotation_euler', index=1, frame=key)
     #obj.keyframe_insert(data_path='rotation_euler', index=2, frame=key)
+"""
+delete keyframes
+"""
+from bpy import data, ops, props, types, context
+from math import degrees
+import json
+import bpy, bgl, blf,sys
+import math
+
+obj = bpy.data.objects['boat2']
+scene = bpy.context.scene
+for key in range(0,5000,5):
+
+    scene.frame_set(int(key))
+    #obj.keyframe_insert(data_path='location', index=2, frame=key)
+    obj.keyframe_delete('rotation_euler', frame=key)
+    #obj.keyframe_delete('location', frame=key)

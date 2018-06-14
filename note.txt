@@ -21,3 +21,9 @@ blender error: RuntimeError: Error: Cannot write a single file with an animation
 solution: change render format to png or jpg
 
 modify learning rate and batch size sometimes can change a lot
+
+time gap should according to the boat's speed
+
+不能直接使用rnn，先经过cnn对图片的特征读取，再传入rnn中
+
+修改time_gap, 

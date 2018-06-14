@@ -86,7 +86,9 @@ def loadLabels(folder):
         folder += '/'
     labels = json.load(open(folder + 'labels.json'))
     for key, value in labels.items():
-        labels[key][2] = 90
+        # labels[key][2] = 90
+        labels[key] = value[:-1]
+
     # print(labels)
     images = list(labels.keys())
     # modified by zhi

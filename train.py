@@ -19,8 +19,8 @@ evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
 
 
-def main(folder, num_epochs=100, batchsize=32,
-         learning_rate=0.0001, seed=42, cuda=False, num_output=3, random_flip=0.5,
+def main(folder, num_epochs=100, batchsize=16,
+         learning_rate=0.0001, seed=42, cuda=False, num_output=2, random_flip=0.5,
          model_type="cnn", evaluate_print=1, load_model=""):
 
     if not folder.endswith('/'):
@@ -70,7 +70,7 @@ def main(folder, num_epochs=100, batchsize=32,
         model.cuda()
 
     # L2 penalty
-    weight_decay = 1e-4
+    weight_decay = 1e-5
     #weight_decay = 0
     # Optimizers
     # optimizer = th.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
@@ -104,10 +104,7 @@ def main(folder, num_epochs=100, batchsize=32,
             # Convert to pytorch variables
             inputs, targets = Variable(inputs), Variable(targets)
             optimizer.zero_grad()
-            # modified by zhi
             # print(inputs.shape) # [4, 3, 75, 100]
-            # end
-            # modified by zhi
             if (model_type == "RNN"):
                 # global h_state
                 predictions, h_state = model(inputs, h_state)   # rnn output
@@ -195,7 +192,7 @@ if __name__ == '__main__':
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
     # modified by zhi
     parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','cnn_rnn','RNN','LSTM'])
-    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)
+    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-6, type=float)
     args = parser.parse_args()
 
     args.cuda = not args.no_cuda and th.cuda.is_available()

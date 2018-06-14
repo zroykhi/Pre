@@ -101,13 +101,13 @@ class MlpNetwork(nn.Module):
 
 # modified by zhi
 class ConvolutionalNetwork(nn.Module):
-    def __init__(self, drop_p=0.2, num_output=3):
+    def __init__(self, drop_p=0.5, num_output=2):
         super(ConvolutionalNetwork, self).__init__()
         self.conv_layers = nn.Sequential(
-            nn.Conv2d(3, 20, kernel_size=5, stride=2, padding=2),
+            nn.Conv2d(3, 20, kernel_size=5, stride=1, padding=2),
             nn.BatchNorm2d(20),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=5, stride=1, padding=2),
+            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
 
             nn.Conv2d(20, 40, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(40),
@@ -179,53 +179,61 @@ Convo1 = torch.nn.Sequential(
 # cnn_dict.update(pretrained_dict)
 # # 3. load the new state dict
 # cnn.load_state_dict(cnn_dict)
-#
-# class cnn_rnn(nn.Module):
-#     def __init__(self, cnn, num_ftrs, rnn_hidden, rnn_layers):
-#         super().__init__()
-#         self.cnn = cnn
-#         self.rnn = nn.LSTM(num_ftrs, rnn_hidden, rnn_layers)
-#         self.fc = nn.Linear(rnn_hidden, 4)
-#         self.fc2 = nn.Linear(80, 4)
-#
-#     def forward(self, inputs):
-#         # features = []
-#         # for i, inp in enumerate(inputs):
-#         #     print(inp.shape) # [3, 75, 100]
-#         #     print(inputs.shape) # [4, 3, 75, 100]
-#         #     outs = self.cnn.forward(inp)
-#         # # outs = self.cnn.forward(inputs)
-#         #     # outs = self.cnn.conv_layers(inp)
-#         # # outs = self.cnn.conv_layers(inputs)
-#         # # outs = outs.view(outs.size(0), -1)
-#         # # outs = outs.view(outs.size(0), -1)
-#         #     features.append(outs)
-#         # print(inputs.shape) # [4, 3, 75, 100]
-#         # print(inputs)
-#         # features = self.cnn.forward(inputs)
-#         features = self.cnn.conv_layers(inputs)
-#         # print(features)
-#         # print(features.shape) # [4, 20, 37, 49]
-#         # print(type(features))
-#         features = features.view(features.size(0), features.size(1), -1)
-#         # print(features.shape) # [4, 20, 1813]
-#         # features = torch.cat(features).view(64, -1, 64)
-#         # features = Variable(features)
-#         # features = np.array(outs)
-#         # features = torch.from_numpy(features).float()
-#         # features = Variable(features)
-#         # format features and store in Variable
-#         # features = torch.stack(features)
-#         # pass through LSTM
-#         outputs, _ = self.rnn(features)
-#         outputs = outputs.view(outputs.size(0), -1)
-#         outputs = F.relu(outputs)
-#         # print(outputs.shape) # [4, 20, 4]
-#         # outputs = self.fc(outputs[-1])
-#         outputs = self.fc2(outputs)
-#         # print(outputs.shape) # [20, 4]
-#         return outputs
-#
+
+class cnn_rnn(nn.Module):
+    def __init__(self, num_ftrs, rnn_hidden, rnn_layers):
+        super().__init__()
+        self.cnn = nn.Sequential(
+                    nn.Conv2d(3, 20, kernel_size=7, stride=1, padding=3),
+                    nn.ReLU(inplace=True),
+                    nn.MaxPool2d(kernel_size=3, stride=1, padding=1),
+
+                    nn.Conv2d(20, 20, kernel_size=3, stride=1, padding=1),
+                    nn.ReLU(inplace=True),
+                    nn.MaxPool2d(kernel_size=3, stride=2)
+                )
+        self.rnn = nn.RNN(num_ftrs, rnn_hidden, rnn_layers)
+        self.fc = nn.Linear(rnn_hidden, 4)
+        self.fc2 = nn.Linear(80, 4)
+
+    def forward(self, inputs):
+        # features = []
+        # for i, inp in enumerate(inputs):
+        #     print(inp.shape) # [3, 75, 100]
+        #     print(inputs.shape) # [4, 3, 75, 100]
+        #     outs = self.cnn.forward(inp)
+        # # outs = self.cnn.forward(inputs)
+        #     # outs = self.cnn.conv_layers(inp)
+        # # outs = self.cnn.conv_layers(inputs)
+        # # outs = outs.view(outs.size(0), -1)
+        # # outs = outs.view(outs.size(0), -1)
+        #     features.append(outs)
+        # print(inputs.shape) # [4, 3, 75, 100]
+        # print(inputs)
+        # features = self.cnn.forward(inputs)
+        features = self.cnn.conv_layers(inputs)
+        # print(features)
+        # print(features.shape) # [4, 20, 37, 49]
+        # print(type(features))
+        features = features.view(features.size(0), features.size(1), -1)
+        # print(features.shape) # [4, 20, 1813]
+        # features = torch.cat(features).view(64, -1, 64)
+        # features = Variable(features)
+        # features = np.array(outs)
+        # features = torch.from_numpy(features).float()
+        # features = Variable(features)
+        # format features and store in Variable
+        # features = torch.stack(features)
+        # pass through LSTM
+        outputs, _ = self.rnn(features)
+        outputs = outputs.view(outputs.size(0), -1)
+        outputs = F.relu(outputs)
+        # print(outputs.shape) # [4, 20, 4]
+        # outputs = self.fc(outputs[-1])
+        outputs = self.fc2(outputs)
+        # print(outputs.shape) # [20, 4]
+        return outputs
+
 # newModel = cnn_rnn(cnn,1813,4,4)
 # print(newModel)
 
