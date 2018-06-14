@@ -4,18 +4,14 @@ File containing all the constants used in the different files
 import numpy as np
 
 # Main Constants
-# modified by zhi
-# CAMERA_RESOLUTION = (800, 600)
 CAMERA_RESOLUTION = (486, 270)
-# CAMERA_RESOLUTION = (854, 480)
 # Regions of interest
 MAX_WIDTH = CAMERA_RESOLUTION[0]
 MAX_HEIGHT = CAMERA_RESOLUTION[1]
-# r = [margin_left, margin_top, width, height]
-# modified by zhi
-ROI = [0, 0, MAX_WIDTH, MAX_HEIGHT]
-# ROI = [0, 100, MAX_WIDTH, MAX_HEIGHT]
 
+ROI = [0, 0, MAX_WIDTH, MAX_HEIGHT]
+TIME_GAP = 5
+TOTAL_FRAME = 5000
 # Training
 FACTOR = 3  # Resize factor
 INPUT_HEIGHT = ROI[3] // FACTOR
