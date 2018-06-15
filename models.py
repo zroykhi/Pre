@@ -103,12 +103,12 @@ class CNN_RNN(nn.Module):
         self.cnn = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=5, stride=2, padding=2),
             nn.BatchNorm2d(16),
-            nn.ReLU(inplace=True),
+            nn.ReLU(inplace=True),# False is ok
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
 
             nn.Conv2d(16, 20, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(20),
-            nn.ReLU(inplace=True),
+            nn.ReLU(inplace=True),# False is ok
             nn.MaxPool2d(kernel_size=3, stride=2, padding = 1)
         )
 
