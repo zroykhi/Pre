@@ -56,7 +56,6 @@ def main(folder, num_epochs=100, batchsize=16,
     model_name = "{}_model_tmp".format(model_type)
     if model_type == "cnn":
         model = ConvolutionalNetwork(num_output=num_output, drop_p=0.0)
-    # modified by zhi
     elif model_type == "CNN_RNN":
         model = CNN_RNN()
     elif model_type == "RNN":
@@ -127,7 +126,7 @@ def main(folder, num_epochs=100, batchsize=16,
             # Set volatile to True because we don't need to compute gradient
             inputs, targets = Variable(inputs, volatile=True), Variable(targets)
             if (model_type == "RNN" or model_type == "CNN_RNN"):
-                predictions, h_state = model(inputs, h_state)   # rnn output
+                predictions, h_state = model(inputs, h_state)
                 # h_state = Variable(h_state.data)
             elif (model_type == "LSTM"):
                 predictions = model(inputs)   # rnn output
@@ -183,7 +182,6 @@ if __name__ == '__main__':
     parser.add_argument('--seed', help='Random Seed', default=42, type=int)
     parser.add_argument('--no-cuda', action='store_true', default=True, help='Disables CUDA training')
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
-    # modified by zhi
     parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','CNN_RNN','RNN','LSTM'])
     parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-6, type=float)
     args = parser.parse_args()

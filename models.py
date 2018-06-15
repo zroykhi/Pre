@@ -80,7 +80,6 @@ class ConvolutionalNetwork(nn.Module):
         #self.fc1 = nn.Linear(20 * 6 * 26, 16)
         self.fc2 = nn.Linear(64, num_output)
         self.drop_p = drop_p
-        # modified by zhi
         # self.bn1 = nn.BatchNorm2d(3)
         # self.bn2 = nn.BatchNorm2d(24)
 
@@ -89,7 +88,7 @@ class ConvolutionalNetwork(nn.Module):
         # print(type(x))
         x = F.dropout(x, p=self.drop_p, training=self.training)
         x = self.conv_layers(x)
-        print(x.shape)
+        # print(x.shape)
         # x = self.bn2(x)
         x = x.view(x.size(0), -1)
         x = F.relu(self.fc1(x))
@@ -99,16 +98,16 @@ class ConvolutionalNetwork(nn.Module):
         return x
 
 class CNN_RNN(nn.Module):
-    def __init__(self, input_size=30176, hidden_size=64, num_layers=2, num_output=2):
+    def __init__(self, input_size=5040, hidden_size=32, num_layers=2, num_output=2):
         super().__init__()
         self.cnn = nn.Sequential(
-            nn.Conv2d(3, 16, kernel_size=5, stride=1, padding=2),
+            nn.Conv2d(3, 16, kernel_size=5, stride=2, padding=2),
             nn.BatchNorm2d(16),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
 
-            nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(32),
+            nn.Conv2d(16, 20, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(20),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2, padding = 1)
         )
