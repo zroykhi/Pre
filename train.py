@@ -58,10 +58,7 @@ def main(folder, num_epochs=100, batchsize=16,
         model = ConvolutionalNetwork(num_output=num_output, drop_p=0.0)
     elif model_type == "CNN_RNN":
         model = CNN_RNN()
-    elif model_type == "RNN":
-        model = RNN(batchsize, 3*INPUT_HEIGHT*INPUT_WIDTH)
-    elif model_type == "LSTM":
-        model = RNN(batchsize, 3*INPUT_HEIGHT*INPUT_WIDTH)
+
     else:
         raise ValueError("Model type not supported")
 
@@ -162,7 +159,9 @@ def main(folder, num_epochs=100, batchsize=16,
         if cuda:
             inputs, targets = inputs.cuda(), targets.cuda()
         inputs, targets = Variable(inputs, volatile=True), Variable(targets)
-        predictions = model(inputs)
+        if model_type == "CNN_RNN":
+            predictions, h_state = model(inputs, h_state)
+        else: predictions = model(inputs)
         loss = loss_fn(predictions, targets)
         test_loss += loss.data[0]
 
@@ -175,12 +174,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a line detector')
     parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
     parser.add_argument('--num_epochs', help='Number of epoch', default=50, type=int)
-    parser.add_argument('-bs', '--batchsize', help='Batch size', default=4, type=int)
+    parser.add_argument('-bs', '--batchsize', help='Batch size', default=8, type=int)
     parser.add_argument('--seed', help='Random Seed', default=42, type=int)
     parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables CUDA training')
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
     parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','CNN_RNN','RNN','LSTM'])
-    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)
+    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-4, type=float)
     args = parser.parse_args()
 
     args.cuda = not args.no_cuda and th.cuda.is_available()
