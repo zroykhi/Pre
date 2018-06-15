@@ -121,6 +121,7 @@ class CNN_RNN(nn.Module):
         features = self.cnn(inputs)
         features = features.view(features.size(0), -1)
         features = features[None, :, :]
+        # features.backward()
         outputs, h_state = self.rnn(features, h_state)
         outputs = self.dropout(outputs)
         outs = []    # save all predictions

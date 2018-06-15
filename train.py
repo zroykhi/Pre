@@ -106,7 +106,7 @@ def main(folder, num_epochs=100, batchsize=16,
             # print(inputs.shape) # [4, 3, 75, 100]
             if (model_type == "RNN" or model_type == "CNN_RNN"):
                 # global h_state
-                predictions, h_state = model(inputs, h_state)   # rnn output
+                predictions, h_state = model(inputs, h_state)   
                 h_state = Variable(h_state, requires_grad=True)
 
             else: predictions = model(inputs)
@@ -176,7 +176,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_epochs', help='Number of epoch', default=50, type=int)
     parser.add_argument('-bs', '--batchsize', help='Batch size', default=4, type=int)
     parser.add_argument('--seed', help='Random Seed', default=42, type=int)
-    parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables CUDA training')
+    parser.add_argument('--no-cuda', action='store_true', default=True, help='Disables CUDA training')
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
     parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','CNN_RNN','RNN','LSTM'])
     parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)
