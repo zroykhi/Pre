@@ -20,7 +20,7 @@ VAL_BATCH_SIZE = 64  # Batch size for validation and test data
 
 
 def main(folder, num_epochs=100, batchsize=16,
-         learning_rate=0.0001, seed=42, cuda=False, num_output=2, random_flip=0.5,
+         learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_flip=0.5,
          model_type="cnn", evaluate_print=1, load_model=""):
 
     if not folder.endswith('/'):
@@ -107,10 +107,8 @@ def main(folder, num_epochs=100, batchsize=16,
             if (model_type == "RNN" or model_type == "CNN_RNN"):
                 # global h_state
                 predictions, h_state = model(inputs, h_state)   # rnn output
-                h_state = Variable(h_state)#, requires_grad=True)
-            elif (model_type == "LSTM"):
-                # global h_state
-                predictions = model(inputs)   # rnn output
+                h_state = Variable(h_state, requires_grad=True)
+
             else: predictions = model(inputs)
             loss = loss_fn(predictions, targets)
             loss.backward()
@@ -128,8 +126,6 @@ def main(folder, num_epochs=100, batchsize=16,
             if (model_type == "RNN" or model_type == "CNN_RNN"):
                 predictions, h_state = model(inputs, h_state)
                 # h_state = Variable(h_state.data)
-            elif (model_type == "LSTM"):
-                predictions = model(inputs)   # rnn output
 
             else:
                 predictions = model(inputs)
