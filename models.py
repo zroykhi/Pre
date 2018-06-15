@@ -68,7 +68,7 @@ class ConvolutionalNetwork(nn.Module):
             nn.Conv2d(3, 16, kernel_size=5, stride=2, padding=2),
             nn.BatchNorm2d(16),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
+            nn.MaxPool2d(kernel_size=3, stride=1, padding=1),
 
             nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(32),
@@ -76,7 +76,7 @@ class ConvolutionalNetwork(nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2, padding = 1)
         )
 
-        self.fc1 = nn.Linear(8064, 64)
+        self.fc1 = nn.Linear(30176, 64)
         #self.fc1 = nn.Linear(20 * 6 * 26, 16)
         self.fc2 = nn.Linear(64, num_output)
         self.drop_p = drop_p

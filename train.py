@@ -13,7 +13,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 from .utils import JsonDataset, loadLabels
-from .models import ConvolutionalNetwork, RNN, LSTM, CNN_RNN
+from .models import ConvolutionalNetwork, CNN_RNN
 
 evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data

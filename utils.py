@@ -72,16 +72,9 @@ def loadLabels(folder):
     if not folder.endswith('/'):
         folder += '/'
     labels = json.load(open(folder + 'labels.json'))
-    for key, value in labels.items():
-        # labels[key][2] = 90
-        labels[key] = value[:-1]
 
-    # print(labels)
     images = list(labels.keys())
-    # modified by zhi
-    # images.sort(key=lambda name: int(name.split('.jpg')[0]))
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
-    # print(images)
 
     # Split the data into three subsets
     train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.4, random_state=SPLIT_SEED)
@@ -109,7 +102,6 @@ class JsonDataset(Dataset):
         :param index: (int)
         :return: (PyTorch Tensor, PyTorch Tensor)
         """
-        # modified by zhi
         image = self.keys[index]
         image += ".png"
         margin_left, margin_top = 0, 0
@@ -119,7 +111,6 @@ class JsonDataset(Dataset):
         if self.preprocess:
             margin_left, margin_top, _, _ = ROI
             im = preprocessImage(im, INPUT_WIDTH, INPUT_HEIGHT)
-        # modified by zhi
         image = image.replace(".png","")
         labels = np.array(self.labels[image]).astype(np.float32)
         y = labels.flatten().astype(np.float32)
