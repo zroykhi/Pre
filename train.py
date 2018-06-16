@@ -176,7 +176,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_epochs', help='Number of epoch', default=50, type=int)
     parser.add_argument('-bs', '--batchsize', help='Batch size', default=8, type=int)
     parser.add_argument('--seed', help='Random Seed', default=42, type=int)
-    parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables CUDA training')
+    parser.add_argument('--no-cuda', action='store_true', default=True, help='Disables CUDA training')
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
     parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','CNN_RNN','RNN','LSTM'])
     parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-4, type=float)

@@ -1,7 +1,7 @@
 import json
 from constants import TIME_GAP, TOTAL_FRAME, FRAME_INTERVAL
 
-labels = json.load(open('paras.json'))
+labels = json.load(open('paras_origin.json'))
 for i in range(len(labels)):
     if labels.get(str(i*FRAME_INTERVAL)) != None and i*FRAME_INTERVAL < (TOTAL_FRAME - TIME_GAP):
         labels[str(i*FRAME_INTERVAL)] = labels[str(i*FRAME_INTERVAL+TIME_GAP)]
