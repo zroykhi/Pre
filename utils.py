@@ -78,8 +78,8 @@ def loadLabels(folder, modelType):
     # Split the data into three subsets
     if modelType == "CNN_RNN":
         train_keys = images[:round(0.5*len(images))]
-        val_keys = images[round(0.5*len(images)), round(0.75*len(images))]
-        test_keys = images[round(0.75*len(images)), len(images))]
+        val_keys = images[round(0.5*len(images)):round(0.75*len(images))]
+        test_keys = images[round(0.75*len(images)):len(images)]
     else:
         train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.4, random_state=SPLIT_SEED)
         val_keys, test_keys = train_test_split(tmp_keys, test_size=0.5, random_state=SPLIT_SEED)
