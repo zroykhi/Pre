@@ -26,7 +26,7 @@ def main(folder, num_epochs=100, batchsize=16,
     if not folder.endswith('/'):
         folder += '/'
 
-    train_labels, val_labels, test_labels, _ = loadLabels(folder)
+    train_labels, val_labels, test_labels, _ = loadLabels(folder, model_type)
 
     # Seed the random generator
     np.random.seed(seed)

@@ -7,7 +7,6 @@ import numpy as np
 import torch as th
 from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
-
 from constants import MAX_WIDTH, MAX_HEIGHT, ROI, INPUT_HEIGHT, INPUT_WIDTH, SPLIT_SEED
 
 
@@ -68,17 +67,22 @@ def transformPrediction(y):
     z = points[2]
     return x, y, z
 
-def loadLabels(folder):
+def loadLabels(folder, modelType):
     if not folder.endswith('/'):
         folder += '/'
     labels = json.load(open(folder + 'labels.json'))
 
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
-
+    print(images)
     # Split the data into three subsets
-    train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.4, random_state=SPLIT_SEED)
-    val_keys, test_keys = train_test_split(tmp_keys, test_size=0.5, random_state=SPLIT_SEED)
+    if modelType == "CNN_RNN":
+        train_keys = images[:round(0.5*len(images))]
+        val_keys = images[round(0.5*len(images)), round(0.75*len(images))]
+        test_keys = images[round(0.75*len(images)), len(images))]
+    else:
+        train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.4, random_state=SPLIT_SEED)
+        val_keys, test_keys = train_test_split(tmp_keys, test_size=0.5, random_state=SPLIT_SEED)
 
     train_labels = {key: labels[key] for key in train_keys}
     val_labels = {key: labels[key] for key in val_keys}
