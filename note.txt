@@ -29,3 +29,5 @@ time gap should according to the boat's speed
 修改time_gap, 
 
 when using cnn_rnn model, can not use train_test_split !!!
+
+change the wave, it is too chaotic now 
