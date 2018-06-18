@@ -68,7 +68,7 @@ print(res)
 # jsObj = json.dumps(res, default=lambda x: None)
 jsObj = json.dumps(res)
 
-fileObject = open('/home/theo/Pre/Code/horizon-detection/3dmodel/test.json', 'w')
+fileObject = open('./3dmodel/predictions.json', 'w')
 fileObject.write(jsObj)
 fileObject.close()
 print('Done!')

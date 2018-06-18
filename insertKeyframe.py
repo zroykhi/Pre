@@ -4,7 +4,7 @@ import json
 import bpy, bgl, blf,sys
 import math
 
-paras = json.load(open('./test.json'))
+paras = json.load(open('./predictions.json'))
 frames = list(paras.keys())
 frames.sort(key=lambda name: int(name.strip().replace('"',"")))
 obj = bpy.data.objects['boat2']
@@ -18,3 +18,4 @@ for key in frames:
     obj.rotation_euler = (value[0]*pi/180, value[1]*pi/180, 90*pi/180)
     obj.keyframe_insert(data_path='rotation_euler', index=0, frame=key)
     obj.keyframe_insert(data_path='rotation_euler', index=1, frame=key)
+print("Done!")

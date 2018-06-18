@@ -1,6 +1,10 @@
 !/3dmodel/materials/*
 !constants.py
-!labels.json
+!/3dmodel/labels.json
+!/3dmodel/predictions.json
+!/3dmodel/paras_origin.json
+!/3dmodel/render.py
+!/3dmodel/insertKeyframe.py
 !makeVideo
 !models.py
 !README.md
@@ -16,6 +20,4 @@
 !note.txt
 !comparePara.xls
 !transformData.py
-!render.py
-!insertKeyframe.py
 /*
