@@ -4,7 +4,7 @@ import json
 import bpy, bgl, blf,sys
 import math
 
-paras = json.load(open('./test.json'))
+paras = json.load(open('./predictions.json'))
 frames = list(paras.keys())
 frames.sort(key=lambda name: int(name.strip().replace('"',"")))
 obj = bpy.data.objects['boat2']
