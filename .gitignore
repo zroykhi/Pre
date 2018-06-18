@@ -1,4 +1,3 @@
-/*
 !constants.py
 !labels.json
 !makeVideo
@@ -18,3 +17,4 @@
 !transformData.py
 !render.py
 !insertKeyframe.py
+/*
