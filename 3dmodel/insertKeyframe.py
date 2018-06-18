@@ -18,4 +18,5 @@ for key in frames:
     obj.rotation_euler = (value[0]*pi/180, value[1]*pi/180, 90*pi/180)
     obj.keyframe_insert(data_path='rotation_euler', index=0, frame=key)
     obj.keyframe_insert(data_path='rotation_euler', index=1, frame=key)
+    print("insert keyframe:", key)
 print("Done!")
