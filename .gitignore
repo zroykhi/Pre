@@ -12,9 +12,9 @@
 !__init__.py
 !.gitignore
 !cnn_model_tmp.pth
-!model.blend
-!blender_model.py
+!/3dmodel/model.blend
 !note.txt
 !comparePara.xls
 !transformData.py
-
+!render.py
+!insertKeyframe.py

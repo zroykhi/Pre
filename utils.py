@@ -64,8 +64,7 @@ def transformPrediction(y):
     points = y.flatten()
     x = points[0]
     y = points[1]
-    z = points[2]
-    return x, y, z
+    return x, y
 
 def loadLabels(folder, modelType):
     if not folder.endswith('/'):

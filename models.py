@@ -62,15 +62,15 @@ class MlpNetwork(nn.Module):
         return x, x1, x2
 
 class ConvolutionalNetwork(nn.Module):
-    def __init__(self, drop_p=0.2, num_output=2):
+    def __init__(self, drop_p=0.4, num_output=2):
         super(ConvolutionalNetwork, self).__init__()
         self.conv_layers = nn.Sequential(
-            nn.Conv2d(3, 16, kernel_size=5, stride=2, padding=2),
-            nn.BatchNorm2d(16),
+            nn.Conv2d(3, 8, kernel_size=5, stride=2, padding=2),
+            nn.BatchNorm2d(8),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=1, padding=1),
 
-            nn.Conv2d(16, 16, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(16),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2, padding = 1)
@@ -113,7 +113,7 @@ class CNN_RNN(nn.Module):
         )
         self.drop_p = drop_p
         # self.fc = nn.Linear(15088, input_size)
-        self.rnn = nn.RNN(input_size, hidden_size, num_layers, batch_first=True)
+        self.rnn = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_size, num_output)
         # self.dropout = nn.Dropout(p=0.25)
 
