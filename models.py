@@ -98,32 +98,33 @@ class ConvolutionalNetwork(nn.Module):
         return x
 
 class CNN_RNN(nn.Module):
-    def __init__(self, input_size=5040, hidden_size=32, num_layers=2, num_output=2):
+    def __init__(self, drop_p=0.25, input_size=4032, hidden_size=32, num_layers=2, num_output=2):
         super().__init__()
         self.cnn = nn.Sequential(
-            nn.Conv2d(3, 16, kernel_size=5, stride=2, padding=2),
+            nn.Conv2d(3, 8, kernel_size=5, stride=2, padding=2),
+            nn.BatchNorm2d(8),
+            nn.ReLU(inplace=True),# False is ok
+            nn.AvgPool2d(kernel_size=3, stride=2, padding=1),
+
+            nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(16),
             nn.ReLU(inplace=True),# False is ok
-            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
-
-            nn.Conv2d(16, 20, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(20),
-            nn.ReLU(inplace=True),# False is ok
-            nn.MaxPool2d(kernel_size=3, stride=2, padding = 1)
+            nn.AvgPool2d(kernel_size=3, stride=2, padding = 1)
         )
-
+        self.drop_p = drop_p
         # self.fc = nn.Linear(15088, input_size)
         self.rnn = nn.RNN(input_size, hidden_size, num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_size, num_output)
-        self.dropout = nn.Dropout(p=0.25)
+        # self.dropout = nn.Dropout(p=0.25)
 
     def forward(self, inputs, h_state):
+        inputs = F.dropout(inputs, p=self.drop_p, training=self.training)
         features = self.cnn(inputs)
         features = features.view(features.size(0), -1)
         features = features[None, :, :]
         # features.backward()
         outputs, h_state = self.rnn(features, h_state)
-        outputs = self.dropout(outputs)
+        # outputs = self.dropout(outputs)
         outs = []    # save all predictions
         for time_step in range(outputs.size(1)):    # calculate output for each time step
             outs.append(self.fc(outputs[:, time_step, :]))

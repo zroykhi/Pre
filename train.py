@@ -66,7 +66,7 @@ def main(folder, num_epochs=100, batchsize=16,
         model.cuda()
 
     # L2 penalty
-    weight_decay = 1e-4
+    weight_decay = 1e-5
     #weight_decay = 0
     # Optimizers
     # optimizer = th.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
@@ -174,12 +174,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a line detector')
     parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
     parser.add_argument('--num_epochs', help='Number of epoch', default=50, type=int)
-    parser.add_argument('-bs', '--batchsize', help='Batch size', default=8, type=int)
+    parser.add_argument('-bs', '--batchsize', help='Batch size', default=4, type=int)
     parser.add_argument('--seed', help='Random Seed', default=42, type=int)
     parser.add_argument('--no-cuda', action='store_true', default=True, help='Disables CUDA training')
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
     parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','CNN_RNN','RNN','LSTM'])
-    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-4, type=float)
+    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)
     args = parser.parse_args()
 
     args.cuda = not args.no_cuda and th.cuda.is_available()
