@@ -2,6 +2,9 @@ import bpy, bgl, blf,sys
 from bpy import data, ops, props, types, context
 from math import degrees
 import json
+# setup gpu render
+bpy.context.user_preferences.system.compute_device_type = 'CUDA'
+bpy.context.user_preferences.system.compute_device = 'CUDA_MULTI_2'
 
 print('\nPrint Scenes...')
 paras = {}
