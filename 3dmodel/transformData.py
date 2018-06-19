@@ -1,7 +1,8 @@
 import json
-from ..constants import TIME_GAP, TOTAL_FRAME, FRAME_INTERVAL
-def transformDate(input, output):
-    labels = json.load(open(input))
+import argparse
+from constants import TIME_GAP, TOTAL_FRAME, FRAME_INTERVAL
+def transformDate(inputFile, output):
+    labels = json.load(open(inputFile))
     for i in range(len(labels)):
         if labels.get(str(i*FRAME_INTERVAL)) != None and i*FRAME_INTERVAL < (TOTAL_FRAME - TIME_GAP):
             labels[str(i*FRAME_INTERVAL)] = labels[str(i*FRAME_INTERVAL+TIME_GAP)]
@@ -18,8 +19,8 @@ def transformDate(input, output):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Transform parameters')
-    parser.add_argument('-i', '--Input', help='Original json file', default="/render/paras_origin.json", type=str)
+    parser.add_argument('-i', '--InputFile', help='Original json file', default="/render/paras_origin.json", type=str)
     parser.add_argument('-o', '--Output', help='Output file name', default='/render/labels.json', type=str)
     args = parser.parse_args()
 
-    transformDate(Input=args.Input, Output=args.Output)
+    transformDate(inputFile=args.InputFile, output=args.Output)
