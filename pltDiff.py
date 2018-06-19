@@ -2,8 +2,9 @@ import matplotlib.pyplot as plt
 import json
 from constants import TIME_GAP
 
-originData = "3dmodel/labels.json"
+originData = "3dmodel/paras_origin.json"
 predData = "3dmodel/predictions.json"
+# predData = "3dmodel/predictions.json"
 labelsOrigin = json.load(open(originData))
 labelsPred = json.load(open(predData))
 frames1 = list(labelsOrigin.keys())
