@@ -6,17 +6,17 @@ import json
 print('\nPrint Scenes...')
 paras = {}
 scene = bpy.context.scene
-for i in range(10):
-    scene.frame_set(i*10)
-    scene.render.filepath = './render/' + str(i)
+for i in range(1,5000):
+    scene.frame_set(i)
+    scene.render.filepath = './render619/' + str(i)
     bpy.ops.render.render(write_still=True)
     # get paras
     loc, rot, scale = bpy.data.objects['boat'].matrix_world.decompose()
     rot = rot.to_euler()
     rot = list(degrees(a) for a in rot)
-    paras.update({i*10:rot})
+    paras.update({i:rot})
 jsObj = json.dumps(paras)
-fileObject = open('./render/paras_origin.json', 'w')
+fileObject = open('./render619/paras_origin.json', 'w')
 fileObject.write(jsObj)
 fileObject.close()
 print(paras)
