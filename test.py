@@ -68,7 +68,7 @@ print(res)
 # jsObj = json.dumps(res, default=lambda x: None)
 jsObj = json.dumps(res)
 
-fileObject = open('./3dmodel/predictions.json', 'w')
+fileObject = open('./Pre/3dmodel/predictions.json', 'w')
 fileObject.write(jsObj)
 fileObject.close()
 print('Done!')
