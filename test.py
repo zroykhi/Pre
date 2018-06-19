@@ -12,8 +12,8 @@ import torch as th
 from torch.autograd import Variable
 
 from constants import INPUT_WIDTH, INPUT_HEIGHT, RIGHT_KEY, LEFT_KEY, EXIT_KEYS, ROI,MAX_WIDTH, UP_KEY, DOWN_KEY, TIME_GAP, TOTAL_FRAME
-from .utils import preprocessImage, transformPrediction, loadLabels
-from .models import ConvolutionalNetwork, CNN_RNN
+from Pre.utils import preprocessImage, transformPrediction, loadLabels
+from Pre.models import ConvolutionalNetwork, CNN_RNN
 
 parser = argparse.ArgumentParser(description='Test a line detector')
 parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
@@ -62,6 +62,7 @@ for current_idx in range(len(images)):
     # res.update({str(current_idx):map(float,[x, y, z])})
     # res.update({images[current_idx].replace('.png',"")+str(TIME_GAP):ls})
     res.update({str(int(images[current_idx].replace('.png',""))+TIME_GAP):ls})
+    # print(int(images[current_idx].replace('.png',""))+TIME_GAP, ls)
 
 print(res)
 # print(type(res["1"]))
