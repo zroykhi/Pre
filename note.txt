@@ -31,3 +31,7 @@ time gap should according to the boat's speed
 when using cnn_rnn model, can not use train_test_split !!!
 
 change the wave, it is too chaotic now 
+
+courve: prediction and origin
+courve: loss and time gap
+cnn prendre 2 images comme entre
