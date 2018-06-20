@@ -77,24 +77,16 @@ class ConvolutionalNetwork(nn.Module):
         )
 
         self.fc1 = nn.Linear(15088, 128)
-        #self.fc1 = nn.Linear(20 * 6 * 26, 16)
         self.fc2 = nn.Linear(128, num_output)
         self.drop_p = drop_p
-        # self.bn1 = nn.BatchNorm2d(3)
-        # self.bn2 = nn.BatchNorm2d(24)
 
     def forward(self, x):
         # x = self.bn1(x)
-        # print(type(x))
         x = F.dropout(x, p=self.drop_p, training=self.training)
         x = self.conv_layers(x)
-        # print(x.shape)
-        # x = self.bn2(x)
         x = x.view(x.size(0), -1)
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
-        # print(type(x))
-        # print(x.shape)
         return x
 
 class CNN_RNN(nn.Module):
@@ -122,7 +114,6 @@ class CNN_RNN(nn.Module):
         features = self.cnn(inputs)
         features = features.view(features.size(0), -1)
         features = features[None, :, :]
-        # features.backward()
         outputs, h_state = self.rnn(features, h_state)
         # outputs = self.dropout(outputs)
         outs = []    # save all predictions
