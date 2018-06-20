@@ -37,3 +37,8 @@ courve: loss and time gap
 cnn prendre 2 images comme entre
 
 change the local axis direction by simply changing the value of z rotation in the menu
+
+# if you use a trained net's parameters
+class newNet(self, net)
+for para in net.parameters():
+  para.grad_required = False # disable gradient

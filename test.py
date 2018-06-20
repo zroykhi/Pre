@@ -13,7 +13,7 @@ from torch.autograd import Variable
 
 from constants import INPUT_WIDTH, INPUT_HEIGHT, RIGHT_KEY, LEFT_KEY, EXIT_KEYS, ROI,MAX_WIDTH, UP_KEY, DOWN_KEY, TIME_GAP, TOTAL_FRAME
 from Pre.utils import preprocessImage, transformPrediction, loadLabels
-from Pre.models import ConvolutionalNetwork, CNN_RNN
+from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 
 parser = argparse.ArgumentParser(description='Test a line detector')
 parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
@@ -24,6 +24,8 @@ args = parser.parse_args()
 current_idx = 0
 if args.model == "CNN_RNN":
     model = CNN_RNN()
+elif args.model == "CNN_LSTM":
+    model = CNN_LSTM()
 else: model = ConvolutionalNetwork(num_output=2)
 model.load_state_dict(th.load(args.weights))
 # modified by zhi IMPORTANT, if drop rate is not 0, without this prediction is bad
