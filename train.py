@@ -168,7 +168,19 @@ def main(folder, num_epochs=100, batchsize=16,
     print("Final results:")
     print("  best validation loss:\t\t{:.6f}".format(best_error))
     print("  test loss:\t\t\t{:.6f}".format(test_loss / n_test))
+    
 
+    with open("result.txt", "a") as f:
+        f.write("\nmodel type: ")
+        f.write(model_type)
+        f.write("\nbest validation loss:")
+        f.write(str(best_error))
+        f.write("\ntest loss:")
+        f.write(str(test_loss / n_test))
+        f.write("\n")
+        print >> f,model
+        f.write("\n\n")
+    f.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a line detector')
