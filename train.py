@@ -13,7 +13,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 from Pre.utils import JsonDataset, loadLabels
-from Pre.models import ConvolutionalNetwork, CNN_RNN
+from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 
 evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
@@ -58,7 +58,8 @@ def main(folder, num_epochs=100, batchsize=16,
         model = ConvolutionalNetwork(num_output=num_output, drop_p=0.0)
     elif model_type == "CNN_RNN":
         model = CNN_RNN()
-
+    elif model_type == "CNN_LSTM":
+        model = CNN_LSTM()
     else:
         raise ValueError("Model type not supported")
 
@@ -102,11 +103,10 @@ def main(folder, num_epochs=100, batchsize=16,
             inputs, targets = Variable(inputs), Variable(targets)
             optimizer.zero_grad()
             # print(inputs.shape) # [4, 3, 75, 100]
-            if (model_type == "RNN" or model_type == "CNN_RNN"):
+            if (model_type == "CNN_RNN"):
                 # global h_state
                 predictions, h_state = model(inputs, h_state)
                 h_state = Variable(h_state, requires_grad=True)
-
             else: predictions = model(inputs)
             loss = loss_fn(predictions, targets)
             loss.backward()
@@ -121,11 +121,10 @@ def main(folder, num_epochs=100, batchsize=16,
                 inputs, targets = inputs.cuda(), targets.cuda()
             # Set volatile to True because we don't need to compute gradient
             inputs, targets = Variable(inputs, volatile=True), Variable(targets)
-            if (model_type == "RNN" or model_type == "CNN_RNN"):
+            if (model_type == "CNN_RNN"):
                 predictions, h_state = model(inputs, h_state)
                 # very IMPORTANT, otherwise error
                 h_state = Variable(h_state)
-
             else:
                 predictions = model(inputs)
             loss = loss_fn(predictions, targets)
@@ -173,7 +172,7 @@ def main(folder, num_epochs=100, batchsize=16,
     print("  test loss:\t\t\t{:.6f}".format(test_loss / n_test))
 
     with open("result.txt", "a") as f:
-        f.write("\nmodel type: ")
+        f.write("model type: ")
         f.write(model_type)
         f.write("\nbest train error:")
         f.write(str(best_train_error))
@@ -183,7 +182,7 @@ def main(folder, num_epochs=100, batchsize=16,
         f.write(str(test_loss / n_test))
         f.write("\n")
         f.write(str(model))
-        f.write("\n")
+        f.write("\n\n")
     f.close()
 
 if __name__ == '__main__':
@@ -194,7 +193,7 @@ if __name__ == '__main__':
     parser.add_argument('--seed', help='Random Seed', default=42, type=int)
     parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables CUDA training')
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
-    parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','CNN_RNN','RNN','LSTM'])
+    parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','CNN_RNN','CNN_LSTM'])
     parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)
     args = parser.parse_args()
 
