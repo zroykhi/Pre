@@ -1,0 +1,19 @@
+model type: CNN_LSTM
+best train error:tensor(27.6675, device='cuda:0')
+best validation loss:tensor(68.5597, device='cuda:0')
+test loss:tensor(73.4266, device='cuda:0')
+CNN_LSTM(
+  (cnn): Sequential(
+    (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): AvgPool2d(kernel_size=3, stride=2, padding=1)
+    (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): AvgPool2d(kernel_size=3, stride=2, padding=1)
+  )
+  (lstm): LSTM(4032, 32, num_layers=2, batch_first=True)
+  (fc): Linear(in_features=32, out_features=2, bias=True)
+)
+
