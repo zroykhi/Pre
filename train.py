@@ -43,9 +43,9 @@ def main(folder, num_epochs=100, batchsize=16,
     train_loader = th.utils.data.DataLoader(
         JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
         batch_size=batchsize, shuffle=True, **kwargs)
-    if model_type == "RNN" or model_type == "CNN_RNN":
-        global VAL_BATCH_SIZE
-        VAL_BATCH_SIZE = batchsize
+    # if model_type == "RNN" or model_type == "CNN_RNN":
+    #     global VAL_BATCH_SIZE
+    #     VAL_BATCH_SIZE = batchsize
     # Random flip also for val ?
     val_loader = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=folder),
                                           batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
@@ -105,8 +105,8 @@ def main(folder, num_epochs=100, batchsize=16,
             # print(inputs.shape) # [4, 3, 75, 100]
             if (model_type == "CNN_RNN"):
                 # global h_state
-                predictions, h_state = model(inputs, h_state)
-                h_state = Variable(h_state, requires_grad=True)
+                predictions = model(inputs)
+                # h_state = Variable(h_state, requires_grad=True)
             else: predictions = model(inputs)
             loss = loss_fn(predictions, targets)
             loss.backward()
@@ -122,9 +122,9 @@ def main(folder, num_epochs=100, batchsize=16,
             # Set volatile to True because we don't need to compute gradient
             inputs, targets = Variable(inputs, volatile=True), Variable(targets)
             if (model_type == "CNN_RNN"):
-                predictions, h_state = model(inputs, h_state)
+                predictions = model(inputs)
                 # very IMPORTANT, otherwise error
-                h_state = Variable(h_state)
+                # h_state = Variable(h_state)
             else:
                 predictions = model(inputs)
             loss = loss_fn(predictions, targets)
@@ -162,7 +162,7 @@ def main(folder, num_epochs=100, batchsize=16,
             inputs, targets = inputs.cuda(), targets.cuda()
         inputs, targets = Variable(inputs, volatile=True), Variable(targets)
         if model_type == "CNN_RNN":
-            predictions, h_state = model(inputs, h_state)
+            predictions = model(inputs)
         else: predictions = model(inputs)
         loss = loss_fn(predictions, targets)
         test_loss += loss.data[0]

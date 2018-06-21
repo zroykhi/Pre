@@ -109,19 +109,19 @@ class CNN_RNN(nn.Module):
         self.fc = nn.Linear(hidden_size, num_output)
         # self.dropout = nn.Dropout(p=0.25)
 
-    def forward(self, inputs, h_state):
+    def forward(self, inputs):
         inputs = F.dropout(inputs, p=self.drop_p, training=self.training)
         features = self.cnn(inputs)
         features = features.view(features.size(0), -1)
         features = features[None, :, :]
-        outputs, h_state = self.rnn(features, h_state)
+        outputs, _ = self.rnn(features)
         # outputs = self.dropout(outputs)
         outs = []    # save all predictions
         for time_step in range(outputs.size(1)):    # calculate output for each time step
             outs.append(self.fc(outputs[:, time_step, :]))
         outs = torch.stack(outs, dim=1)
         outs = outs[0]
-        return outs, h_state
+        return outs
 
 class CNN_LSTM(nn.Module):
     def __init__(self, drop_p=0.25, input_size=4032, hidden_size=32, num_layers=2, num_output=2):
