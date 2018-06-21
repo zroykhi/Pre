@@ -42,3 +42,6 @@ change the local axis direction by simply changing the value of z rotation in th
 class newNet(self, net)
 for para in net.parameters():
   para.grad_required = False # disable gradient
+
+difference between return hidden state and not return ?
+why random split data for lstm works better?

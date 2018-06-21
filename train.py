@@ -11,9 +11,10 @@ import torch as th
 import torch.utils.data
 import torch.nn as nn
 from torch.autograd import Variable
-
+from Pre.constants import TIME_GAP
 from Pre.utils import JsonDataset, loadLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
+
 
 evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
@@ -180,6 +181,9 @@ def main(folder, num_epochs=100, batchsize=16,
         f.write(str(best_error))
         f.write("\ntest loss:")
         f.write(str(test_loss / n_test))
+        f.write("\n")
+        f.write("time gap is:")
+        f.write(str(TIME_GAP))
         f.write("\n")
         f.write(str(model))
         f.write("\n\n")

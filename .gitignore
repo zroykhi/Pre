@@ -1,3 +1,4 @@
+!autoRun.sh
 !pltDiff.py
 !/3dmodel/materials/*
 !constants.py

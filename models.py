@@ -148,7 +148,7 @@ class CNN_LSTM(nn.Module):
         features = self.cnn(inputs)
         features = features.view(features.size(0), -1)
         features = features[None, :, :]
-        outputs, h_state = self.lstm(features)
+        outputs, _ = self.lstm(features)
         # outputs = self.dropout(outputs)
         outs = []    # save all predictions
         for time_step in range(outputs.size(1)):    # calculate output for each time step
