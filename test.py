@@ -19,6 +19,7 @@ parser = argparse.ArgumentParser(description='Test a line detector')
 parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
 parser.add_argument('-w', '--weights', help='Saved weights', default="cnn_model_tmp.pth", type=str)
 parser.add_argument('-m', '--model', help='Model type', default="cnn", type=str)
+parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)
 args = parser.parse_args()
 
 current_idx = 0
@@ -51,13 +52,11 @@ for current_idx in range(len(images)):
     image = cv2.imread('{}/{}'.format(args.folder, images[current_idx]))
     im = preprocessImage(image, INPUT_WIDTH, INPUT_HEIGHT)
     im = im.transpose((2, 0, 1)).astype(np.float32)
-    if args.model == "CNN_RNN":
+    if False: #args.model == "CNN_RNN":
         # global h_state
         predictions, h_state = model(Variable(th.from_numpy(im[None])), h_state)[0].data.numpy()
     else: predictions = model(Variable(th.from_numpy(im[None])))[0].data.numpy()
     x, y = transformPrediction(predictions)
-    # print(type(x))
-    # rot = list(degrees(a) for a in rot)
     ls = []
     ls.append(float(x))
     ls.append(float(y))
@@ -66,12 +65,13 @@ for current_idx in range(len(images)):
     res.update({str(int(images[current_idx].replace('.png',""))+TIME_GAP):ls})
     # print(int(images[current_idx].replace('.png',""))+TIME_GAP, ls)
 
-print(res)
+# print(res)
+print("test finished !")
 # print(type(res["1"]))
 # jsObj = json.dumps(res, default=lambda x: None)
 jsObj = json.dumps(res)
 
-fileObject = open('./Pre/3dmodel/predictions.json', 'w')
+fileObject = open('./Pre/3dmodel/predictions_'+args.model+"_"+str(args.time_gap)+'.json', 'w')
 fileObject.write(jsObj)
 fileObject.close()
 print('Done!')

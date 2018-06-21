@@ -22,7 +22,7 @@ VAL_BATCH_SIZE = 64  # Batch size for validation and test data
 
 def main(folder, num_epochs=100, batchsize=16,
          learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_flip=0.5,
-         model_type="cnn", evaluate_print=1, load_model=""):
+         model_type="cnn", evaluate_print=1, load_model="", time_gap):
 
     if not folder.endswith('/'):
         folder += '/'
@@ -54,7 +54,7 @@ def main(folder, num_epochs=100, batchsize=16,
     test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=folder),
                                            batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
-    model_name = "{}_model_tmp".format(model_type)
+    model_name = "{}_model_{}_tmp".format(model_type, time_gap)
     if model_type == "cnn":
         model = ConvolutionalNetwork(num_output=num_output, drop_p=0.0)
     elif model_type == "CNN_RNN":
@@ -199,9 +199,10 @@ if __name__ == '__main__':
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
     parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','CNN_RNN','CNN_LSTM'])
     parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)
+    parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)
     args = parser.parse_args()
 
     args.cuda = not args.no_cuda and th.cuda.is_available()
     main(folder=args.folder, num_epochs=args.num_epochs, batchsize=args.batchsize,
          learning_rate=args.learning_rate, cuda=args.cuda,
-         seed=args.seed, load_model=args.load_model, model_type=args.model_type)
+         seed=args.seed, load_model=args.load_model, model_type=args.model_type, time_gap=args.time_gap)
