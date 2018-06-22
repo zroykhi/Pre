@@ -29,7 +29,7 @@ predY = [labelsPred[str(key)][1] for key in frames2]
 frames1 = [int(key) for key in frames1]
 frames2 = [int(key) for key in frames2]
 # plot x rotation
-plt.figure(1)
+# plt.figure(1)
 plt.plot(frames1, originX, 'r-', label='original x rotation')
 plt.plot(frames2, predX, 'b-', label='prediction x rotation')
 plt.title("X rotation - frame")
@@ -39,7 +39,7 @@ plt.legend(loc='upper right')
 plt.savefig(args.model+'_'+str(args.time_gap)+'_x'+'.png')
 # plt.show()
 # plot y rotation
-plt.figure(2)
+# plt.figure(2)
 plt.plot(frames1, originY, 'r-', label='original y rotation')
 plt.plot(frames2, predY, 'b-', label='prediction y rotation')
 plt.title("Y rotation - frame")

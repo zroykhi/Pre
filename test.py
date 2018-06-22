@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser(description='Test a line detector')
 parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
 parser.add_argument('-w', '--weights', help='Saved weights', default="cnn_model_tmp.pth", type=str)
 parser.add_argument('-m', '--model', help='Model type', default="cnn", type=str)
-parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)
+parser.add_argument('-t', '--time_gap', help='Time gap', type=int)
 args = parser.parse_args()
 
 current_idx = 0

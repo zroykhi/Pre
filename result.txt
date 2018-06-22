@@ -1,7 +1,28 @@
-model type: CNN_LSTM
-best train error:tensor(27.6675, device='cuda:0')
-best validation loss:tensor(68.5597, device='cuda:0')
-test loss:tensor(73.4266, device='cuda:0')
+current model: cnn
+best train error:267.70179480496085
+best validation loss:243.98651853015076
+final test loss:266.93582070508796
+time gap is:25
+ConvolutionalNetwork(
+  (conv_layers): Sequential(
+    (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): MaxPool2d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+    (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+  )
+  (fc1): Linear(in_features=15088, out_features=128, bias=True)
+  (fc2): Linear(in_features=128, out_features=2, bias=True)
+)
+
+current model: CNN_LSTM
+best train error:293.95414931335347
+best validation loss:258.2126737201633
+final test loss:288.7005653266332
+time gap is:25
 CNN_LSTM(
   (cnn): Sequential(
     (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
@@ -17,4 +38,223 @@ CNN_LSTM(
   (fc): Linear(in_features=32, out_features=2, bias=True)
 )
 
+current model: cnn
+best train error:274.7111758859694
+best validation loss:266.2829616834171
+final test loss:264.6349192250314
+time gap is:26
+ConvolutionalNetwork(
+  (conv_layers): Sequential(
+    (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): MaxPool2d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+    (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+  )
+  (fc1): Linear(in_features=15088, out_features=128, bias=True)
+  (fc2): Linear(in_features=128, out_features=2, bias=True)
+)
+
+current model: CNN_LSTM
+best train error:290.1901823958813
+best validation loss:292.74808318938443
+final test loss:265.37446313599247
+time gap is:26
+CNN_LSTM(
+  (cnn): Sequential(
+    (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): AvgPool2d(kernel_size=3, stride=2, padding=1)
+    (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): AvgPool2d(kernel_size=3, stride=2, padding=1)
+  )
+  (lstm): LSTM(4032, 32, num_layers=2, batch_first=True)
+  (fc): Linear(in_features=32, out_features=2, bias=True)
+)
+
+current model: cnn
+best train error:274.8982958881559
+best validation loss:244.84449248194096
+final test loss:265.83173288316584
+time gap is:25
+ConvolutionalNetwork(
+  (conv_layers): Sequential(
+    (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): MaxPool2d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+    (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+  )
+  (fc1): Linear(in_features=15088, out_features=128, bias=True)
+  (fc2): Linear(in_features=128, out_features=2, bias=True)
+)
+
+current model: CNN_LSTM
+best train error:288.442242831781
+best validation loss:288.77248449277636
+final test loss:274.43176379946607
+time gap is:25
+CNN_LSTM(
+  (cnn): Sequential(
+    (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): AvgPool2d(kernel_size=3, stride=2, padding=1)
+    (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): AvgPool2d(kernel_size=3, stride=2, padding=1)
+  )
+  (lstm): LSTM(4032, 32, num_layers=2, batch_first=True)
+  (fc): Linear(in_features=32, out_features=2, bias=True)
+)
+
+current model: cnn
+best train error:281.7380931955274
+best validation loss:237.3652284861809
+final test loss:230.36853554883794
+time gap is:26
+ConvolutionalNetwork(
+  (conv_layers): Sequential(
+    (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): MaxPool2d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+    (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+  )
+  (fc1): Linear(in_features=15088, out_features=128, bias=True)
+  (fc2): Linear(in_features=128, out_features=2, bias=True)
+)
+
+current model: CNN_LSTM
+best train error:283.10610224039334
+best validation loss:296.2842464274498
+final test loss:283.1276906995917
+time gap is:26
+CNN_LSTM(
+  (cnn): Sequential(
+    (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): AvgPool2d(kernel_size=3, stride=2, padding=1)
+    (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): AvgPool2d(kernel_size=3, stride=2, padding=1)
+  )
+  (lstm): LSTM(4032, 32, num_layers=2, batch_first=True)
+  (fc): Linear(in_features=32, out_features=2, bias=True)
+)
+
+current model: cnn
+best train error:280.88971173103886
+best validation loss:252.06262366520102
+final test loss:279.85861632380653
+time gap is:25
+ConvolutionalNetwork(
+  (conv_layers): Sequential(
+    (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): MaxPool2d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+    (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+  )
+  (fc1): Linear(in_features=15088, out_features=128, bias=True)
+  (fc2): Linear(in_features=128, out_features=2, bias=True)
+)
+
+current model: cnn
+best train error:270.16420699940244
+best validation loss:262.6613114400126
+final test loss:245.26354133951006
+time gap is:25
+ConvolutionalNetwork(
+  (conv_layers): Sequential(
+    (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): MaxPool2d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+    (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+  )
+  (fc1): Linear(in_features=15088, out_features=128, bias=True)
+  (fc2): Linear(in_features=128, out_features=2, bias=True)
+)
+
+current model: CNN_LSTM
+best train error:283.8693012483081
+best validation loss:299.35291496545227
+final test loss:277.6462792478015
+time gap is:25
+CNN_LSTM(
+  (cnn): Sequential(
+    (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): AvgPool2d(kernel_size=3, stride=2, padding=1)
+    (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): AvgPool2d(kernel_size=3, stride=2, padding=1)
+  )
+  (lstm): LSTM(4032, 32, num_layers=2, batch_first=True)
+  (fc): Linear(in_features=32, out_features=2, bias=True)
+)
+
+current model: cnn
+best train error:275.151149721622
+best validation loss:275.99042674309044
+final test loss:249.9221704224246
+time gap is:26
+ConvolutionalNetwork(
+  (conv_layers): Sequential(
+    (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): MaxPool2d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+    (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+  )
+  (fc1): Linear(in_features=15088, out_features=128, bias=True)
+  (fc2): Linear(in_features=128, out_features=2, bias=True)
+)
+
+current model: CNN_LSTM
+best train error:279.1322063391056
+best validation loss:292.8795579459799
+final test loss:298.1783850895101
+time gap is:26
+CNN_LSTM(
+  (cnn): Sequential(
+    (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): AvgPool2d(kernel_size=3, stride=2, padding=1)
+    (4): Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): AvgPool2d(kernel_size=3, stride=2, padding=1)
+  )
+  (lstm): LSTM(4032, 32, num_layers=2, batch_first=True)
+  (fc): Linear(in_features=32, out_features=2, bias=True)
+)
 

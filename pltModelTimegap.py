@@ -1,4 +1,5 @@
 import re
+import matplotlib.pyplot as plt
 import argparse
 
 def getList(filename):
@@ -7,28 +8,40 @@ def getList(filename):
     valError = []
     testError = []
     timeGap = []
-    with open(filename, 'r') as f:
-        while True:
-            line = f.readline()
-            if not lines:
-                continue
-            line = re.split(r' ', line)
-            if line[1] == "model":
-                model.append(line[2])
-            elif line[1] == "train":
-                line = line[2].split(":").split("(")
-                trainError.append(float(line[2]))
-            elif line[1] == "validation":
-                line = line[2].split(":").split("(")
-                valError.append(float(line[2]))
-            elif line[1] == "test":
-                line = line[2].split(":").split("(")
-                testError.append(float(line[2]))
-            elif line[1] == "gap":
-                line = line.split(":")
-                timeGap.append(int(line[2]))
-            else:
-                print("Error !")
+    f = open(filename)
+    lines = f.readlines()
+    # with open(filename, 'r') as f:
+    for line in lines:
+#        while True:
+  #      line = f.readline()
+        if not line:
+            continue
+        line = line.strip('\n')
+        line = line.replace(':',' ')
+        line = re.split(" ", line)
+        # print(line)
+        if len(line)<2:
+            continue
+        if line[1] == "model":
+         #   line[2] = line[2].replace('\n',' ')
+            model.append(line[2])
+        elif line[1] == "train":
+           # line = line[3]#.split(":").split("(")
+            trainError.append(float(line[3]))
+        elif line[1] == "validation":
+           # line = line[3]#.split(":").split("(")
+            valError.append(float(line[3]))
+        elif line[1] == "test":
+           # line = line[3].split(":").split("(")
+            testError.append(float(line[3]))
+        elif line[1] == "gap":
+           # line = line.split(":")
+            timeGap.append(int(line[3]))
+        else:
+            # print("Error !")
+            pass
+        print(line)
+    #print(model)      
     f.close()
     return model, trainError, valError, testError, timeGap
 
@@ -69,7 +82,7 @@ def main(filename):
     for model in unqModels:
         posIdxMatrix.append(find_repeat(models, model))
     unqModels = list(unqModels)
-    for i in len(unqModels):
+    for i in range(len(unqModels)):
         resMatrix = []
         # resMatrix.append(posIdxMatrix[i])
         tmp = [timeGaps[idx] for idx in posIdxMatrix[i]]

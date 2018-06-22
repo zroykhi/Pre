@@ -171,7 +171,7 @@ def main(folder, num_epochs=100, batchsize=16,
     print("  best validation loss:\t\t{:.6f}".format(best_error))
     print("  test loss:\t\t\t{:.6f}".format(test_loss / n_test))
 
-    with open("result.txt", "a") as f:
+    with open("./Pre/result.txt", "a") as f:
         f.write("current model: ")
         f.write(model_type)
         f.write("\nbest train error:")
