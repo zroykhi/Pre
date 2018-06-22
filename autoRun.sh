@@ -1,7 +1,7 @@
 #!/bin/bash
 BASE_DIR=/home/interns/zhi
-IMG_DIR=/3dmodel/render619
-CODE_DIR=/Pre
+IMG_DIR=3dmodel/render619
+CODE_DIR=/Pre/
 IDX=1
 RESULT_FILE=/result.txt
 declare -a model_list=("cnn" "CNN_LSTM")
