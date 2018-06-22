@@ -4,7 +4,7 @@ from constants import TIME_GAP
 import argparse
 
 parser = argparse.ArgumentParser(description='Test a line detector')
-parser.add_argument('-m', '--model', help='Model type', default="cnn", type=str)
+parser.add_argument('-m', '--model', help='Model type', default="cnn", type=str, choices=['cnn','CNN_RNN','CNN_LSTM'])
 parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)
 args = parser.parse_args()
 
@@ -45,4 +45,4 @@ plt.xlabel("Frames")
 plt.ylabel("Y Rotations")
 plt.legend(loc='upper right')
 plt.savefig(args.model+'_'+str(args.time_gap)+'_y'+'.png')
-plt.show()
+# plt.show()

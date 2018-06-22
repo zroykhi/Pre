@@ -17,3 +17,4 @@ CNN_LSTM(
   (fc): Linear(in_features=32, out_features=2, bias=True)
 )
 
+

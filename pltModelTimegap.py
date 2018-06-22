@@ -1,4 +1,5 @@
 import re
+import argparse
 
 def getList(filename):
     model = []
@@ -82,6 +83,9 @@ def main(filename):
         pltFigure(unqModels[i], resMatrix, i)
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Test a line detector')
+    parser.add_argument('-f', '--file', help='Input file', default="result.txt", type=str)
+    args = parser.parse_args()
     print("start ploting ...")
-    main(result.txt)
+    main(args.file)
     print("finished ploting !")
