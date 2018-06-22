@@ -6,10 +6,12 @@ import argparse
 parser = argparse.ArgumentParser(description='Test a line detector')
 parser.add_argument('-m', '--model', help='Model type', default="cnn", type=str, choices=['cnn','CNN_RNN','CNN_LSTM'])
 parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)
+parser.add_argument('-o', '--origin_file', help='Original file', default="3dmodel/paras_origin.json", type=str)
+parser.add_argument('-p', '--prediction_file', help='Predictin file', default="3dmodel/predictions.json", type=str)
 args = parser.parse_args()
 
-originData = "3dmodel/paras_origin.json"
-predData = "3dmodel/predictions.json"
+originData = args.origin_file
+predData = args.prediction_file
 # predData = "3dmodel/predictions.json"
 labelsOrigin = json.load(open(originData))
 labelsPred = json.load(open(predData))

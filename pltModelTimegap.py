@@ -48,7 +48,7 @@ def pltFigure(modelname, matrix, idx):
     plt.figure(idx)
     styles = ['r-', 'b-', 'g-', 'p-']
     labels = ['train loss', 'test loss', 'val loss']
-    for i in range(len(matrix)-1)
+    for i in range(len(matrix)-1):
         plt.plot(matrix[0], matrix[i+1], styles[i], label='train loss')
         plt.plot(matrix[0], predX, 'b-', label='prediction x rotation')
         plt.title(modelname + " - timeGap - loss")
