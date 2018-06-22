@@ -24,7 +24,7 @@ def getList(filename):
             continue
         if line[1] == "model":
          #   line[2] = line[2].replace('\n',' ')
-            model.append(line[2])
+            model.append(line[3])
         elif line[1] == "train":
            # line = line[3]#.split(":").split("(")
             trainError.append(float(line[3]))
@@ -41,7 +41,7 @@ def getList(filename):
             # print("Error !")
             pass
         print(line)
-    #print(model)      
+    #print(model)
     f.close()
     return model, trainError, valError, testError, timeGap
 
@@ -62,8 +62,7 @@ def pltFigure(modelname, matrix, idx):
     styles = ['r-', 'b-', 'g-', 'p-']
     labels = ['train loss', 'test loss', 'val loss']
     for i in range(len(matrix)-1):
-        plt.plot(matrix[0], matrix[i+1], styles[i], label='train loss')
-        plt.plot(matrix[0], predX, 'b-', label='prediction x rotation')
+        plt.plot(matrix[0], matrix[i+1], styles[i], label=labels[i])
         plt.title(modelname + " - timeGap - loss")
         plt.xlabel("Time gap")
         plt.ylabel("loss")
