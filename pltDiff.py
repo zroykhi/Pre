@@ -1,6 +1,12 @@
 import matplotlib.pyplot as plt
 import json
 from constants import TIME_GAP
+import argparse
+
+parser = argparse.ArgumentParser(description='Test a line detector')
+parser.add_argument('-m', '--model', help='Model type', default="cnn", type=str)
+parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)
+args = parser.parse_args()
 
 originData = "3dmodel/paras_origin.json"
 predData = "3dmodel/predictions.json"
@@ -18,7 +24,7 @@ originY = [labelsOrigin[str(key)][1] for key in frames1]
 predX = [labelsPred[str(key)][0] for key in frames2]
 predY = [labelsPred[str(key)][1] for key in frames2]
 # frames: str -> int
-frames1 = [int(key)+TIME_GAP for key in frames1]
+frames1 = [int(key) for key in frames1]
 frames2 = [int(key) for key in frames2]
 # plot x rotation
 plt.figure(1)
@@ -28,6 +34,8 @@ plt.title("X rotation - frame")
 plt.xlabel("Frames")
 plt.ylabel("X Rotations")
 plt.legend(loc='upper right')
+plt.savefig(args.model+'_'+str(args.time_gap)+'_x'+'.png')
+# plt.show()
 # plot y rotation
 plt.figure(2)
 plt.plot(frames1, originY, 'r-', label='original y rotation')
@@ -36,5 +44,5 @@ plt.title("Y rotation - frame")
 plt.xlabel("Frames")
 plt.ylabel("Y Rotations")
 plt.legend(loc='upper right')
-
+plt.savefig(args.model+'_'+str(args.time_gap)+'_y'+'.png')
 plt.show()
