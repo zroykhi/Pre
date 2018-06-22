@@ -22,7 +22,7 @@ VAL_BATCH_SIZE = 64  # Batch size for validation and test data
 
 def main(folder, num_epochs=100, batchsize=16,
          learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_flip=0.5,
-         model_type="cnn", evaluate_print=1, load_model="", time_gap):
+         model_type="cnn", evaluate_print=1, load_model="", time_gap=25):
 
     if not folder.endswith('/'):
         folder += '/'
@@ -89,7 +89,7 @@ def main(folder, num_epochs=100, batchsize=16,
     for epoch in range(num_epochs):
         # Switch to training mode
         model.train()
-        train_loss, val_loss = 0, 0
+        train_loss, val_loss = 0.0, 0.0
         start_time = time.time()
         # Full pass on training data
         # Update the model after each minibatch
@@ -111,7 +111,7 @@ def main(folder, num_epochs=100, batchsize=16,
             else: predictions = model(inputs)
             loss = loss_fn(predictions, targets)
             loss.backward()
-            train_loss += loss.data[0]
+            train_loss += loss.item()
             optimizer.step()
 
         # Do a full pass on validation data
@@ -121,7 +121,7 @@ def main(folder, num_epochs=100, batchsize=16,
             if cuda:
                 inputs, targets = inputs.cuda(), targets.cuda()
             # Set volatile to True because we don't need to compute gradient
-            inputs, targets = Variable(inputs, volatile=True), Variable(targets)
+            inputs, targets = Variable(inputs), Variable(targets)
             if (model_type == "CNN_RNN"):
                 predictions = model(inputs)
                 # very IMPORTANT, otherwise error
@@ -129,7 +129,7 @@ def main(folder, num_epochs=100, batchsize=16,
             else:
                 predictions = model(inputs)
             loss = loss_fn(predictions, targets)
-            val_loss += loss.data[0]
+            val_loss += loss.item()
 
         # Compute error per sample
         val_error = val_loss / n_val
@@ -157,16 +157,16 @@ def main(folder, num_epochs=100, batchsize=16,
 
     # After training, we compute and print the test error:
     model.load_state_dict(th.load(best_model_path))
-    test_loss = 0
+    test_loss = 0.0
     for inputs, targets in test_loader:
         if cuda:
             inputs, targets = inputs.cuda(), targets.cuda()
-        inputs, targets = Variable(inputs, volatile=True), Variable(targets)
+        inputs, targets = Variable(inputs), Variable(targets)
         if model_type == "CNN_RNN":
             predictions = model(inputs)
         else: predictions = model(inputs)
         loss = loss_fn(predictions, targets)
-        test_loss += loss.data[0]
+        test_loss += loss.item()
 
     print("Final results:")
     print("  best validation loss:\t\t{:.6f}".format(best_error))

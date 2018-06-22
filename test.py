@@ -47,6 +47,7 @@ idx_test = set(test_labels.keys())
 # TODO: compute val and test error
 res = {}
 h_state = None
+print("start testing ...")
 for current_idx in range(len(images)):
     name = images[current_idx]
     image = cv2.imread('{}/{}'.format(args.folder, images[current_idx]))

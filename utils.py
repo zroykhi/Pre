@@ -73,7 +73,7 @@ def loadLabels(folder, modelType):
 
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
-    print(images)
+    # print(images)
     # Split the data into three subsets
     if False:# modelType == "CNN_RNN":
         train_keys = images[:int(round(0.5*len(images)))]
