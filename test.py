@@ -57,15 +57,10 @@ for current_idx in range(len(images)):
     ls = []
     ls.append(float(x))
     ls.append(float(y))
-    # res.update({str(current_idx):map(float,[x, y, z])})
-    # res.update({images[current_idx].replace('.png',"")+str(TIME_GAP):ls})
     res.update({str(int(images[current_idx].replace('.png',""))+TIME_GAP):ls})
-    # print(int(images[current_idx].replace('.png',""))+TIME_GAP, ls)
 
 # print(res)
 print("test finished !")
-# print(type(res["1"]))
-# jsObj = json.dumps(res, default=lambda x: None)
 jsObj = json.dumps(res)
 
 fileObject = open('./Pre/3dmodel/predictions_'+args.model+"_"+str(args.time_gap)+'.json', 'w')

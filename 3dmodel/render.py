@@ -9,11 +9,13 @@ import sys
 # change your path here(path to 'Pre' folder)
 sys.path.append('/home/theo/test/Pre/')
 from constants import FRAME_INTERVAL, TOTAL_FRAME
-IMG_DIR="./render619/"
 
-# setup gpu render if your computer supports
-# remmenber change blender render setting: tiles center:x:512, y:512 for gpu support
-# otherwise tiles center:x:16, y:16 for rendering with cpu only
+IMG_DIR="./render619/"
+"""
+setup gpu render if your computer supports
+remmenber change blender render setting: tiles center:x:512, y:512 for gpu support
+otherwise tiles center:x:16, y:16 for rendering with cpu only
+"""
 CUDA=False
 if CUDA:
     bpy.context.user_preferences.system.compute_device_type = 'CUDA'
@@ -29,7 +31,6 @@ if CUDA:
 #         scene.cycles.tile_order = 'CENTER'
 print('\nPrint Scenes...')
 paras = {}
-# scene = bpy.context.scene
 context = bpy.context
 scene = context.scene
 currentCameraObj = bpy.data.objects['Camera_fixtoboat_stable']

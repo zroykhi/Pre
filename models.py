@@ -95,12 +95,12 @@ class CNN_RNN(nn.Module):
         self.cnn = nn.Sequential(
             nn.Conv2d(3, 8, kernel_size=5, stride=2, padding=2),
             nn.BatchNorm2d(8),
-            nn.ReLU(inplace=True),# False is ok
+            nn.ReLU(inplace=True),
             nn.AvgPool2d(kernel_size=3, stride=2, padding=1),
 
             nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(16),
-            nn.ReLU(inplace=True),# False is ok
+            nn.ReLU(inplace=True),
             nn.AvgPool2d(kernel_size=3, stride=2, padding = 1)
         )
         self.drop_p = drop_p
@@ -129,12 +129,12 @@ class CNN_LSTM(nn.Module):
         self.cnn = nn.Sequential(
             nn.Conv2d(3, 8, kernel_size=5, stride=2, padding=2),
             nn.BatchNorm2d(8),
-            nn.ReLU(inplace=True),# False is ok
+            nn.ReLU(inplace=True),
             nn.AvgPool2d(kernel_size=3, stride=2, padding=1),
 
             nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(16),
-            nn.ReLU(inplace=True),# False is ok
+            nn.ReLU(inplace=True),
             nn.AvgPool2d(kernel_size=3, stride=2, padding = 1)
         )
         self.drop_p = drop_p

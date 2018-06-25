@@ -7,7 +7,6 @@ matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 import json
-from constants import TIME_GAP
 import argparse
 
 parser = argparse.ArgumentParser(description='Test a line detector')

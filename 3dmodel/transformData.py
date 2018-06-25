@@ -11,16 +11,16 @@ from constants import TOTAL_FRAME, FRAME_INTERVAL
 def transformDate(inputFile, output, TIME_GAP):
     labels = json.load(open(inputFile))
     print("transforming data ...")
+    # add time gap to data
     for i in range(len(labels)):
         if labels.get(str(i*FRAME_INTERVAL)) != None and i*FRAME_INTERVAL < (TOTAL_FRAME - TIME_GAP):
             labels[str(i*FRAME_INTERVAL)] = labels[str(i*FRAME_INTERVAL+TIME_GAP)]
-
+    # delete frames which exceed total frame
     for i in range(TOTAL_FRAME - TIME_GAP, TOTAL_FRAME):
         if labels.get(str(i)) != None:
             labels.pop(str(i))
-
+    # use only pitch and roll to train, delete yaw
     for key, value in labels.items():
-        # labels[key][2] = 90
         labels[key] = value[:-1]
 
     json.dump(labels,open(output,'w'))
