@@ -15,13 +15,13 @@ from Pre.utils import JsonDataset, loadLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 
 
-evaluate_print = 10  # Print info every 1 epoch
+evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
 
 
 def main(folder, num_epochs=100, batchsize=16,
          learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_flip=0.5,
-         model_type="cnn", evaluate_print=10, load_model="", time_gap=25):
+         model_type="cnn", evaluate_print=1, load_model="", time_gap=25):
 
     if not folder.endswith('/'):
         folder += '/'
@@ -80,8 +80,6 @@ def main(folder, num_epochs=100, batchsize=16,
     best_error = np.inf
     best_train_error = np.inf
     best_model_path = "{}.pth".format(model_name)
-    global h_state
-    h_state = None
     # Finally, launch the training loop.
     print("Starting training...")
     # We iterate over epochs:
@@ -103,11 +101,7 @@ def main(folder, num_epochs=100, batchsize=16,
             inputs, targets = Variable(inputs), Variable(targets)
             optimizer.zero_grad()
             # print(inputs.shape) # [4, 3, 75, 100]
-            if (model_type == "CNN_RNN"):
-                # global h_state
-                predictions = model(inputs)
-                # h_state = Variable(h_state, requires_grad=True)
-            else: predictions = model(inputs)
+            predictions = model(inputs)
             loss = loss_fn(predictions, targets)
             loss.backward()
             train_loss += loss.item()
@@ -120,13 +114,7 @@ def main(folder, num_epochs=100, batchsize=16,
             if cuda:
                 inputs, targets = inputs.cuda(), targets.cuda()
             # Set volatile to True because we don't need to compute gradient
-            inputs, targets = Variable(inputs), Variable(targets)
-            if (model_type == "CNN_RNN"):
-                predictions = model(inputs)
-                # very IMPORTANT, otherwise error
-                # h_state = Variable(h_state)
-            else:
-                predictions = model(inputs)
+            predictions = model(inputs)
             loss = loss_fn(predictions, targets)
             val_loss += loss.item()
 
@@ -161,9 +149,7 @@ def main(folder, num_epochs=100, batchsize=16,
         if cuda:
             inputs, targets = inputs.cuda(), targets.cuda()
         inputs, targets = Variable(inputs), Variable(targets)
-        if model_type == "CNN_RNN":
-            predictions = model(inputs)
-        else: predictions = model(inputs)
+        predictions = model(inputs)
         loss = loss_fn(predictions, targets)
         test_loss += loss.item()
 
@@ -194,7 +180,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_epochs', help='Number of epoch', default=50, type=int)
     parser.add_argument('-bs', '--batchsize', help='Batch size', default=4, type=int)
     parser.add_argument('--seed', help='Random Seed', default=42, type=int)
-    parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables CUDA training')
+    parser.add_argument('--no-cuda', action='store_true', default=True, help='Disables CUDA training')
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
     parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','CNN_RNN','CNN_LSTM'])
     parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)

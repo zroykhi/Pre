@@ -1,7 +1,11 @@
+"""
+transform the data obtained from blender.py to the one which can be used for training
+"""
 import json
 import argparse
 import sys
-# sys.path.append('/home/theo/Study/Cours_en_france/Pre/Code/horizon-detection/Pre') 
+# change your path here(path to 'Pre' folder)
+# sys.path.append('/home/theo/Study/Cours_en_france/Pre/Code/horizon-detection/Pre')
 sys.path.append('/home/interns/Documents/ZHI/horizon-detection/Pre/')
 from constants import TOTAL_FRAME, FRAME_INTERVAL
 def transformDate(inputFile, output, TIME_GAP):

@@ -11,13 +11,13 @@ import numpy as np
 import torch as th
 from torch.autograd import Variable
 
-from constants import INPUT_WIDTH, INPUT_HEIGHT, RIGHT_KEY, LEFT_KEY, EXIT_KEYS, ROI,MAX_WIDTH, UP_KEY, DOWN_KEY, TIME_GAP, TOTAL_FRAME
+from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, RIGHT_KEY, LEFT_KEY, EXIT_KEYS, ROI,MAX_WIDTH, UP_KEY, DOWN_KEY, TIME_GAP, TOTAL_FRAME
 from Pre.utils import preprocessImage, transformPrediction, loadLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 
 parser = argparse.ArgumentParser(description='Test a line detector')
 parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
-parser.add_argument('-w', '--weights', help='Saved weights', default="cnn_model_tmp.pth", type=str)
+parser.add_argument('-w', '--weights', help='Saved weights', default="cnn_model_25_tmp.pth", type=str)
 parser.add_argument('-m', '--model', help='Model type', default="cnn", type=str)
 parser.add_argument('-t', '--time_gap', help='Time gap', type=int)
 args = parser.parse_args()
@@ -29,8 +29,7 @@ elif args.model == "CNN_LSTM":
     model = CNN_LSTM()
 else: model = ConvolutionalNetwork(num_output=2)
 model.load_state_dict(th.load(args.weights))
-# modified by zhi IMPORTANT, if drop rate is not 0, without this prediction is bad
-model.eval()
+model.eval()# IMPORTANT, if drop rate is not 0, without this prediction is bad
 
 train_labels, val_labels, test_labels, labels = loadLabels(args.folder, args.model)
 
@@ -53,10 +52,7 @@ for current_idx in range(len(images)):
     image = cv2.imread('{}/{}'.format(args.folder, images[current_idx]))
     im = preprocessImage(image, INPUT_WIDTH, INPUT_HEIGHT)
     im = im.transpose((2, 0, 1)).astype(np.float32)
-    if False: #args.model == "CNN_RNN":
-        # global h_state
-        predictions, h_state = model(Variable(th.from_numpy(im[None])), h_state)[0].data.numpy()
-    else: predictions = model(Variable(th.from_numpy(im[None])))[0].data.numpy()
+    predictions = model(Variable(th.from_numpy(im[None])))[0].data.numpy()
     x, y = transformPrediction(predictions)
     ls = []
     ls.append(float(x))

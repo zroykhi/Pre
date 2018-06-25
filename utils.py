@@ -7,7 +7,7 @@ import numpy as np
 import torch as th
 from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
-from constants import MAX_WIDTH, MAX_HEIGHT, ROI, INPUT_HEIGHT, INPUT_WIDTH, SPLIT_SEED
+from Pre.constants import MAX_WIDTH, MAX_HEIGHT, ROI, INPUT_HEIGHT, INPUT_WIDTH, SPLIT_SEED
 
 
 def adjustLearningRate(optimizer, epoch, n_epochs, lr_init, batch,

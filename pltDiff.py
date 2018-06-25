@@ -35,7 +35,7 @@ predY = [labelsPred[str(key)][1] for key in frames2]
 frames1 = [int(key) for key in frames1]
 frames2 = [int(key) for key in frames2]
 # plot roll
-# plt.figure(1)
+plt.figure(1)
 plt.plot(frames1, originX, 'r-', label='original roll')
 plt.plot(frames2, predX, 'b-', label='prediction roll')
 plt.title("roll - frame")
@@ -43,10 +43,10 @@ plt.xlabel("Frames")
 plt.ylabel("Roll")
 plt.legend(loc='upper right')
 plt.savefig(args.model+'_'+str(args.time_gap)+'_roll'+'.png')
-# plt.show()
+plt.show()
 
 # plot pitch
-# plt.figure(2)
+plt.figure(2)
 plt.plot(frames1, originY, 'r-', label='original pitch')
 plt.plot(frames2, predY, 'b-', label='prediction pitch')
 plt.title("pitch - frame")
@@ -54,4 +54,4 @@ plt.xlabel("Frames")
 plt.ylabel("Pitch")
 plt.legend(loc='upper right')
 plt.savefig(args.model+'_'+str(args.time_gap)+'_pitch'+'.png')
-# plt.show()
+plt.show()
