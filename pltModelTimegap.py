@@ -1,5 +1,10 @@
+"""
+read the result.txt and plot the model-timeGap-loss figures
+"""
+# run this code under ssh mode, you need to add the following two lines codes.
 import matplotlib
 matplotlib.use('Agg')
+
 import re
 import matplotlib.pyplot as plt
 import argparse
@@ -12,37 +17,28 @@ def getList(filename):
     timeGap = []
     f = open(filename)
     lines = f.readlines()
-    # with open(filename, 'r') as f:
     for line in lines:
-#        while True:
-  #      line = f.readline()
         if not line:
             continue
         line = line.strip('\n')
         line = line.replace(':',' ')
         line = re.split(" ", line)
-        # print(line)
         if len(line)<2:
             continue
         if line[1] == "model":
-         #   line[2] = line[2].replace('\n',' ')
             model.append(line[3])
         elif line[1] == "train":
-           # line = line[3]#.split(":").split("(")
             trainError.append(float(line[3]))
         elif line[1] == "validation":
-           # line = line[3]#.split(":").split("(")
             valError.append(float(line[3]))
         elif line[1] == "test":
-           # line = line[3].split(":").split("(")
             testError.append(float(line[3]))
         elif line[1] == "gap":
-           # line = line.split(":")
             timeGap.append(int(line[3]))
         else:
             # print("Error !")
             pass
-        print(line)
+        # print(line)
     #print(model)
     f.close()
     return model, trainError, valError, testError, timeGap
@@ -76,10 +72,6 @@ def main(filename):
     models, trainErrors, valErrors, testErrors, timeGaps = getList(filename)
     unqModels = set(models)
     posIdxMatrix = []
-    trainLossMatrix = []
-    testLossMatrix = []
-    valLossMatrix = []
-    timeGapMatrix = []
     for model in unqModels:
         posIdxMatrix.append(find_repeat(models, model))
     unqModels = list(unqModels)

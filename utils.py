@@ -75,7 +75,7 @@ def loadLabels(folder, modelType):
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
     # print(images)
     # Split the data into three subsets
-    if False:# modelType == "CNN_RNN":
+    if False:# modelType == "CNN_LSTM":
         train_keys = images[:int(round(0.5*len(images)))]
         val_keys = images[int(round(0.5*len(images))):int(round(0.75*len(images)))]
         test_keys = images[int(round(0.75*len(images))):len(images)]

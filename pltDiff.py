@@ -1,5 +1,10 @@
+"""
+this code is used to plot figure comparing the original boat parameters and predictions ones
+"""
+# run this code under ssh mode, you need to add the following two lines codes.
 import matplotlib
 matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 import json
 from constants import TIME_GAP
@@ -14,7 +19,6 @@ args = parser.parse_args()
 
 originData = args.origin_file
 predData = args.prediction_file
-# predData = "3dmodel/predictions.json"
 labelsOrigin = json.load(open(originData))
 labelsPred = json.load(open(predData))
 frames1 = list(labelsOrigin.keys())
@@ -30,23 +34,24 @@ predY = [labelsPred[str(key)][1] for key in frames2]
 # frames: str -> int
 frames1 = [int(key) for key in frames1]
 frames2 = [int(key) for key in frames2]
-# plot x rotation
+# plot roll
 # plt.figure(1)
-plt.plot(frames1, originX, 'r-', label='original x rotation')
-plt.plot(frames2, predX, 'b-', label='prediction x rotation')
-plt.title("X rotation - frame")
+plt.plot(frames1, originX, 'r-', label='original roll')
+plt.plot(frames2, predX, 'b-', label='prediction roll')
+plt.title("roll - frame")
 plt.xlabel("Frames")
-plt.ylabel("X Rotations")
+plt.ylabel("Roll")
 plt.legend(loc='upper right')
-plt.savefig(args.model+'_'+str(args.time_gap)+'_x'+'.png')
+plt.savefig(args.model+'_'+str(args.time_gap)+'_roll'+'.png')
 # plt.show()
-# plot y rotation
+
+# plot pitch
 # plt.figure(2)
-plt.plot(frames1, originY, 'r-', label='original y rotation')
-plt.plot(frames2, predY, 'b-', label='prediction y rotation')
-plt.title("Y rotation - frame")
+plt.plot(frames1, originY, 'r-', label='original pitch')
+plt.plot(frames2, predY, 'b-', label='prediction pitch')
+plt.title("pitch - frame")
 plt.xlabel("Frames")
-plt.ylabel("Y Rotations")
+plt.ylabel("Pitch")
 plt.legend(loc='upper right')
-plt.savefig(args.model+'_'+str(args.time_gap)+'_y'+'.png')
+plt.savefig(args.model+'_'+str(args.time_gap)+'_pitch'+'.png')
 # plt.show()

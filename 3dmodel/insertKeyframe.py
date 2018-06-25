@@ -1,3 +1,7 @@
+"""
+insert the prediction parameters into blender file model.blend and visualize the
+prediction in order to compare with the original ones.
+"""
 from bpy import data, ops, props, types, context
 from math import degrees
 import json
