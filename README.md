@@ -34,9 +34,9 @@ or copy the code to blender's text editor and press "run script"
 
 ### Step guidance:
 1. download the code and add environment path by changing the code in
- + `transformData.py`
- + `render.py`
- + `autoRun.sh`
+  + `transformData.py`
+  + `render.py`
+  + `autoRun.sh`
 
 2. download the images dataset [here](https://drive.google.com/file/d/1Iez0P0yxOB1csu3ckNv2uvGewOaGSwr4/view?usp=sharing) if you have not yet and put the dataset under the directory **3dmodel**, make sure the dataset folder's name is **render619** and has file **labels.json** inside it
 
