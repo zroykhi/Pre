@@ -1,8 +1,8 @@
 #!/bin/bash
-# change your path here(path to Pre's parent folder)
+# change your path here(path to Pre's parent folder,without '/' at the end)
 # BASE_DIR=/home/interns/zhi
 # BASE_DIR=/home/theo/Study/Cours_en_france/Pre/Code/horizon-detection
-BASE_DIR=/home/interns/Documents/ZHI/horizon-detection/
+BASE_DIR=/home/interns/Documents/ZHI/horizon-detection
 IMG_DIR=3dmodel/render619
 CODE_DIR=/Pre/
 IDX=1
