@@ -1,8 +1,8 @@
 current model: cnn
-best train error:273.7284763837308
-best validation loss:282.68356626884423
-final test loss:288.0710083621231
-time gap is:25
+best train error:1.2070478401506948
+best validation loss:46.90049418866874
+final test loss:40.52253042933452
+time gap is:20
 ConvolutionalNetwork(
   (conv_layers): Sequential(
     (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
@@ -19,10 +19,10 @@ ConvolutionalNetwork(
 )
 
 current model: CNN_LSTM
-best train error:284.7259984975206
-best validation loss:285.72186224089194
-final test loss:288.5047974246231
-time gap is:25
+best train error:26.84396316201383
+best validation loss:75.66826363069465
+final test loss:71.49817286725025
+time gap is:20
 CNN_LSTM(
   (cnn): Sequential(
     (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
@@ -39,10 +39,10 @@ CNN_LSTM(
 )
 
 current model: cnn
-best train error:281.76528214784906
-best validation loss:236.84127964038944
-final test loss:259.5773339353015
-time gap is:26
+best train error:1.0862172804398578
+best validation loss:43.84930076752322
+final test loss:46.46175485633942
+time gap is:21
 ConvolutionalNetwork(
   (conv_layers): Sequential(
     (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
@@ -59,10 +59,10 @@ ConvolutionalNetwork(
 )
 
 current model: CNN_LSTM
-best train error:285.7493269457099
-best validation loss:298.7670608903895
-final test loss:272.8988325416143
-time gap is:26
+best train error:25.26601665002423
+best validation loss:69.87030887220757
+final test loss:64.66452823010793
+time gap is:21
 CNN_LSTM(
   (cnn): Sequential(
     (0): Conv2d(3, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))

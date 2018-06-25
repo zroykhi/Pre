@@ -15,13 +15,13 @@ from Pre.utils import JsonDataset, loadLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 
 
-evaluate_print = 1  # Print info every 1 epoch
+evaluate_print = 10  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
 
 
 def main(folder, num_epochs=100, batchsize=16,
          learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_flip=0.5,
-         model_type="cnn", evaluate_print=1, load_model="", time_gap=25):
+         model_type="cnn", evaluate_print=10, load_model="", time_gap=25):
 
     if not folder.endswith('/'):
         folder += '/'

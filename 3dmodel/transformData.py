@@ -1,7 +1,8 @@
 import json
 import argparse
 import sys
-sys.path.append('/home/theo/Study/Cours_en_france/Pre/Code/horizon-detection/Pre') 
+# sys.path.append('/home/theo/Study/Cours_en_france/Pre/Code/horizon-detection/Pre') 
+sys.path.append('/home/interns/Documents/ZHI/horizon-detection/Pre/')
 from constants import TOTAL_FRAME, FRAME_INTERVAL
 def transformDate(inputFile, output, TIME_GAP):
     labels = json.load(open(inputFile))
@@ -18,7 +19,7 @@ def transformDate(inputFile, output, TIME_GAP):
         # labels[key][2] = 90
         labels[key] = value[:-1]
 
-        json.dump(labels,open(output,'w'))
+    json.dump(labels,open(output,'w'))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Transform parameters')
