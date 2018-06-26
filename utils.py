@@ -128,6 +128,48 @@ class JsonDataset(Dataset):
         return len(self.keys)
 
 
+class JsonDataset2(Dataset):
+    def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False):
+        self.keys = list(labels.keys())
+        self.labels = labels.copy()
+        self.folder = folder
+        self.preprocess = preprocess
+        self.random_flip = random_flip
+        self.swap = swap
+
+    def __getitem__(self, index):
+        """
+        :param index: (int)
+        :return: (PyTorch Tensor, PyTorch Tensor)
+        """
+        images = []
+        image = self.keys[index]
+        labels = np.array(self.labels[image]).astype(np.float32)
+        y = labels.flatten().astype(np.float32)
+
+        for i in range(2):
+            image = self.keys[index+i]
+            image += ".png"
+            margin_left, margin_top = 0, 0
+            im = cv2.imread(self.folder + image)
+            # if the index is the last one
+            if im is None:
+                images.append(images[0])
+                continue
+            # Crop the image and normalize it
+            if self.preprocess:
+                margin_left, margin_top, _, _ = ROI
+                im = preprocessImage(im, INPUT_WIDTH, INPUT_HEIGHT)
+            images.append(im)
+        # image = image.replace(".png","")
+        # swap color axis
+        images = np.dstack(images)
+        images = images.transpose((0, 3, 2, 1)).astype(np.float32)
+        return th.from_numpy(images), th.from_numpy(y)
+
+    def __len__(self):
+        return len(self.keys)
+
 def computeMSE(y_test, y_true, indices):
     """
     Compute Mean Square Error
