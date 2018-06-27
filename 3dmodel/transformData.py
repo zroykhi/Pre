@@ -6,7 +6,8 @@ import argparse
 import sys
 # change your path here(path to 'Pre' folder)
 # sys.path.append('/home/theo/Study/Cours_en_france/Pre/Code/horizon-detection/Pre')
-sys.path.append('/home/interns/Documents/ZHI/horizon-detection/Pre/')
+# sys.path.append('/home/interns/Documents/ZHI/horizon-detection/Pre/')
+sys.path.append('/home/theo/Pre/Code/horizon-detection/Pre/')
 from constants import TOTAL_FRAME, FRAME_INTERVAL
 def transformDate(inputFile, output, TIME_GAP):
     labels = json.load(open(inputFile))

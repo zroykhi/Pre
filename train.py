@@ -17,7 +17,7 @@ from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 
 evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
-
+# def getNChannels():
 
 def main(folder, num_epochs=100, batchsize=16,
          learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_flip=0.5,
@@ -43,9 +43,7 @@ def main(folder, num_epochs=100, batchsize=16,
     train_loader = th.utils.data.DataLoader(
         JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
         batch_size=batchsize, shuffle=True, **kwargs)
-    # if model_type == "RNN" or model_type == "CNN_RNN":
-    #     global VAL_BATCH_SIZE
-    #     VAL_BATCH_SIZE = batchsize
+
     # Random flip also for val ?
     val_loader = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=folder),
                                           batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
