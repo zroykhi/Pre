@@ -22,17 +22,8 @@ parser.add_argument('-m', '--model', help='Model type', default="cnn", type=str)
 parser.add_argument('-t', '--time_gap', help='Time gap', type=int)
 args = parser.parse_args()
 
-current_idx = 0
-if args.model == "CNN_RNN":
-    model = CNN_RNN()
-elif args.model == "CNN_LSTM":
-    model = CNN_LSTM()
-else: model = ConvolutionalNetwork(num_output=2)
-model.load_state_dict(th.load(args.weights))
-model.eval()# IMPORTANT, if drop rate is not 0, without this prediction is bad
-
 train_labels, val_labels, test_labels, labels = loadLabels(args.folder, args.model)
-
+ONE_IMG_ONLY = False
 # images = list(labels.keys())
 # TODO: add support for folders without labels
 if True:
@@ -42,17 +33,45 @@ images.sort(key=lambda name: int(name.split('.png')[0]))
 
 idx_val = set(val_labels.keys())
 idx_test = set(test_labels.keys())
-
+numChannel = 3
+if ONE_IMG_ONLY:
+    numChannel = 3
+else:
+    numChannel = 6
+current_idx = 0
+if args.model == "CNN_RNN":
+    model = CNN_RNN(num_channel=numChannel)
+elif args.model == "CNN_LSTM":
+    model = CNN_LSTM(num_channel=numChannel)
+else: model = ConvolutionalNetwork(num_channel=numChannel, num_output=2)
+model.load_state_dict(th.load(args.weights))
+model.eval()# IMPORTANT, if drop rate is not 0, without this prediction is bad
 # TODO: compute val and test error
 res = {}
 
 print("start testing ...")
 for current_idx in range(len(images)):
-    name = images[current_idx]
-    image = cv2.imread('{}/{}'.format(args.folder, images[current_idx]))
-    im = preprocessImage(image, INPUT_WIDTH, INPUT_HEIGHT)
-    im = im.transpose((2, 0, 1)).astype(np.float32)
-    predictions = model(Variable(th.from_numpy(im[None])))[0].data.numpy()
+    # if take only one image for prediction
+    if ONE_IMG_ONLY:
+        name = images[current_idx]
+        image = cv2.imread('{}/{}'.format(args.folder, images[current_idx]))
+        imgs = preprocessImage(image, INPUT_WIDTH, INPUT_HEIGHT)
+        imgs = imgs.transpose((2, 0, 1)).astype(np.float32)
+    # take two images as input
+    else:
+        imgs = []
+        for i in range(2):
+            try:
+                image = images[current_idx+i]
+                image = cv2.imread('{}/{}'.format(args.folder, images[current_idx]))
+                im = preprocessImage(image, INPUT_WIDTH, INPUT_HEIGHT)
+                imgs.append(im)
+            except IndexError:
+                imgs.append(imgs[0])
+                continue
+        imgs = np.dstack(imgs)
+        imgs = imgs.transpose((2, 0, 1)).astype(np.float32)
+    predictions = model(Variable(th.from_numpy(imgs[None])))[0].data.numpy()
     x, y = transformPrediction(predictions)
     ls = []
     ls.append(float(x))

@@ -17,7 +17,6 @@ from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 
 evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
-# def getNChannels():
 
 def main(folder, num_epochs=100, batchsize=16,
          learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_flip=0.5,
@@ -50,14 +49,14 @@ def main(folder, num_epochs=100, batchsize=16,
 
     test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=folder),
                                            batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
-
+    numChannel = train_loader.dataset.numChannel
     model_name = "{}_model_{}_tmp".format(model_type, time_gap)
     if model_type == "cnn":
-        model = ConvolutionalNetwork(num_output=num_output, drop_p=0.0)
+        model = ConvolutionalNetwork(num_channel=numChannel, num_output=num_output, drop_p=0.0)
     elif model_type == "CNN_RNN":
-        model = CNN_RNN()
+        model = CNN_RNN(num_channel=numChannel)
     elif model_type == "CNN_LSTM":
-        model = CNN_LSTM()
+        model = CNN_LSTM(num_channel=numChannel)
     else:
         raise ValueError("Model type not supported")
 
@@ -175,7 +174,7 @@ def main(folder, num_epochs=100, batchsize=16,
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a line detector')
     parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
-    parser.add_argument('--num_epochs', help='Number of epoch', default=50, type=int)
+    parser.add_argument('--num_epochs', help='Number of epoch', default=1, type=int)
     parser.add_argument('-bs', '--batchsize', help='Batch size', default=4, type=int)
     parser.add_argument('--seed', help='Random Seed', default=42, type=int)
     parser.add_argument('--no-cuda', action='store_true', default=True, help='Disables CUDA training')

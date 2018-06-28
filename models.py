@@ -91,10 +91,10 @@ class ConvolutionalNetwork(nn.Module):
         return x
 
 class CNN_RNN(nn.Module):
-    def __init__(self, drop_p=0.25, input_size=4032, hidden_size=32, num_layers=2, num_output=2):
+    def __init__(self, num_channel=6, drop_p=0.25, input_size=4032, hidden_size=32, num_layers=2, num_output=2):
         super().__init__()
         self.cnn = nn.Sequential(
-            nn.Conv2d(3, 8, kernel_size=5, stride=2, padding=2),
+            nn.Conv2d(num_channel, 8, kernel_size=5, stride=2, padding=2),
             nn.BatchNorm2d(8),
             nn.ReLU(inplace=True),
             nn.AvgPool2d(kernel_size=3, stride=2, padding=1),
@@ -125,10 +125,10 @@ class CNN_RNN(nn.Module):
         return outs
 
 class CNN_LSTM(nn.Module):
-    def __init__(self, drop_p=0.25, input_size=4032, hidden_size=32, num_layers=2, num_output=2):
+    def __init__(self, num_channel=6, drop_p=0.25, input_size=4032, hidden_size=32, num_layers=2, num_output=2):
         super().__init__()
         self.cnn = nn.Sequential(
-            nn.Conv2d(3, 8, kernel_size=5, stride=2, padding=2),
+            nn.Conv2d(num_channel, 8, kernel_size=5, stride=2, padding=2),
             nn.BatchNorm2d(8),
             nn.ReLU(inplace=True),
             nn.AvgPool2d(kernel_size=3, stride=2, padding=1),

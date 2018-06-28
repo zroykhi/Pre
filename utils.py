@@ -99,6 +99,7 @@ class JsonDataset2(Dataset):
         self.preprocess = preprocess
         self.random_flip = random_flip
         self.swap = swap
+        self.numChannel = 3
 
     def __getitem__(self, index):
         """
@@ -117,7 +118,7 @@ class JsonDataset2(Dataset):
         image = image.replace(".png","")
         labels = np.array(self.labels[image]).astype(np.float32)
         y = labels.flatten().astype(np.float32)
-
+        self.numChannel = images.shape[2]
         # swap color axis because
         # numpy image: H x W x C
         # torch image: C X H X W
@@ -136,6 +137,7 @@ class JsonDataset(Dataset):
         self.preprocess = preprocess
         self.random_flip = random_flip
         self.swap = swap
+        self.numChannel = 6
 
     def __getitem__(self, index):
         """
@@ -168,8 +170,9 @@ class JsonDataset(Dataset):
         # image = image.replace(".png","")
         # swap color axis
         images = np.dstack(images)
-        #print(images.shape)
-        images = images.transpose((2, 1, 0)).astype(np.float32)
+        # print(images.shape)
+        self.numChannel = images.shape[2]
+        images = images.transpose((2, 0, 1)).astype(np.float32)
         return th.from_numpy(images), th.from_numpy(y)
 
     def __len__(self):
