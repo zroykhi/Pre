@@ -13,7 +13,8 @@ import torch.nn as nn
 from torch.autograd import Variable
 from Pre.utils import JsonDataset, loadLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
-
+import matplotlib.pyplot as plt
+# from matpltlib.animation import FuncAnimation
 
 evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
@@ -76,7 +77,17 @@ def main(folder, num_epochs=100, batchsize=16,
     # loss_fn = nn.SmoothL1Loss(size_average=False)
     best_error = np.inf
     best_train_error = np.inf
+    train_err_list = []
+    val_err_list = []
+    xdata = []
     best_model_path = "{}.pth".format(model_name)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    li, = ax.plot(xdata, train_err_list, 'b-', label='train loss')
+    l2, = ax.plot(xdata, val_err_list, 'r-', label='val loss')
+    plt.legend(loc='upper right')
+    fig.canvas.draw()
+    plt.show(block=False)
     # Finally, launch the training loop.
     print("Starting training...")
     # We iterate over epochs:
@@ -117,7 +128,6 @@ def main(folder, num_epochs=100, batchsize=16,
 
         # Compute error per sample
         val_error = val_loss / n_val
-
         if val_error < best_error:
             best_error = val_error
             # Move back weights to cpu
@@ -125,7 +135,6 @@ def main(folder, num_epochs=100, batchsize=16,
                 model.cpu()
             # Save Weights
             th.save(model.state_dict(), best_model_path)
-
             if cuda:
                 model.cuda()
         if (train_loss / n_train) < best_train_error:
@@ -134,6 +143,18 @@ def main(folder, num_epochs=100, batchsize=16,
         if (epoch + 1) % evaluate_print == 0:
             # Then we print the results for this epoch:
             # Losses are averaged over the samples
+            train_l = train_loss / n_train
+            xdata.append(epoch+1)
+            train_err_list.append(train_l)
+            val_err_list.append(val_error)
+            li.set_xdata(xdata)
+            li.set_ydata(train_err_list)
+            l2.set_xdata(xdata)
+            l2.set_ydata(val_err_list)
+            ax.relim()
+            ax.autoscale_view(True,True,True)
+            fig.canvas.draw()
+            time.sleep(0.01)
             print("Epoch {} of {} took {:.3f}s".format(
                 epoch + 1, num_epochs, time.time() - start_time))
             print("  training loss:\t\t{:.6f}".format(train_loss / n_train))
@@ -149,7 +170,6 @@ def main(folder, num_epochs=100, batchsize=16,
         predictions = model(inputs)
         loss = loss_fn(predictions, targets)
         test_loss += loss.item()
-
     print("Final results:")
     print("  best validation loss:\t\t{:.6f}".format(best_error))
     print("  test loss:\t\t\t{:.6f}".format(test_loss / n_test))
