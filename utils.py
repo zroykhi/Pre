@@ -91,7 +91,7 @@ def loadLabels(folder, modelType):
     return train_labels, val_labels, test_labels, labels
 
 
-class JsonDataset(Dataset):
+class JsonDataset2(Dataset):
     def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False):
         self.keys = list(labels.keys())
         self.labels = labels.copy()
@@ -128,7 +128,7 @@ class JsonDataset(Dataset):
         return len(self.keys)
 
 
-class JsonDataset2(Dataset):
+class JsonDataset(Dataset):
     def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False):
         self.keys = list(labels.keys())
         self.labels = labels.copy()
@@ -148,14 +148,18 @@ class JsonDataset2(Dataset):
         y = labels.flatten().astype(np.float32)
 
         for i in range(2):
-            image = self.keys[index+i]
+            try:
+                image = self.keys[index+i]
+            except IndexError:
+                images.append(images[0])
+                continue
             image += ".png"
             margin_left, margin_top = 0, 0
             im = cv2.imread(self.folder + image)
             # if the index is the last one
-            if im is None:
-                images.append(images[0])
-                continue
+            #if im is None:
+            #    images.append(images[0])
+            #    continue
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI
@@ -164,7 +168,8 @@ class JsonDataset2(Dataset):
         # image = image.replace(".png","")
         # swap color axis
         images = np.dstack(images)
-        images = images.transpose((0, 3, 2, 1)).astype(np.float32)
+        #print(images.shape)
+        images = images.transpose((2, 1, 0)).astype(np.float32)
         return th.from_numpy(images), th.from_numpy(y)
 
     def __len__(self):
