@@ -13,7 +13,11 @@ import torch.nn as nn
 from torch.autograd import Variable
 from Pre.utils import JsonDataset, loadLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
+# run this code under ssh mode, you need to add the following two lines codes.
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 # from matpltlib.animation import FuncAnimation
 
 evaluate_print = 1  # Print info every 1 epoch
@@ -87,11 +91,14 @@ def main(folder, num_epochs=100, batchsize=16,
     l2, = ax.plot(xdata, val_err_list, 'r-', label='val loss')
     plt.legend(loc='upper right')
     fig.canvas.draw()
+    plt.title("train epochs - loss")
+    plt.xlabel("epochs")
+    plt.ylabel("loss")
     plt.show(block=False)
     # Finally, launch the training loop.
     print("Starting training...")
     # We iterate over epochs:
-    for epoch in range(num_epochs):
+    for epoch in tqdm(range(num_epochs)):
         # Switch to training mode
         model.train()
         train_loss, val_loss = 0.0, 0.0
@@ -155,11 +162,11 @@ def main(folder, num_epochs=100, batchsize=16,
             ax.autoscale_view(True,True,True)
             fig.canvas.draw()
             time.sleep(0.01)
-            print("Epoch {} of {} took {:.3f}s".format(
-                epoch + 1, num_epochs, time.time() - start_time))
-            print("  training loss:\t\t{:.6f}".format(train_loss / n_train))
-            print("  validation loss:\t\t{:.6f}".format(val_error))
-
+            # print("Epoch {} of {} took {:.3f}s".format(
+            #     epoch + 1, num_epochs, time.time() - start_time))
+            # print("  training loss:\t\t{:.6f}".format(train_loss / n_train))
+            # print("  validation loss:\t\t{:.6f}".format(val_error))
+    plt.savefig(args.model_type+'_'+str(args.time_gap)+'_loss'+'.png')
     # After training, we compute and print the test error:
     model.load_state_dict(th.load(best_model_path))
     test_loss = 0.0

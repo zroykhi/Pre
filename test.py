@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 import torch as th
 from torch.autograd import Variable
-
+from tqdm import tqdm
 from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, RIGHT_KEY, LEFT_KEY, EXIT_KEYS, ROI,MAX_WIDTH, UP_KEY, DOWN_KEY, TIME_GAP, TOTAL_FRAME
 from Pre.utils import preprocessImage, transformPrediction, loadLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
@@ -50,7 +50,7 @@ model.eval()# IMPORTANT, if drop rate is not 0, without this prediction is bad
 res = {}
 
 print("start testing ...")
-for current_idx in range(len(images)):
+for current_idx in tqdm(range(len(images))):
     # if take only one image for prediction
     if ONE_IMG_ONLY:
         name = images[current_idx]
