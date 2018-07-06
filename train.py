@@ -14,8 +14,8 @@ from torch.autograd import Variable
 from Pre.utils import JsonDataset, loadLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 # run this code under ssh mode, you need to add the following two lines codes.
-import matplotlib
-matplotlib.use('Agg')
+# import matplotlib
+# matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 # from matpltlib.animation import FuncAnimation
@@ -162,6 +162,7 @@ def main(folder, num_epochs=100, batchsize=16,
             ax.autoscale_view(True,True,True)
             fig.canvas.draw()
             time.sleep(0.01)
+            fig.show()
             # print("Epoch {} of {} took {:.3f}s".format(
             #     epoch + 1, num_epochs, time.time() - start_time))
             # print("  training loss:\t\t{:.6f}".format(train_loss / n_train))
@@ -201,7 +202,7 @@ def main(folder, num_epochs=100, batchsize=16,
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a line detector')
     parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
-    parser.add_argument('--num_epochs', help='Number of epoch', default=1, type=int)
+    parser.add_argument('--num_epochs', help='Number of epoch', default=30, type=int)
     parser.add_argument('-bs', '--batchsize', help='Batch size', default=4, type=int)
     parser.add_argument('--seed', help='Random Seed', default=42, type=int)
     parser.add_argument('--no-cuda', action='store_true', default=True, help='Disables CUDA training')

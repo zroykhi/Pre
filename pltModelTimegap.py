@@ -59,11 +59,16 @@ def pltFigure(modelname, matrix, idx):
     plt.figure(idx)
     styles = ['r-', 'b-', 'g-', 'p-']
     labels = ['train loss', 'test loss', 'val loss']
-    for i in range(len(matrix)-1):
-        plt.plot(matrix[0], matrix[i+1], styles[i], label=labels[i])
-        plt.title(modelname + " - timeGap - loss")
-        plt.xlabel("Time gap")
-        plt.ylabel("loss")
+    # for i in range(len(matrix)-1):
+    #    plt.plot(matrix[0], matrix[i+1], styles[i], label=labels[i])
+    #    plt.title(modelname + " - timeGap - loss")
+    #    plt.xlabel("Time gap")
+    #    plt.ylabel("loss")
+    plt.plot(matrix[0], matrix[2], styles[1], label=labels[1])
+    plt.title(modelname + " - timeGap - loss")
+    plt.xlabel("Time gap")
+    plt.ylabel("loss")
+
     plt.legend(loc='upper right')
     plt.savefig(modelname+'_'+'loss_comparation'+'.png')
     # plt.show()
