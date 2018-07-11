@@ -70,10 +70,10 @@ def loadLabels(folder, modelType):
     if not folder.endswith('/'):
         folder += '/'
     labels = json.load(open(folder + 'labels.json'))
-    # labels2 = labels.copy()
-    # labels2 = dict((int(key.replace('"',''))+5000,value) for (key, value) in labels2.items())
-    # json.dump(labels2,open('labels2.json','w'))
-    # labels = labels.update(labels2)
+    labels2 = labels.copy()
+    labels2 = dict((str(int(key.replace('"',''))+5000),value) for (key, value) in labels2.items())
+    labels.update(labels2)
+    json.dump(labels,open('labels2.json','w'))
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
     if True:# modelType == "CNN_LSTM":
