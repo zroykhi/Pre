@@ -23,6 +23,7 @@ def getList(filename):
         line = line.strip('\n')
         line = line.replace(':',' ')
         line = re.split(" ", line)
+        # skip some useless lines
         if len(line)<2:
             continue
         if line[1] == "model":
@@ -59,11 +60,14 @@ def pltFigure(modelname, matrix, idx):
     plt.figure(idx)
     styles = ['r-', 'b-', 'g-', 'p-']
     labels = ['train loss', 'test loss', 'val loss']
+    # plot all the loss(train test validation)
     # for i in range(len(matrix)-1):
     #    plt.plot(matrix[0], matrix[i+1], styles[i], label=labels[i])
     #    plt.title(modelname + " - timeGap - loss")
     #    plt.xlabel("Time gap")
     #    plt.ylabel("loss")
+
+    # plot only test loss
     plt.plot(matrix[0], matrix[2], styles[1], label=labels[1])
     plt.title(modelname + " - timeGap - loss")
     plt.xlabel("Time gap")

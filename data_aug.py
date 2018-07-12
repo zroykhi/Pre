@@ -36,6 +36,8 @@ tfs = torchvision.transforms.Compose([
     # transforms.RandomRotation(20, resample=PIL.Image.BILINEAR),
     transforms.ToTensor()
 ])
+# if you use original module of python
 # dataset = torchvision.datasets.ImageFolder(BASE_DIR+'data_aug/', transform=tfs)
+# self define module
 dataset = ImageFolder(BASE_DIR+'data_aug/', transform=tfs)
 show_dataset(dataset)

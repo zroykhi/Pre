@@ -76,7 +76,7 @@ def loadLabels(folder, modelType):
     json.dump(labels,open('labels2.json','w'))
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
-    if True:# modelType == "CNN_LSTM":
+    if False:# modelType == "CNN_LSTM":
         train_keys = images[:int(round(0.5*len(images)))]
         val_keys = images[int(round(0.5*len(images))):int(round(0.75*len(images)))]
         test_keys = images[int(round(0.75*len(images))):len(images)]
@@ -90,8 +90,9 @@ def loadLabels(folder, modelType):
 
     print("{} images".format(len(labels)))
     return train_labels, val_labels, test_labels, labels
-
-
+"""
+take one image only as input
+"""
 class JsonDataset2(Dataset):
     def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False):
         self.keys = list(labels.keys())
@@ -128,8 +129,9 @@ class JsonDataset2(Dataset):
 
     def __len__(self):
         return len(self.keys)
-
-
+"""
+take two images as inputs
+"""
 class JsonDataset(Dataset):
     def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False):
         self.keys = list(labels.keys())
@@ -154,21 +156,17 @@ class JsonDataset(Dataset):
             try:
                 image = self.keys[index+i]
             except IndexError:
+                # if the index is the last one
                 images.append(images[0])
                 continue
             image += ".png"
             margin_left, margin_top = 0, 0
             im = cv2.imread(self.folder + image)
-            # if the index is the last one
-            #if im is None:
-            #    images.append(images[0])
-            #    continue
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI
                 im = preprocessImage(im, INPUT_WIDTH, INPUT_HEIGHT)
             images.append(im)
-        # image = image.replace(".png","")
         # swap color axis
         images = np.dstack(images)
         # print(images.shape)

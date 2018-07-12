@@ -6,8 +6,11 @@ from bpy import data, ops, props, types, context
 from math import degrees
 import json
 import sys
+import os
+dirpath = os.getcwd()
+sys.path.append(dirpath)
 # change your path here(path to 'Pre' folder)
-sys.path.append('/home/theo/test/Pre/')
+# sys.path.append('/home/theo/test/Pre/')
 from constants import FRAME_INTERVAL, TOTAL_FRAME
 
 IMG_DIR="./render619/"

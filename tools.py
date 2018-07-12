@@ -37,10 +37,11 @@ def make_dataset(dir, class_to_idx, extensions):
             continue
 
         for root, _, fnames in sorted(os.walk(d)):
-            # sort filenames
+            """
+            sort filenames(this needs to self define according to file name)
+            """
             fnames = [x for x in fnames if os.path.splitext(x)[1] in IMG_EXTENSIONS]
             fnames.sort(key=lambda name: int(name.split('.')[0]))
-            # print(fnames)
             for fname in fnames:
                 if has_file_allowed_extension(fname, extensions):
                     path = os.path.join(root, fname)
@@ -103,7 +104,6 @@ class DatasetFolder(data.Dataset):
         Ensures:
             No class is a subdirectory of another.
         """
-
         classes = [d for d in os.listdir(dir) if os.path.isdir(os.path.join(dir, d))]
         classes.sort()
         class_to_idx = {classes[i]: i for i in range(len(classes))}

@@ -18,7 +18,6 @@ from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 # matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-# from matpltlib.animation import FuncAnimation
 
 evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
@@ -182,6 +181,7 @@ def main(folder, num_epochs=100, batchsize=16,
     print("  best validation loss:\t\t{:.6f}".format(best_error))
     print("  test loss:\t\t\t{:.6f}".format(test_loss / n_test))
     # write result into result.txt
+    # format fixed because we use this file later in pltModelTimegap.py
     with open("./Pre/result.txt", "a") as f:
         f.write("current model: ")
         f.write(model_type)

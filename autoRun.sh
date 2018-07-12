@@ -11,7 +11,7 @@ declare -a model_list=("cnn" "CNN_LSTM")
 cd $BASE_DIR
 start_tm=`date +%s%N`
 # T is time gap
-for T in {25..30..1} ; do
+for T in {25..26..1} ; do
 # for T in {20..30..1} ; do
     cd $BASE_DIR$CODE_DIR
     python3 3dmodel/transformData.py -i $IMG_DIR"/paras_origin.json" -o $IMG_DIR"/labels.json" -t ${T};
