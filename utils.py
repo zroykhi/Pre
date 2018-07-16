@@ -71,15 +71,24 @@ def loadLabels(folder, modelType):
         folder += '/'
     labels = json.load(open(folder + 'labels.json'))
     labels2 = labels.copy()
-    labels2 = dict((str(int(key.replace('"',''))+5000),value) for (key, value) in labels2.items())
+    lenght = len(labels2)
+    # change keys' number in the new labels2
+    labels2 = dict((str(int(key.replace('"',''))+lenght),value) for (key, value) in labels2.items())
+    # update labels(combine labels and labels2)
     labels.update(labels2)
     json.dump(labels,open('labels2.json','w'))
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
-    if False:# modelType == "CNN_LSTM":
-        train_keys = images[:int(round(0.5*len(images)))]
-        val_keys = images[int(round(0.5*len(images))):int(round(0.75*len(images)))]
-        test_keys = images[int(round(0.75*len(images))):len(images)]
+    if True:# modelType == "CNN_LSTM":
+        # train_keys = images[:int(round(0.6*len(images)))]
+        # val_keys = images[int(round(0.6*len(images))):int(round(0.8*len(images)))]
+        # test_keys = images[int(round(0.8*len(images))):len(images)]
+        train_keys = images[:int(round(0.3*len(images)))]
+        train_keys += images[int(round(0.5*len(images))):int(round(0.8*len(images)))]
+        val_keys = images[int(round(0.3*len(images))):int(round(0.4*len(images)))]
+        val_keys += images[int(round(0.8*len(images))):int(round(0.9*len(images)))]
+        test_keys = images[int(round(0.9*len(images))):len(images)]
+        test_keys += images[int(round(0.4*len(images))):int(round(0.5*len(images)))]
     else:
         train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.4, random_state=SPLIT_SEED)
         val_keys, test_keys = train_test_split(tmp_keys, test_size=0.5, random_state=SPLIT_SEED)
@@ -154,7 +163,7 @@ class JsonDataset(Dataset):
 
         for i in range(2):
             try:
-                image = self.keys[index+i]
+                image = self.keys[index+3*i]
             except IndexError:
                 # if the index is the last one
                 images.append(images[0])

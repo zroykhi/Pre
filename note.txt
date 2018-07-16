@@ -26,11 +26,11 @@ time gap should according to the boat's speed
 
 不能直接使用rnn，先经过cnn对图片的特征读取，再传入rnn中
 
-修改time_gap, 
+修改time_gap,
 
 when using cnn_rnn model, can not use train_test_split !!!
 
-change the wave, it is too chaotic now 
+change the wave, it is too chaotic now
 
 courve: prediction and origin
 courve: loss and time gap
@@ -45,3 +45,5 @@ for para in net.parameters():
 
 difference between return hidden state and not return ?
 why random split data for lstm works better?
+
+implemente the data augmentation during the training
