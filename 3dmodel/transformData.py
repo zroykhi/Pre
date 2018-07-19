@@ -28,6 +28,7 @@ def transformDate(inputFile, output, TIME_GAP):
         labels[key] = value[:-1]
 
     json.dump(labels,open(output,'w'))
+    print("transform data done !")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Transform parameters')

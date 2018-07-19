@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 from Pre.constants import MAX_WIDTH, MAX_HEIGHT, ROI, INPUT_HEIGHT, INPUT_WIDTH, SPLIT_SEED
 from Pre.data_aug import transform
 from PIL import Image
+import scipy.misc
 
 def adjustLearningRate(optimizer, epoch, n_epochs, lr_init, batch,
                          n_batch, method='cosine'):
@@ -221,6 +222,8 @@ class JsonDataset1(Dataset):
             im = Image.fromarray(np.uint8(cm.gist_earth(im)*255))
             im = transform(im)
             im = np.array(im)
+            print('hhhhhhhhhh')
+            scipy.misc.toimage(im, cmin=0.0).save('./TEST'+str(index)+'.png')
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI

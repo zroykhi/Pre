@@ -57,7 +57,6 @@ def main(folder, num_epochs=100, batchsize=16,
     test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=folder),
                                            batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
-    print(type(train_loader))
     train_loader1 = th.utils.data.DataLoader(
         JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
         batch_size=batchsize, shuffle=True, **kwargs)

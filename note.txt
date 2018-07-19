@@ -47,3 +47,5 @@ difference between return hidden state and not return ?
 why random split data for lstm works better?
 
 implemente the data augmentation during the training
+
+保证utils.py和test.py中的两张图片的间隔是一样的
