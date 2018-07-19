@@ -51,3 +51,7 @@ python3 -m Pre.test -f Pre/3dmodel/render619
 ```
 
 5. or you can run autoRun.sh directly
+
+### Some issues
+1. After insert keyframes into blender model, the motion postures of the two boats are opposite
+  + Make sure that the local coordinates of the two boats are the same, just change them into the same if not (rotate the prediction one)

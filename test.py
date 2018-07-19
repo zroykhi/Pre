@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser(description='Test a line detector')
 parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
 parser.add_argument('-w', '--weights', help='Saved weights', default="cnn_model_25_tmp.pth", type=str)
 parser.add_argument('-m', '--model', help='Model type', default="cnn", type=str)
-parser.add_argument('-t', '--time_gap', help='Time gap', type=int)
+parser.add_argument('-t', '--time_gap', help='Time gap', type=int, default=25)
 args = parser.parse_args()
 
 train_labels, val_labels, test_labels, labels = loadLabels(args.folder, args.model)
@@ -76,7 +76,7 @@ for current_idx in tqdm(range(len(images))):
     ls = []
     ls.append(float(x))
     ls.append(float(y))
-    res.update({str(int(images[current_idx].replace('.png',""))+TIME_GAP):ls})
+    res.update({str(int(images[current_idx].replace('.png',""))+args.time_gap):ls})
 
 # print(res)
 print("test finished !")

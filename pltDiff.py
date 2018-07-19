@@ -2,8 +2,8 @@
 this code is used to plot figure comparing the original boat parameters and predictions ones
 """
 # run this code under ssh mode, you need to add the following two lines codes.
-import matplotlib
-matplotlib.use('Agg')
+# import matplotlib
+# matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 import json

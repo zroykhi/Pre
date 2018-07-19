@@ -8,7 +8,8 @@ import torch as th
 from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 from Pre.constants import MAX_WIDTH, MAX_HEIGHT, ROI, INPUT_HEIGHT, INPUT_WIDTH, SPLIT_SEED
-
+from Pre.data_aug import transform
+from PIL import Image
 
 def adjustLearningRate(optimizer, epoch, n_epochs, lr_init, batch,
                          n_batch, method='cosine'):
@@ -70,16 +71,16 @@ def loadLabels(folder, modelType):
     if not folder.endswith('/'):
         folder += '/'
     labels = json.load(open(folder + 'labels.json'))
-    labels2 = labels.copy()
-    lenght = len(labels2)
+    # labels2 = labels.copy()
+    # lenght = len(labels2)
     # change keys' number in the new labels2
-    labels2 = dict((str(int(key.replace('"',''))+lenght),value) for (key, value) in labels2.items())
+    # labels2 = dict((str(int(key.replace('"',''))+lenght),value) for (key, value) in labels2.items())
     # update labels(combine labels and labels2)
-    labels.update(labels2)
-    json.dump(labels,open('labels2.json','w'))
+    # labels.update(labels2)
+    # json.dump(labels,open('labels2.json','w'))
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
-    if True:# modelType == "CNN_LSTM":
+    if False:# modelType == "CNN_LSTM":
         # train_keys = images[:int(round(0.6*len(images)))]
         # val_keys = images[int(round(0.6*len(images))):int(round(0.8*len(images)))]
         # test_keys = images[int(round(0.8*len(images))):len(images)]
@@ -102,7 +103,7 @@ def loadLabels(folder, modelType):
 """
 take one image only as input
 """
-class JsonDataset2(Dataset):
+class JsonDatasetOrigin(Dataset):
     def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False):
         self.keys = list(labels.keys())
         self.labels = labels.copy()
@@ -171,6 +172,55 @@ class JsonDataset(Dataset):
             image += ".png"
             margin_left, margin_top = 0, 0
             im = cv2.imread(self.folder + image)
+            # print(type(im))
+            # Crop the image and normalize it
+            if self.preprocess:
+                margin_left, margin_top, _, _ = ROI
+                im = preprocessImage(im, INPUT_WIDTH, INPUT_HEIGHT)
+            images.append(im)
+        # swap color axis
+        images = np.dstack(images)
+        # print(images.shape)
+        self.numChannel = images.shape[2]
+        images = images.transpose((2, 0, 1)).astype(np.float32)
+        return th.from_numpy(images), th.from_numpy(y)
+
+    def __len__(self):
+        return len(self.keys)
+
+class JsonDataset1(Dataset):
+    def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False):
+        self.keys = list(labels.keys())
+        self.labels = labels.copy()
+        self.folder = folder
+        self.preprocess = preprocess
+        self.random_flip = random_flip
+        self.swap = swap
+        self.numChannel = 6
+
+    def __getitem__(self, index):
+        """
+        :param index: (int)
+        :return: (PyTorch Tensor, PyTorch Tensor)
+        """
+        images = []
+        image = self.keys[index]
+        labels = np.array(self.labels[image]).astype(np.float32)
+        y = labels.flatten().astype(np.float32)
+
+        for i in range(2):
+            try:
+                image = self.keys[index+3*i]
+            except IndexError:
+                # if the index is the last one
+                images.append(images[0])
+                continue
+            image += ".png"
+            margin_left, margin_top = 0, 0
+            im = cv2.imread(self.folder + image)
+            im = Image.fromarray(np.uint8(cm.gist_earth(im)*255))
+            im = transform(im)
+            im = np.array(im)
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI

@@ -6,7 +6,8 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import scipy.misc
-from tools import ImageFolder
+from Pre.tools import ImageFolder
+from skimage import io
 mpl.rcParams['axes.grid'] = False
 mpl.rcParams['image.interpolation'] = 'nearest'
 mpl.rcParams['figure.figsize'] = 15, 25
@@ -39,5 +40,20 @@ tfs = torchvision.transforms.Compose([
 # if you use original module of python
 # dataset = torchvision.datasets.ImageFolder(BASE_DIR+'data_aug/', transform=tfs)
 # self define module
-dataset = ImageFolder(BASE_DIR+'data_aug/', transform=tfs)
-show_dataset(dataset)
+# dataset = ImageFolder(BASE_DIR+'data_aug/', transform=tfs)
+# show_dataset(dataset)
+
+def transform(img):
+    tfs = torchvision.transforms.Compose([
+        # transforms.Resize((224,224)),
+        transforms.ColorJitter(hue=.05, saturation=.05),
+        # transforms.RandomHorizontalFlip(),
+        # transforms.RandomRotation(20, resample=PIL.Image.BILINEAR),
+        transforms.ToTensor()
+    ])
+    return tfs(img)
+
+# img = Image.open(BASE_DIR+'render619/1.png')
+# img = transform(img)
+# img = np.array(img)
+# scipy.misc.toimage(img, cmin=0.0).save(BASE_DIR+'TEST.png')

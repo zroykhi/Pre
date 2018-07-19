@@ -1,5 +1,5 @@
 """
-Train a neural network to detect a black&white line
+Train a neural network to predict vessel's movement
 """
 from __future__ import print_function, division, absolute_import
 
@@ -11,13 +11,16 @@ import torch as th
 import torch.utils.data
 import torch.nn as nn
 from torch.autograd import Variable
-from Pre.utils import JsonDataset, loadLabels
+from Pre.utils import JsonDataset, loadLabels, JsonDataset1
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 # run this code under ssh mode, you need to add the following two lines codes.
 # import matplotlib
 # matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+from torchvision import transforms
+from Pre.data_aug import transform
+import scipy.misc
 
 evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
@@ -53,6 +56,19 @@ def main(folder, num_epochs=100, batchsize=16,
 
     test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=folder),
                                            batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
+
+    print(type(train_loader))
+    train_loader1 = th.utils.data.DataLoader(
+        JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
+        batch_size=batchsize, shuffle=True, **kwargs)
+
+    # Random flip also for val ?
+    val_loader1 = th.utils.data.DataLoader(JsonDataset1(val_labels, preprocess=True, folder=folder),
+                                          batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
+
+    test_loader1 = th.utils.data.DataLoader(JsonDataset1(test_labels, preprocess=True, folder=folder),
+                                           batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
+
     numChannel = train_loader.dataset.numChannel
     model_name = "{}_model_{}_tmp".format(model_type, time_gap)
     if model_type == "cnn":
@@ -95,13 +111,13 @@ def main(folder, num_epochs=100, batchsize=16,
     plt.ylabel("loss")
     plt.show(block=False)
     # Finally, launch the training loop.
+    start_time = time.time()
     print("Starting training...")
     # We iterate over epochs:
     for epoch in tqdm(range(num_epochs)):
         # Switch to training mode
         model.train()
         train_loss, val_loss = 0.0, 0.0
-        start_time = time.time()
         # Full pass on training data
         # Update the model after each minibatch
         for i, (inputs, targets) in enumerate(train_loader):
@@ -109,6 +125,40 @@ def main(folder, num_epochs=100, batchsize=16,
             # adjustLearningRate(optimizer, epoch, num_epochs, lr_init=learning_rate,
             #                         batch=i, n_batch=len(train_loader), method='multistep')
             # Move variables to gpu
+            # print(inputs.size)
+            # print(len(inputs))
+            # print(inputs[0])
+            # print(type(inputs[0]))
+            # print(inputs[0].size())
+            # for k in range(2):
+            #     if k == 1:
+            #         for j in range(len(inputs)):
+            #             img = transforms.ToPILImage()(inputs[j][:3,:,:]).convert('RGB')
+            #             img1 = transforms.ToPILImage()(inputs[j][3:6,:,:]).convert('RGB')
+            #             # img = np.array(img)
+            #             # scipy.misc.toimage(img, cmin=0.0).save('/home/theo/Pre/Code/horizon-detection/Pre/3dmodel/TEST1.png')
+            #             img = transform(img)
+            #             # img = np.array(img)
+            #             # img = transforms.ToPILImage()(img).convert('RGB')
+            #             # scipy.misc.toimage(img, cmin=0.0).save('/home/theo/Pre/Code/horizon-detection/Pre/3dmodel/TEST2.png')
+            #             img1 = transform(img1)
+            #             # print(img.size())
+            #             img = torch.cat((img,img1),0)
+            #             # print(img.size())
+            #             inputs[j] = img
+            if cuda:
+                inputs, targets = inputs.cuda(), targets.cuda()
+            # Convert to pytorch variables
+            inputs, targets = Variable(inputs), Variable(targets)
+            optimizer.zero_grad()
+            # print(inputs.shape) # [4, 3, 75, 100]
+            predictions = model(inputs)
+            loss = loss_fn(predictions, targets)
+            loss.backward()
+            # train_loss += loss.item()
+            optimizer.step()
+
+        for i, (inputs, targets) in enumerate(train_loader1):
             if cuda:
                 inputs, targets = inputs.cuda(), targets.cuda()
             # Convert to pytorch variables
@@ -198,6 +248,7 @@ def main(folder, num_epochs=100, batchsize=16,
         f.write(str(model))
         f.write("\n\n")
     f.close()
+    print("Total train time: {:.2f} mins".format((time.time() - start_time)/60))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a line detector')
