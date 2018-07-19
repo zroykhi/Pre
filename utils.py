@@ -173,6 +173,7 @@ class JsonDataset(Dataset):
             image += ".png"
             margin_left, margin_top = 0, 0
             im = cv2.imread(self.folder + image)
+            # print(im.shape)
             # print(type(im))
             # Crop the image and normalize it
             if self.preprocess:
@@ -219,11 +220,16 @@ class JsonDataset1(Dataset):
             image += ".png"
             margin_left, margin_top = 0, 0
             im = cv2.imread(self.folder + image)
-            im = Image.fromarray(np.uint8(cm.gist_earth(im)*255))
+            # print(type(im))
+            im = Image.fromarray(np.uint8(im))
             im = transform(im)
             im = np.array(im)
-            print('hhhhhhhhhh')
-            scipy.misc.toimage(im, cmin=0.0).save('./TEST'+str(index)+'.png')
+            # print(im.shape)
+            im = im.transpose((1, 2, 0)).astype(np.float32)
+            # print(type(im))
+            # print(im.shape)
+            # print('hhhhhhhhhh')
+            # scipy.misc.toimage(im, cmin=0.0).save('/home/theo/Pre/Code/horizon-detection/TEST'+str(index)+'.png')
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI
