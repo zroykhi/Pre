@@ -478,3 +478,23 @@ ConvolutionalNetwork(
   (fc2): Linear(in_features=128, out_features=2, bias=True)
 )
 
+current model: cnn
+best train error:3.432981999854946
+best validation loss:27.424649001845165
+final test loss:30.401320076947236
+time gap is:25
+ConvolutionalNetwork(
+  (conv_layers): Sequential(
+    (0): Conv2d(6, 16, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): MaxPool2d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+    (4): Conv2d(16, 20, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace)
+    (7): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+  )
+  (fc1): Linear(in_features=18860, out_features=128, bias=True)
+  (fc2): Linear(in_features=128, out_features=2, bias=True)
+)
+

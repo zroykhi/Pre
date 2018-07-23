@@ -16,10 +16,12 @@ from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 # run this code under ssh mode, you need to add the following two lines codes.
 # import matplotlib
 # matplotlib.use('Agg')
+"""if above line didnot work, use following two lines instead"""
 import matplotlib.pyplot as plt
+# plt.switch_backend('agg')
 from tqdm import tqdm
 from torchvision import transforms
-from Pre.data_aug import transform
+from Pre.data_aug import imgTransform
 import scipy.misc
 
 evaluate_print = 1  # Print info every 1 epoch
@@ -154,21 +156,21 @@ def main(folder, num_epochs=100, batchsize=16,
             predictions = model(inputs)
             loss = loss_fn(predictions, targets)
             loss.backward()
-            # train_loss += loss.item()
-            optimizer.step()
-
-        for i, (inputs, targets) in enumerate(train_loader1):
-            if cuda:
-                inputs, targets = inputs.cuda(), targets.cuda()
-            # Convert to pytorch variables
-            inputs, targets = Variable(inputs), Variable(targets)
-            optimizer.zero_grad()
-            # print(inputs.shape) # [4, 3, 75, 100]
-            predictions = model(inputs)
-            loss = loss_fn(predictions, targets)
-            loss.backward()
             train_loss += loss.item()
             optimizer.step()
+
+        # for i, (inputs, targets) in enumerate(train_loader1):
+        #     if cuda:
+        #         inputs, targets = inputs.cuda(), targets.cuda()
+        #     # Convert to pytorch variables
+        #     inputs, targets = Variable(inputs), Variable(targets)
+        #     optimizer.zero_grad()
+        #     # print(inputs.shape) # [4, 3, 75, 100]
+        #     predictions = model(inputs)
+        #     loss = loss_fn(predictions, targets)
+        #     loss.backward()
+        #     train_loss += loss.item()
+        #     optimizer.step()
 
         # Do a full pass on validation data
         model.eval()

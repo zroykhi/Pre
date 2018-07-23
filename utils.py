@@ -8,9 +8,10 @@ import torch as th
 from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 from Pre.constants import MAX_WIDTH, MAX_HEIGHT, ROI, INPUT_HEIGHT, INPUT_WIDTH, SPLIT_SEED
-from Pre.data_aug import transform
+from Pre.data_aug import imgTransform
 from PIL import Image
 import scipy.misc
+import matplotlib.image as mpimg
 
 def adjustLearningRate(optimizer, epoch, n_epochs, lr_init, batch,
                          n_batch, method='cosine'):
@@ -175,6 +176,8 @@ class JsonDataset(Dataset):
             im = cv2.imread(self.folder + image)
             # print(im.shape)
             # print(type(im))
+            # print(123)
+            # scipy.misc.imsave('test'+str(index)+'.png', im)
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI
@@ -219,13 +222,25 @@ class JsonDataset1(Dataset):
                 continue
             image += ".png"
             margin_left, margin_top = 0, 0
+            # im = mpimg.imread(self.folder + image)
+            # im = Image.open(self.folder+image)
+            # print(im.size)
+            # im.show()
+            # im = Image.fromarray(np.uint8(im))
             im = cv2.imread(self.folder + image)
             # print(type(im))
             im = Image.fromarray(np.uint8(im))
-            im = transform(im)
+            im = imgTransform(im)
             im = np.array(im)
             # print(im.shape)
+            # im = rgb2gray(im)
+            # im = cv2.imread(self.folder + image)
+            # print(type(im))
+            # im = Image.fromarray(np.uint8(im))
+            # im = transform(im)
+            # im = np.array(im)
             im = im.transpose((1, 2, 0)).astype(np.float32)
+            # print(im.shape)
             # print(type(im))
             # print(im.shape)
             # print('hhhhhhhhhh')
