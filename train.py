@@ -48,20 +48,20 @@ def main(folder, num_epochs=100, batchsize=16,
     # Keywords for pytorch dataloader
     kwargs = {'num_workers': 1, 'pin_memory': False} if cuda else {}
     # Create data loaders
-    train_loader = th.utils.data.DataLoader(
-        JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
-        batch_size=batchsize, shuffle=True, **kwargs)
-
-    # Random flip also for val ?
-    val_loader = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=folder),
-                                          batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
-
-    test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=folder),
-                                           batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
+    # train_loader = th.utils.data.DataLoader(
+    #     JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
+    #     batch_size=batchsize, shuffle=True, **kwargs)
+    #
+    # # Random flip also for val ?
+    # val_loader = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=folder),
+    #                                       batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
+    #
+    # test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=folder),
+    #                                        batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
     train_loader1 = th.utils.data.DataLoader(
         JsonDataset1(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
-        batch_size=batchsize, shuffle=True, **kwargs)
+        batch_size=batchsize, shuffle=False, **kwargs)
 
     # Random flip also for val ?
     val_loader1 = th.utils.data.DataLoader(JsonDataset1(val_labels, preprocess=True, folder=folder),
@@ -70,7 +70,7 @@ def main(folder, num_epochs=100, batchsize=16,
     test_loader1 = th.utils.data.DataLoader(JsonDataset1(test_labels, preprocess=True, folder=folder),
                                            batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
-    numChannel = train_loader.dataset.numChannel
+    numChannel = train_loader1.dataset.numChannel
     model_name = "{}_model_{}_tmp".format(model_type, time_gap)
     if model_type == "cnn":
         model = ConvolutionalNetwork(num_channel=numChannel, num_output=num_output, drop_p=0.0)
@@ -85,7 +85,7 @@ def main(folder, num_epochs=100, batchsize=16,
         model.cuda()
 
     # L2 penalty
-    weight_decay = 1e-5
+    weight_decay = 1e-4
     #weight_decay = 0
     # Optimizers
     # optimizer = th.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
@@ -121,61 +121,38 @@ def main(folder, num_epochs=100, batchsize=16,
         train_loss, val_loss = 0.0, 0.0
         # Full pass on training data
         # Update the model after each minibatch
-        for i, (inputs, targets) in enumerate(train_loader):
+        # for i, (inputs, targets) in enumerate(train_loader):
             # Adjust learning rate
             # adjustLearningRate(optimizer, epoch, num_epochs, lr_init=learning_rate,
             #                         batch=i, n_batch=len(train_loader), method='multistep')
             # Move variables to gpu
-            # print(inputs.size)
-            # print(len(inputs))
-            # print(inputs[0])
-            # print(type(inputs[0]))
-            # print(inputs[0].size())
-            # for k in range(2):
-            #     if k == 1:
-            #         for j in range(len(inputs)):
-            #             img = transforms.ToPILImage()(inputs[j][:3,:,:]).convert('RGB')
-            #             img1 = transforms.ToPILImage()(inputs[j][3:6,:,:]).convert('RGB')
-            #             # img = np.array(img)
-            #             # scipy.misc.toimage(img, cmin=0.0).save('/home/theo/Pre/Code/horizon-detection/Pre/3dmodel/TEST1.png')
-            #             img = transform(img)
-            #             # img = np.array(img)
-            #             # img = transforms.ToPILImage()(img).convert('RGB')
-            #             # scipy.misc.toimage(img, cmin=0.0).save('/home/theo/Pre/Code/horizon-detection/Pre/3dmodel/TEST2.png')
-            #             img1 = transform(img1)
-            #             # print(img.size())
-            #             img = torch.cat((img,img1),0)
-            #             # print(img.size())
-            #             inputs[j] = img
+            # if cuda:
+            #     inputs, targets = inputs.cuda(), targets.cuda()
+            # # Convert to pytorch variables
+            # inputs, targets = Variable(inputs), Variable(targets)
+            # optimizer.zero_grad()
+            # # print(inputs.shape) # [4, 3, 75, 100]
+            # predictions = model(inputs)
+            # loss = loss_fn(predictions, targets)
+            # loss.backward()
+            # train_loss += loss.item()
+            # optimizer.step()
+
+        for i, (inputs, targets) in enumerate(train_loader1):
             if cuda:
                 inputs, targets = inputs.cuda(), targets.cuda()
             # Convert to pytorch variables
             inputs, targets = Variable(inputs), Variable(targets)
             optimizer.zero_grad()
-            # print(inputs.shape) # [4, 3, 75, 100]
             predictions = model(inputs)
             loss = loss_fn(predictions, targets)
             loss.backward()
             train_loss += loss.item()
             optimizer.step()
 
-        # for i, (inputs, targets) in enumerate(train_loader1):
-        #     if cuda:
-        #         inputs, targets = inputs.cuda(), targets.cuda()
-        #     # Convert to pytorch variables
-        #     inputs, targets = Variable(inputs), Variable(targets)
-        #     optimizer.zero_grad()
-        #     # print(inputs.shape) # [4, 3, 75, 100]
-        #     predictions = model(inputs)
-        #     loss = loss_fn(predictions, targets)
-        #     loss.backward()
-        #     train_loss += loss.item()
-        #     optimizer.step()
-
         # Do a full pass on validation data
         model.eval()
-        val_loss = 0
-        for inputs, targets in val_loader:
+        for inputs, targets in val_loader1:
             if cuda:
                 inputs, targets = inputs.cuda(), targets.cuda()
             # Set volatile to True because we don't need to compute gradient

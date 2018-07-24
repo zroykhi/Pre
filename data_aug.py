@@ -232,7 +232,7 @@ class ColorJitter(transforms.ColorJitter):
             hue_factor = hue
             transforms.append(Lambda(lambda img: adjust_hue(img, hue_factor)))
 
-        random.shuffle(transforms)
+        # random.shuffle(transforms)
         transform = Compose(transforms)
 
         return transform
@@ -274,12 +274,16 @@ def imgTransform(img):
     tfs = torchvision.transforms.Compose([
         # transforms.Resize((224,224)),
         # transforms.ColorJitter(hue=.05, saturation=.05),
-        ColorJitter(hue=.5, saturation=.5),
+        ColorJitter(saturation=1),
         # transforms.RandomHorizontalFlip(),
         # transforms.RandomRotation(20, resample=PIL.Image.BILINEAR),
-        transforms.ToTensor()
+        # transforms.ToTensor()
     ])
-    return tfs(img)
+    res = tfs(img)
+    # print(type(res))
+    # print(res.size)
+    # print(res)
+    return res#tfs(img)
 
 def transform2(img):
     img = np.asarray(img)

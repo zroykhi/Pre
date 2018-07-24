@@ -222,29 +222,23 @@ class JsonDataset1(Dataset):
                 continue
             image += ".png"
             margin_left, margin_top = 0, 0
-            # im = mpimg.imread(self.folder + image)
-            # im = Image.open(self.folder+image)
-            # print(im.size)
-            # im.show()
-            # im = Image.fromarray(np.uint8(im))
             im = cv2.imread(self.folder + image)
-            # print(type(im))
-            im = Image.fromarray(np.uint8(im))
-            im = imgTransform(im)
-            im = np.array(im)
+            # print('11111')
             # print(im.shape)
-            # im = rgb2gray(im)
-            # im = cv2.imread(self.folder + image)
-            # print(type(im))
-            # im = Image.fromarray(np.uint8(im))
-            # im = transform(im)
-            # im = np.array(im)
-            im = im.transpose((1, 2, 0)).astype(np.float32)
-            # print(im.shape)
-            # print(type(im))
-            # print(im.shape)
+            # print(im)
+
+            im = Image.fromarray(im)
             # print('hhhhhhhhhh')
-            # scipy.misc.toimage(im, cmin=0.0).save('/home/theo/Pre/Code/horizon-detection/TEST'+str(index)+'.png')
+            # print(im)
+            im = imgTransform(im)
+            # print('hhhhhhhhhh')
+            # print(im)
+            im = np.array(im)
+            # im = im.transpose((1, 2, 0)).astype(np.float32)
+            # print('hhhhhhhhhh')
+            # print(im)
+            # print(im.shape)
+            # scipy.misc.toimage(im, cmin=0.0).save('/home/theo/Pre/Code/horizon-detection/TESTT'+str(index)+'.png')
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI
