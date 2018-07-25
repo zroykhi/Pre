@@ -3,11 +3,9 @@
 !pltDiff.py
 !/3dmodel/materials/*
 !constants.py
-!/3dmodel/labels.json
-!/3dmodel/predictions.json
-!/3dmodel/paras_origin.json
 !/3dmodel/render.py
 !/3dmodel/insertKeyframe.py
+!/results/cnn_model_25_tmp.pth
 !makeVideo
 !models.py
 !README.md
@@ -18,7 +16,6 @@
 !utils.py
 !__init__.py
 !.gitignore
-!cnn_model_tmp.pth
 !/3dmodel/model.blend
 !note.txt
 !comparePara.xls

@@ -19,6 +19,7 @@ INPUT_HEIGHT = ROI[3] // FACTOR
 INPUT_WIDTH = ROI[2] // FACTOR
 SPLIT_SEED = 42  # For train/val/test split
 WEIGHTS_PTH = "cnn_model.pth"  # Path to the trained model
+RES_DIR = "./Pre/results/"
 
 # Arrow keys
 # modified by zhi

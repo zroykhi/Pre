@@ -11,13 +11,14 @@ import numpy as np
 import torch as th
 from torch.autograd import Variable
 from tqdm import tqdm
-from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, RIGHT_KEY, LEFT_KEY, EXIT_KEYS, ROI,MAX_WIDTH, UP_KEY, DOWN_KEY, TIME_GAP, TOTAL_FRAME
+from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, RIGHT_KEY, LEFT_KEY, EXIT_KEYS
+from Pre.constants import ROI,MAX_WIDTH, UP_KEY, DOWN_KEY, TIME_GAP, TOTAL_FRAME, RES_DIR
 from Pre.utils import preprocessImage, transformPrediction, loadLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 
 parser = argparse.ArgumentParser(description='Test a line detector')
 parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
-parser.add_argument('-w', '--weights', help='Saved weights', default="cnn_model_25_tmp.pth", type=str)
+parser.add_argument('-w', '--weights', help='Saved weights', default=RES_DIR+"cnn_model_25_tmp.pth", type=str)
 parser.add_argument('-m', '--model', help='Model type', default="cnn", type=str)
 parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)
 args = parser.parse_args()
@@ -83,7 +84,7 @@ for current_idx in tqdm(range(len(images))):
 print("test finished !")
 jsObj = json.dumps(res)
 
-fileObject = open('./Pre/3dmodel/predictions_'+args.model+"_"+str(args.time_gap)+'.json', 'w')
+fileObject = open('./Pre/results/predictions_'+args.model+"_"+str(args.time_gap)+'.json', 'w')
 fileObject.write(jsObj)
 fileObject.close()
 print('Done!')

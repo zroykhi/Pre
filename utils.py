@@ -93,7 +93,7 @@ def loadLabels(folder, modelType):
         test_keys = images[int(round(0.9*len(images))):len(images)]
         test_keys += images[int(round(0.4*len(images))):int(round(0.5*len(images)))]
     else:
-        train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.4, random_state=SPLIT_SEED)
+        train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.01, random_state=SPLIT_SEED)
         val_keys, test_keys = train_test_split(tmp_keys, test_size=0.5, random_state=SPLIT_SEED)
 
     train_labels = {key: labels[key] for key in train_keys}
@@ -174,9 +174,6 @@ class JsonDataset(Dataset):
             image += ".png"
             margin_left, margin_top = 0, 0
             im = cv2.imread(self.folder + image)
-            # print(im.shape)
-            # print(type(im))
-            # print(123)
             # scipy.misc.imsave('test'+str(index)+'.png', im)
             # Crop the image and normalize it
             if self.preprocess:
@@ -223,22 +220,9 @@ class JsonDataset1(Dataset):
             image += ".png"
             margin_left, margin_top = 0, 0
             im = cv2.imread(self.folder + image)
-            # print('11111')
-            # print(im.shape)
-            # print(im)
-
             im = Image.fromarray(im)
-            # print('hhhhhhhhhh')
-            # print(im)
             im = imgTransform(im)
-            # print('hhhhhhhhhh')
-            # print(im)
             im = np.array(im)
-            # im = im.transpose((1, 2, 0)).astype(np.float32)
-            # print('hhhhhhhhhh')
-            # print(im)
-            # print(im.shape)
-            # scipy.misc.toimage(im, cmin=0.0).save('/home/theo/Pre/Code/horizon-detection/TESTT'+str(index)+'.png')
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI

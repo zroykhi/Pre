@@ -4,10 +4,10 @@ read the result.txt and plot the model-timeGap-loss figures
 # run this code under ssh mode, you need to add the following two lines codes.
 import matplotlib
 matplotlib.use('Agg')
-
 import re
 import matplotlib.pyplot as plt
 import argparse
+from constants import RES_DIR
 
 def getList(filename):
     model = []
@@ -74,7 +74,7 @@ def pltFigure(modelname, matrix, idx):
     plt.ylabel("loss")
 
     plt.legend(loc='upper right')
-    plt.savefig(modelname+'_'+'loss_comparation'+'.png')
+    plt.savefig('results/'+modelname+'_'+'loss_comparation'+'.png')
     # plt.show()
 
 def main(filename):

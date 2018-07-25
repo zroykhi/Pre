@@ -2,18 +2,19 @@
 this code is used to plot figure comparing the original boat parameters and predictions ones
 """
 # run this code under ssh mode, you need to add the following two lines codes.
-# import matplotlib
-# matplotlib.use('Agg')
+import matplotlib
+matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 import json
 import argparse
+from constants import RES_DIR
 
 parser = argparse.ArgumentParser(description='Test a line detector')
 parser.add_argument('-m', '--model', help='Model type', default="cnn", type=str, choices=['cnn','CNN_RNN','CNN_LSTM'])
 parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)
-parser.add_argument('-o', '--origin_file', help='Original file', default="3dmodel/paras_origin.json", type=str)
-parser.add_argument('-p', '--prediction_file', help='Predictin file', default="3dmodel/predictions.json", type=str)
+parser.add_argument('-o', '--origin_file', help='Original file', default="results/paras_origin.json", type=str)
+parser.add_argument('-p', '--prediction_file', help='Predictin file', default="results/predictions.json", type=str)
 args = parser.parse_args()
 
 originData = args.origin_file
@@ -41,7 +42,7 @@ plt.title("roll - frame")
 plt.xlabel("Frames")
 plt.ylabel("Roll")
 plt.legend(loc='upper right')
-plt.savefig(args.model+'_'+str(args.time_gap)+'_roll'+'.png')
+plt.savefig(RES_DIR+args.model+'_'+str(args.time_gap)+'_roll'+'.png')
 plt.show()
 
 # plot pitch
@@ -52,5 +53,5 @@ plt.title("pitch - frame")
 plt.xlabel("Frames")
 plt.ylabel("Pitch")
 plt.legend(loc='upper right')
-plt.savefig(args.model+'_'+str(args.time_gap)+'_pitch'+'.png')
+plt.savefig(RES_DIR+args.model+'_'+str(args.time_gap)+'_pitch'+'.png')
 plt.show()

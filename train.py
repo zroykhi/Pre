@@ -5,7 +5,7 @@ from __future__ import print_function, division, absolute_import
 
 import argparse
 import time
-from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT
+from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, RES_DIR
 import numpy as np
 import torch as th
 import torch.utils.data
@@ -48,20 +48,20 @@ def main(folder, num_epochs=100, batchsize=16,
     # Keywords for pytorch dataloader
     kwargs = {'num_workers': 1, 'pin_memory': False} if cuda else {}
     # Create data loaders
-    # train_loader = th.utils.data.DataLoader(
-    #     JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
-    #     batch_size=batchsize, shuffle=True, **kwargs)
-    #
-    # # Random flip also for val ?
-    # val_loader = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=folder),
-    #                                       batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
-    #
-    # test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=folder),
-    #                                        batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
+    train_loader = th.utils.data.DataLoader(
+        JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
+        batch_size=batchsize, shuffle=True, **kwargs)
+
+    # Random flip also for val ?
+    val_loader = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=folder),
+                                          batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
+
+    test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=folder),
+                                           batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
     train_loader1 = th.utils.data.DataLoader(
         JsonDataset1(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
-        batch_size=batchsize, shuffle=False, **kwargs)
+        batch_size=batchsize, shuffle=True, **kwargs)
 
     # Random flip also for val ?
     val_loader1 = th.utils.data.DataLoader(JsonDataset1(val_labels, preprocess=True, folder=folder),
@@ -71,7 +71,6 @@ def main(folder, num_epochs=100, batchsize=16,
                                            batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
     numChannel = train_loader1.dataset.numChannel
-    model_name = "{}_model_{}_tmp".format(model_type, time_gap)
     if model_type == "cnn":
         model = ConvolutionalNetwork(num_channel=numChannel, num_output=num_output, drop_p=0.0)
     elif model_type == "CNN_RNN":
@@ -100,7 +99,9 @@ def main(folder, num_epochs=100, batchsize=16,
     train_err_list = []
     val_err_list = []
     xdata = []
+    model_name = "{}_model_{}_tmp".format(model_type, time_gap)
     best_model_path = "{}.pth".format(model_name)
+    best_model_path = RES_DIR + best_model_path
     fig = plt.figure()
     ax = fig.add_subplot(111)
     li, = ax.plot(xdata, train_err_list, 'b-', label='train loss')
@@ -121,29 +122,28 @@ def main(folder, num_epochs=100, batchsize=16,
         train_loss, val_loss = 0.0, 0.0
         # Full pass on training data
         # Update the model after each minibatch
-        # for i, (inputs, targets) in enumerate(train_loader):
+        # for i, (inputs, targets) in enumerate(train_loader1):
+        #     if cuda:
+        #         inputs, targets = inputs.cuda(), targets.cuda()
+        #     inputs, targets = Variable(inputs), Variable(targets)
+        #     optimizer.zero_grad()
+        #     predictions = model(inputs)
+        #     loss = loss_fn(predictions, targets)
+        #     loss.backward()
+        #     # train_loss += loss.item()
+        #     optimizer.step()
+
+        for i, (inputs, targets) in enumerate(train_loader):
             # Adjust learning rate
             # adjustLearningRate(optimizer, epoch, num_epochs, lr_init=learning_rate,
             #                         batch=i, n_batch=len(train_loader), method='multistep')
             # Move variables to gpu
-            # if cuda:
-            #     inputs, targets = inputs.cuda(), targets.cuda()
-            # # Convert to pytorch variables
-            # inputs, targets = Variable(inputs), Variable(targets)
-            # optimizer.zero_grad()
-            # # print(inputs.shape) # [4, 3, 75, 100]
-            # predictions = model(inputs)
-            # loss = loss_fn(predictions, targets)
-            # loss.backward()
-            # train_loss += loss.item()
-            # optimizer.step()
-
-        for i, (inputs, targets) in enumerate(train_loader1):
             if cuda:
                 inputs, targets = inputs.cuda(), targets.cuda()
             # Convert to pytorch variables
             inputs, targets = Variable(inputs), Variable(targets)
             optimizer.zero_grad()
+            # print(inputs.shape) # [4, 3, 75, 100]
             predictions = model(inputs)
             loss = loss_fn(predictions, targets)
             loss.backward()
@@ -152,7 +152,7 @@ def main(folder, num_epochs=100, batchsize=16,
 
         # Do a full pass on validation data
         model.eval()
-        for inputs, targets in val_loader1:
+        for inputs, targets in val_loader:
             if cuda:
                 inputs, targets = inputs.cuda(), targets.cuda()
             # Set volatile to True because we don't need to compute gradient
@@ -194,7 +194,7 @@ def main(folder, num_epochs=100, batchsize=16,
             #     epoch + 1, num_epochs, time.time() - start_time))
             # print("  training loss:\t\t{:.6f}".format(train_loss / n_train))
             # print("  validation loss:\t\t{:.6f}".format(val_error))
-    plt.savefig(args.model_type+'_'+str(args.time_gap)+'_loss'+'.png')
+    plt.savefig(RES_DIR+args.model_type+'_'+str(args.time_gap)+'_loss'+'.png')
     # After training, we compute and print the test error:
     model.load_state_dict(th.load(best_model_path))
     test_loss = 0.0

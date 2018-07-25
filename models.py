@@ -66,19 +66,19 @@ class ConvolutionalNetwork(nn.Module):
         super(ConvolutionalNetwork, self).__init__()
         # self.numChannel = num_channel
         self.conv_layers = nn.Sequential(
-            nn.Conv2d(num_channel, 16, kernel_size=5, stride=2, padding=2),
-            nn.BatchNorm2d(16),
+            nn.Conv2d(num_channel, 8, kernel_size=5, stride=2, padding=2),
+            nn.BatchNorm2d(8),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=1, padding=1),
 
-            nn.Conv2d(16, 20, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(20),
+            nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(16),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2, padding = 1)
         )
 
-        self.fc1 = nn.Linear(18860, 128)
-        self.fc2 = nn.Linear(128, num_output)
+        self.fc1 = nn.Linear(15088, 64)
+        self.fc2 = nn.Linear(64, num_output)
         self.drop_p = drop_p
 
     def forward(self, x):
