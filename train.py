@@ -18,7 +18,7 @@ from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 # matplotlib.use('Agg')
 """if above line didnot work, use following two lines instead"""
 import matplotlib.pyplot as plt
-# plt.switch_backend('agg')
+plt.switch_backend('agg')
 from tqdm import tqdm
 from torchvision import transforms
 from Pre.data_aug import imgTransform

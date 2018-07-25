@@ -18,6 +18,7 @@ for T in {10..30..2} ; do
 # for T in {20..30..1} ; do
     cd $BASE_DIR$CODE_DIR
     python3 3dmodel/transformData.py -i $IMG_DIR"/paras_origin.json" -o $IMG_DIR"/labels.json" -t ${T};
+    python3 3dmodel/transformData.py -i $TEST_DIR"/paras_origin.json" -o $TEST_DIR"/labels.json" -t ${T};
     cp $BASE_DIR$CODE_DIR$IMG_DIR"/labels.json" $RES_DIR."labels_"${T}".json"
     cd $BASE_DIR
     for model in "${model_list[@]}"; do

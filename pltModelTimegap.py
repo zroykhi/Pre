@@ -3,10 +3,10 @@ read the result.txt and plot the model-timeGap-loss figures
 """
 # run this code under ssh mode, you need to add the following two lines codes.
 import matplotlib
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 import re
 import matplotlib.pyplot as plt
-# plt.switch_backend('agg')
+plt.switch_backend('agg')
 import argparse
 from constants import RES_DIR
 

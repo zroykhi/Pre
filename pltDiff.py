@@ -3,9 +3,9 @@ this code is used to plot figure comparing the original boat parameters and pred
 """
 # run this code under ssh mode, you need to add the following two lines codes.
 import matplotlib
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-# plt.switch_backend('agg')
+plt.switch_backend('agg')
 import matplotlib.pyplot as plt
 import json
 import argparse
