@@ -6,6 +6,7 @@ import matplotlib
 matplotlib.use('Agg')
 import re
 import matplotlib.pyplot as plt
+# plt.switch_backend('agg')
 import argparse
 from constants import RES_DIR
 

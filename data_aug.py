@@ -22,21 +22,6 @@ mpl.rcParams['figure.figsize'] = 15, 25
 from torchvision.utils import make_grid
 from torchvision import transforms
 
-BASE_DIR = '/home/theo/Pre/Code/horizon-detection/Pre/3dmodel/'
-
-def show_dataset(dataset, n=1):
-    for i in range(len(dataset)):
-        print("current image:", i+5001)
-        img = np.array(dataset[i][0])
-        scipy.misc.toimage(img, cmin=0.0).save(BASE_DIR+"after/"+str(i+5001)+".png")
-    # imgs = torch.stack([dataset[i][0] for _ in range(n)
-    #                    for i in range(len(dataset))])
-    # print(imgs.size)
-    # grid = make_grid(imgs).numpy()
-    # plt.imshow(np.transpose(grid, (1, 2, 0)), interpolation='nearest')
-    # plt.axis('off')
-    # plt.show()
-
 class Compose(object):
     """Composes several transforms together.
 
@@ -257,44 +242,19 @@ class ColorJitter(transforms.ColorJitter):
         format_string += ', hue={0})'.format(self.hue)
         return format_string
 
-tfs = torchvision.transforms.Compose([
-    # transforms.Resize((224,224)),
-    # transforms.ColorJitter(hue=.05, saturation=.05),
-    # transforms.RandomHorizontalFlip(),
-    # transforms.RandomRotation(20, resample=PIL.Image.BILINEAR),
-    transforms.ToTensor()
-])
-# if you use original module of python
-# dataset = torchvision.datasets.ImageFolder(BASE_DIR+'data_aug/', transform=tfs)
-# self define module
-# dataset = ImageFolder(BASE_DIR+'data_aug/', transform=tfs)
-# show_dataset(dataset)
-
 def imgTransform(img):
     tfs = torchvision.transforms.Compose([
         # transforms.Resize((224,224)),
         # transforms.ColorJitter(hue=.05, saturation=.05),
-        ColorJitter(saturation=1),
+        ColorJitter(saturation=0.8),
         # transforms.RandomHorizontalFlip(),
         # transforms.RandomRotation(20, resample=PIL.Image.BILINEAR),
         # transforms.ToTensor()
     ])
-    res = tfs(img)
-    # print(type(res))
-    # print(res.size)
-    # print(res)
-    return res#tfs(img)
+    return tfs(img)
 
-def transform2(img):
+def imgTransform2(img):
     img = np.asarray(img)
     img = sk.util.random_noise(img)
-    img = torch.from_numpy(img)
+    # img = torch.from_numpy(img)
     return img
-
-def transform1(img):
-    img = np.asarray(img)
-    return torch.from_numpy(img)
-# img = Image.open(BASE_DIR+'render619/1.png')
-# img = transform(img)
-# img = np.array(img)
-# scipy.misc.toimage(img, cmin=0.0).save(BASE_DIR+'TEST.png')

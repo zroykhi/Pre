@@ -41,7 +41,6 @@ def adjustLearningRate(optimizer, epoch, n_epochs, lr_init, batch,
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
-
 def preprocessImage(image, width, height):
     """
     Preprocessing script to convert image into neural net input array
@@ -60,7 +59,6 @@ def preprocessImage(image, width, height):
     x -= 0.5
     x *= 2
     return x
-
 
 def transformPrediction(y):
     margin_left, margin_top, _, _ = ROI

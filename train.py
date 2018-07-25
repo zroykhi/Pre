@@ -122,16 +122,16 @@ def main(folder, num_epochs=100, batchsize=16,
         train_loss, val_loss = 0.0, 0.0
         # Full pass on training data
         # Update the model after each minibatch
-        # for i, (inputs, targets) in enumerate(train_loader1):
-        #     if cuda:
-        #         inputs, targets = inputs.cuda(), targets.cuda()
-        #     inputs, targets = Variable(inputs), Variable(targets)
-        #     optimizer.zero_grad()
-        #     predictions = model(inputs)
-        #     loss = loss_fn(predictions, targets)
-        #     loss.backward()
-        #     # train_loss += loss.item()
-        #     optimizer.step()
+        for i, (inputs, targets) in enumerate(train_loader1):
+            if cuda:
+                inputs, targets = inputs.cuda(), targets.cuda()
+            inputs, targets = Variable(inputs), Variable(targets)
+            optimizer.zero_grad()
+            predictions = model(inputs)
+            loss = loss_fn(predictions, targets)
+            loss.backward()
+            # train_loss += loss.item()
+            optimizer.step()
 
         for i, (inputs, targets) in enumerate(train_loader):
             # Adjust learning rate
