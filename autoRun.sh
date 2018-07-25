@@ -4,6 +4,7 @@
 BASE_DIR=/home/theo/Pre/Code/horizon-detection
 # BASE_DIR=/home/interns/Documents/ZHI/horizon-detection
 IMG_DIR=3dmodel/render706
+TEST_DIR=3dmodel/testData719
 CODE_DIR=/Pre/
 IDX=1
 RESULT_FILE=/result.txt
@@ -24,8 +25,8 @@ for T in {10..30..2} ; do
         echo "current model:"${model}"; time gap: "$T
         # change to a suitable epochs number(50 is ok, 1 for test)
         python3 -m Pre.train -f $BASE_DIR$CODE_DIR$IMG_DIR --model_type ${model} -t ${T} --num_epochs 20
-        python3 -m Pre.test -f $BASE_DIR$CODE_DIR$IMG_DIR -m ${model} -w $BASE_DIR$CODE_DIR$RES_DIR${model}"_model_"${T}"_tmp.pth" -t $T
-        python $BASE_DIR$CODE_DIR"pltDiff.py" -m ${model} -t $T -o $BASE_DIR$CODE_DIR$IMG_DIR"/paras_origin.json" -p $BASE_DIR$CODE_DIR$RES_DIR"predictions_"${model}"_"${T}".json"
+        python3 -m Pre.test -f $BASE_DIR$CODE_DIR$TEST_DIR -m ${model} -w $BASE_DIR$CODE_DIR$RES_DIR${model}"_model_"${T}"_tmp.pth" -t $T
+        python $BASE_DIR$CODE_DIR"pltDiff.py" -m ${model} -t $T -o $BASE_DIR$CODE_DIR$TEST_DIR"/paras_origin.json" -p $BASE_DIR$CODE_DIR$RES_DIR"predictions_"${model}"_"${T}".json"
     let IDX+=1
     echo -e "\n"
     done
