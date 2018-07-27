@@ -11,14 +11,14 @@ import torch as th
 import torch.utils.data
 import torch.nn as nn
 from torch.autograd import Variable
-from Pre.utils import JsonDataset, loadLabels, JsonDataset1
+from Pre.utils import JsonDataset, loadLabels, JsonDataset1, JsonDatasetOrigin
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 # run this code under ssh mode, you need to add the following two lines codes.
 # import matplotlib
 # matplotlib.use('Agg')
 """if above line didnot work, use following two lines instead"""
 import matplotlib.pyplot as plt
-plt.switch_backend('agg')
+# plt.switch_backend('agg')
 from tqdm import tqdm
 from torchvision import transforms
 from Pre.data_aug import imgTransform
@@ -49,25 +49,25 @@ def main(folder, num_epochs=100, batchsize=16,
     kwargs = {'num_workers': 1, 'pin_memory': False} if cuda else {}
     # Create data loaders
     train_loader = th.utils.data.DataLoader(
-        JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
+        JsonDatasetOrigin(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
         batch_size=batchsize, shuffle=True, **kwargs)
 
     # Random flip also for val ?
-    val_loader = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=folder),
+    val_loader = th.utils.data.DataLoader(JsonDatasetOrigin(val_labels, preprocess=True, folder=folder),
                                           batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
-    test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=folder),
+    test_loader = th.utils.data.DataLoader(JsonDatasetOrigin(test_labels, preprocess=True, folder=folder),
                                            batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
     train_loader1 = th.utils.data.DataLoader(
-        JsonDataset1(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
+        JsonDatasetOrigin(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
         batch_size=batchsize, shuffle=True, **kwargs)
 
     # Random flip also for val ?
-    val_loader1 = th.utils.data.DataLoader(JsonDataset1(val_labels, preprocess=True, folder=folder),
+    val_loader1 = th.utils.data.DataLoader(JsonDatasetOrigin(val_labels, preprocess=True, folder=folder),
                                           batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
-    test_loader1 = th.utils.data.DataLoader(JsonDataset1(test_labels, preprocess=True, folder=folder),
+    test_loader1 = th.utils.data.DataLoader(JsonDatasetOrigin(test_labels, preprocess=True, folder=folder),
                                            batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
     numChannel = train_loader1.dataset.numChannel

@@ -41,6 +41,7 @@ scene.camera = currentCameraObj
 # RUN small test before running the real one
 # for i in range(10):
 for i in range(1,int(TOTAL_FRAME/FRAME_INTERVAL)+1):
+    print('current frame:', i)
     scene.frame_set(i*FRAME_INTERVAL)
     scene.render.filepath = IMG_DIR + str(i*FRAME_INTERVAL)
     bpy.ops.render.render(write_still=True)

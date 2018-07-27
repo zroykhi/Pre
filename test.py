@@ -21,10 +21,11 @@ parser.add_argument('-f', '--folder', help='Training folder', type=str, required
 parser.add_argument('-w', '--weights', help='Saved weights', default=RES_DIR+"cnn_model_25_tmp.pth", type=str)
 parser.add_argument('-m', '--model', help='Model type', default="cnn", type=str)
 parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)
+parser.add_argument('-o', '--output', help='output file', default='none', type=str)
 args = parser.parse_args()
 
 train_labels, val_labels, test_labels, labels = loadLabels(args.folder, args.model)
-ONE_IMG_ONLY = False
+ONE_IMG_ONLY = True
 # images = list(labels.keys())
 # TODO: add support for folders without labels
 if True:
@@ -83,8 +84,12 @@ for current_idx in tqdm(range(len(images))):
 # print(res)
 print("test finished !")
 jsObj = json.dumps(res)
-
-fileObject = open('./Pre/results/predictions_'+args.model+"_"+str(args.time_gap)+'.json', 'w')
+out = ''
+if args.output == 'none':
+    out = './Pre/results/predictions_'+args.model+"_"+str(args.time_gap)+'.json'
+else:
+    out = args.output
+fileObject = open(out, 'w')
 fileObject.write(jsObj)
 fileObject.close()
 print('Done!')

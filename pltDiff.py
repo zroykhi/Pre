@@ -5,8 +5,7 @@ this code is used to plot figure comparing the original boat parameters and pred
 import matplotlib
 # matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-plt.switch_backend('agg')
-import matplotlib.pyplot as plt
+# plt.switch_backend('agg')
 import json
 import argparse
 from constants import RES_DIR

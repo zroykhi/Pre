@@ -62,14 +62,14 @@ class MlpNetwork(nn.Module):
         return x, x1, x2
 
 class ConvolutionalNetwork(nn.Module):
-    def __init__(self, num_channel=6, drop_p=0.25, num_output=2):
+    def __init__(self, num_channel=6, drop_p=0.3, num_output=2):
         super(ConvolutionalNetwork, self).__init__()
         # self.numChannel = num_channel
         self.conv_layers = nn.Sequential(
-            nn.Conv2d(num_channel, 8, kernel_size=5, stride=2, padding=2),
+            nn.Conv2d(num_channel, 8, kernel_size=5, stride=1, padding=2),
             nn.BatchNorm2d(8),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=1, padding=1),
+            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
 
             nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(16),

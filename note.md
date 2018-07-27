@@ -49,3 +49,9 @@ why random split data for lstm works better?
 implemente the data augmentation during the training
 
 保证utils.py和test.py中的两张图片的间隔是一样的
+
+# test的结果不好是因为roll和pitch的位置改变了,在blender模型里面，预测的船和原船的local坐标系xy互换了！！！
+> 纠正方法是，改变blender model里面的plane1的local坐标系的角度，使得boat1相应的变换，最终使
+> 得boat和boat1的local坐标系方向一致
+
+data load 是不按顺序的，需要修改。

@@ -81,15 +81,15 @@ def loadLabels(folder, modelType):
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
     if False:# modelType == "CNN_LSTM":
-        # train_keys = images[:int(round(0.6*len(images)))]
-        # val_keys = images[int(round(0.6*len(images))):int(round(0.8*len(images)))]
-        # test_keys = images[int(round(0.8*len(images))):len(images)]
-        train_keys = images[:int(round(0.3*len(images)))]
-        train_keys += images[int(round(0.5*len(images))):int(round(0.8*len(images)))]
-        val_keys = images[int(round(0.3*len(images))):int(round(0.4*len(images)))]
-        val_keys += images[int(round(0.8*len(images))):int(round(0.9*len(images)))]
-        test_keys = images[int(round(0.9*len(images))):len(images)]
-        test_keys += images[int(round(0.4*len(images))):int(round(0.5*len(images)))]
+        train_keys = images[:int(round(0.6*len(images)))]
+        val_keys = images[int(round(0.6*len(images))):int(round(0.8*len(images)))]
+        test_keys = images[int(round(0.8*len(images))):len(images)]
+        # train_keys = images[:int(round(0.3*len(images)))]
+        # train_keys += images[int(round(0.5*len(images))):int(round(0.8*len(images)))]
+        # val_keys = images[int(round(0.3*len(images))):int(round(0.4*len(images)))]
+        # val_keys += images[int(round(0.8*len(images))):int(round(0.9*len(images)))]
+        # test_keys = images[int(round(0.9*len(images))):len(images)]
+        # test_keys += images[int(round(0.4*len(images))):int(round(0.5*len(images)))]
     else:
         train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.01, random_state=SPLIT_SEED)
         val_keys, test_keys = train_test_split(tmp_keys, test_size=0.5, random_state=SPLIT_SEED)
@@ -130,7 +130,7 @@ class JsonDatasetOrigin(Dataset):
         image = image.replace(".png","")
         labels = np.array(self.labels[image]).astype(np.float32)
         y = labels.flatten().astype(np.float32)
-        self.numChannel = images.shape[2]
+        self.numChannel = im.shape[2]
         # swap color axis because
         # numpy image: H x W x C
         # torch image: C X H X W
@@ -172,7 +172,7 @@ class JsonDataset(Dataset):
             image += ".png"
             margin_left, margin_top = 0, 0
             im = cv2.imread(self.folder + image)
-            # scipy.misc.imsave('test'+str(index)+'.png', im)
+            # scipy.misc.imsave('test'+str(index+3*i)+'.png', im)
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI
@@ -210,7 +210,7 @@ class JsonDataset1(Dataset):
 
         for i in range(2):
             try:
-                image = self.keys[index+3*i]
+                image = self.keys[index+i]
             except IndexError:
                 # if the index is the last one
                 images.append(images[0])
@@ -221,6 +221,8 @@ class JsonDataset1(Dataset):
             im = Image.fromarray(im)
             im = imgTransform(im)
             im = np.array(im)
+            print('hhhhh')
+            scipy.misc.imsave('test'+str(index+i)+'.png', im)
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI
