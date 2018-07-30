@@ -55,3 +55,7 @@ implemente the data augmentation during the training
 > 得boat和boat1的local坐标系方向一致
 
 data load 是不按顺序的，需要修改。
+
+utils.py中的labels的顺序要随着keys排序而排序！！！
+
+DataLoader的shuffle改为true，训练才有效果

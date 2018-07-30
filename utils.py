@@ -80,10 +80,10 @@ def loadLabels(folder, modelType):
     # json.dump(labels,open('labels2.json','w'))
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
-    if False:# modelType == "CNN_LSTM":
-        train_keys = images[:int(round(0.6*len(images)))]
-        val_keys = images[int(round(0.6*len(images))):int(round(0.8*len(images)))]
-        test_keys = images[int(round(0.8*len(images))):len(images)]
+    if True:# modelType == "CNN_LSTM":
+        train_keys = images[:int(round(0.8*len(images)))]
+        val_keys = images[int(round(0.8*len(images))):int(round(0.9*len(images)))]
+        test_keys = images[int(round(0.9*len(images))):len(images)]
         # train_keys = images[:int(round(0.3*len(images)))]
         # train_keys += images[int(round(0.5*len(images))):int(round(0.8*len(images)))]
         # val_keys = images[int(round(0.3*len(images))):int(round(0.4*len(images)))]
@@ -104,14 +104,20 @@ def loadLabels(folder, modelType):
 take one image only as input
 """
 class JsonDatasetOrigin(Dataset):
-    def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False):
-        self.keys = list(labels.keys())
+    def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False, sequence=True):
+        self.sequence = sequence
         self.labels = labels.copy()
         self.folder = folder
         self.preprocess = preprocess
         self.random_flip = random_flip
         self.swap = swap
         self.numChannel = 3
+        self.keys = list(labels.keys())
+        if self.sequence:
+            # keys = list(labels.keys())
+            self.keys.sort(key=lambda name: int(name.strip().replace('"',"")))
+            # setattr(self, 'keys', keys)
+            # self.keys = [str(i) for i in self.keys]
 
     def __getitem__(self, index):
         """
@@ -122,7 +128,8 @@ class JsonDatasetOrigin(Dataset):
         image += ".png"
         margin_left, margin_top = 0, 0
         im = cv2.imread(self.folder + image)
-
+        # print('hhhhh')
+        # scipy.misc.imsave('test'+str(index)+'.png', im)
         # Crop the image and normalize it
         if self.preprocess:
             margin_left, margin_top, _, _ = ROI
@@ -143,14 +150,19 @@ class JsonDatasetOrigin(Dataset):
 take two images as inputs
 """
 class JsonDataset(Dataset):
-    def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False):
-        self.keys = list(labels.keys())
+    def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False, sequence=True):
+        self.sequence = sequence
         self.labels = labels.copy()
         self.folder = folder
         self.preprocess = preprocess
         self.random_flip = random_flip
         self.swap = swap
         self.numChannel = 6
+        self.keys = list(labels.keys())
+        if self.sequence:
+            # keys = list(labels.keys())
+            self.keys.sort(key=lambda name: int(name.strip().replace('"',"")))
+            # setattr(self, 'keys', keys)
 
     def __getitem__(self, index):
         """
@@ -160,11 +172,13 @@ class JsonDataset(Dataset):
         images = []
         image = self.keys[index]
         labels = np.array(self.labels[image]).astype(np.float32)
+        # print(image)
+        # print(labels)
         y = labels.flatten().astype(np.float32)
 
         for i in range(2):
             try:
-                image = self.keys[index+3*i]
+                image = self.keys[index+i]
             except IndexError:
                 # if the index is the last one
                 images.append(images[0])
@@ -172,7 +186,8 @@ class JsonDataset(Dataset):
             image += ".png"
             margin_left, margin_top = 0, 0
             im = cv2.imread(self.folder + image)
-            # scipy.misc.imsave('test'+str(index+3*i)+'.png', im)
+            # print('hhh')
+            # scipy.misc.imsave('test'+str(index+i)+'.png', im)
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI
@@ -189,14 +204,18 @@ class JsonDataset(Dataset):
         return len(self.keys)
 
 class JsonDataset1(Dataset):
-    def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False):
+    def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False, sequence=True):
         self.keys = list(labels.keys())
+        self.sequence = sequence
         self.labels = labels.copy()
         self.folder = folder
         self.preprocess = preprocess
         self.random_flip = random_flip
         self.swap = swap
         self.numChannel = 6
+        if self.sequence:
+            # keys = list(labels.keys())
+            self.keys.sort(key=lambda name: int(name.strip().replace('"',"")))
 
     def __getitem__(self, index):
         """
@@ -221,8 +240,8 @@ class JsonDataset1(Dataset):
             im = Image.fromarray(im)
             im = imgTransform(im)
             im = np.array(im)
-            print('hhhhh')
-            scipy.misc.imsave('test'+str(index+i)+'.png', im)
+            # print('hhhhh')
+            # scipy.misc.imsave('test'+str(index+i)+'.png', im)
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI

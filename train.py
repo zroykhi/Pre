@@ -49,28 +49,28 @@ def main(folder, num_epochs=100, batchsize=16,
     kwargs = {'num_workers': 1, 'pin_memory': False} if cuda else {}
     # Create data loaders
     train_loader = th.utils.data.DataLoader(
-        JsonDatasetOrigin(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
+        JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip, sequence=True),
         batch_size=batchsize, shuffle=True, **kwargs)
 
     # Random flip also for val ?
-    val_loader = th.utils.data.DataLoader(JsonDatasetOrigin(val_labels, preprocess=True, folder=folder),
+    val_loader = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=folder, sequence=True),
                                           batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
-    test_loader = th.utils.data.DataLoader(JsonDatasetOrigin(test_labels, preprocess=True, folder=folder),
+    test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=folder, sequence=True),
                                            batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
-    train_loader1 = th.utils.data.DataLoader(
-        JsonDatasetOrigin(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
-        batch_size=batchsize, shuffle=True, **kwargs)
+    # train_loader1 = th.utils.data.DataLoader(
+    #     JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
+    #     batch_size=batchsize, shuffle=False, **kwargs)
+    #
+    # # Random flip also for val ?
+    # val_loader1 = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=folder),
+    #                                       batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
+    #
+    # test_loader1 = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=folder),
+    #                                        batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
-    # Random flip also for val ?
-    val_loader1 = th.utils.data.DataLoader(JsonDatasetOrigin(val_labels, preprocess=True, folder=folder),
-                                          batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
-
-    test_loader1 = th.utils.data.DataLoader(JsonDatasetOrigin(test_labels, preprocess=True, folder=folder),
-                                           batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
-
-    numChannel = train_loader1.dataset.numChannel
+    numChannel = train_loader.dataset.numChannel
     if model_type == "cnn":
         model = ConvolutionalNetwork(num_channel=numChannel, num_output=num_output, drop_p=0.0)
     elif model_type == "CNN_RNN":
@@ -84,7 +84,7 @@ def main(folder, num_epochs=100, batchsize=16,
         model.cuda()
 
     # L2 penalty
-    weight_decay = 1e-4
+    weight_decay = 1e-5
     #weight_decay = 0
     # Optimizers
     # optimizer = th.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
@@ -122,16 +122,15 @@ def main(folder, num_epochs=100, batchsize=16,
         train_loss, val_loss = 0.0, 0.0
         # Full pass on training data
         # Update the model after each minibatch
-        for i, (inputs, targets) in enumerate(train_loader1):
-            if cuda:
-                inputs, targets = inputs.cuda(), targets.cuda()
-            inputs, targets = Variable(inputs), Variable(targets)
-            optimizer.zero_grad()
-            predictions = model(inputs)
-            loss = loss_fn(predictions, targets)
-            loss.backward()
-            # train_loss += loss.item()
-            optimizer.step()
+        # for i, (inputs, targets) in enumerate(train_loader1):
+        #     if cuda:
+        #         inputs, targets = inputs.cuda(), targets.cuda()
+        #     inputs, targets = Variable(inputs), Variable(targets)
+        #     optimizer.zero_grad()
+        #     predictions = model(inputs)
+        #     loss = loss_fn(predictions, targets)
+        #     loss.backward()
+        #     optimizer.step()
 
         for i, (inputs, targets) in enumerate(train_loader):
             # Adjust learning rate

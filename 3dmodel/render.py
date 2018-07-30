@@ -13,7 +13,7 @@ sys.path.append(dirpath)
 # sys.path.append('/home/theo/test/Pre/')
 from constants import FRAME_INTERVAL, TOTAL_FRAME
 
-IMG_DIR="./render619/"
+IMG_DIR="./render706/"
 """
 setup gpu render if your computer supports
 remmenber change blender render setting: tiles center:x:512, y:512 for gpu support

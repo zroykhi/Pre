@@ -8,10 +8,10 @@ import json
 import bpy, bgl, blf,sys
 import math
 
-paras = json.load(open('./predictions.json'))
+paras = json.load(open('../results/predictions_cnn_25.json'))
 frames = list(paras.keys())
 frames.sort(key=lambda name: int(name.strip().replace('"',"")))
-obj = bpy.data.objects['boat2']
+obj = bpy.data.objects['boat1_prediction']
 scene = bpy.context.scene
 for key in frames:
     key = str(key)

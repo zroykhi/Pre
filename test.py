@@ -25,7 +25,7 @@ parser.add_argument('-o', '--output', help='output file', default='none', type=s
 args = parser.parse_args()
 
 train_labels, val_labels, test_labels, labels = loadLabels(args.folder, args.model)
-ONE_IMG_ONLY = True
+ONE_IMG_ONLY = False
 # images = list(labels.keys())
 # TODO: add support for folders without labels
 if True:
