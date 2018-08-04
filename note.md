@@ -59,3 +59,30 @@ data load 是不按顺序的，需要修改。
 utils.py中的labels的顺序要随着keys排序而排序！！！
 
 DataLoader的shuffle改为true，训练才有效果
+
+loadlabesl use sequential load. and change the gap of two pictures(3) seems works? non
+though validation loss is big, the predictions maybe work as well
+
+sudo python3 -m Pre.test -f Pre/3dmodel/testData719/ -w Pre/results/CNN_LSTM_model_25_tmp.pth -m CNN_LSTM
+sudo ppython3 -m Pre.train -f Pre/3model/render706/ --model_type CNN_LSTM -bs 8
+
+# results record:
+1. loadLabels: sequence; JsonDataset: two images cnn sequence, predict original data works;6 images gap; predict testData works a little(in some place).
+2. loadLabels: sequence; JsonDataset: two images cnn not sequence, predict original data works moins bon;6 images gap; predict testData works moins bon(especially pitch).
+3. loadLabels: not sequence; JsonDataset: two images cnn not sequence, predict original data **works best**;6 images gap; predict testData works so-so.
+could try half for train half for test
+4. loadLabels: not sequence; JsonDataset: two images cnn sequence, predict original data works moins bon;6 images gap; predict testData works moins bon(especially pitch).
+
+Lstm
+5. loadLabels: sequence; JsonDataset: sequence; predict original data roll good, pitch bad; predict testData predict testData roll pretty good, pitch not good; val_loss not converge
+6. loadLabels: not sequence; JsonDataset: sequence; predict original data  roll good, pitch bad; predict testData roll pretty good, pitch not good;
+7. loadLabels: sequence; JsonDataset: not sequence; predict original data same with above; predict testData roll very good, pitch bad; 
+8. loadLabels: not sequence; JsonDataset: not sequence; predict original data; predict testData ;
+
+9. one image cnn, prediction of original data is good, bad for prediction of testData
+train epochs less
+
+# data needed:
+1. one image only cnn
+2. one image only cnn_lstm
+3. two images cnn

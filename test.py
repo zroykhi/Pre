@@ -11,8 +11,8 @@ import numpy as np
 import torch as th
 from torch.autograd import Variable
 from tqdm import tqdm
-from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, RIGHT_KEY, LEFT_KEY, EXIT_KEYS
-from Pre.constants import ROI,MAX_WIDTH, UP_KEY, DOWN_KEY, TIME_GAP, TOTAL_FRAME, RES_DIR
+from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, RIGHT_KEY, LEFT_KEY, EXIT_KEYS, TWO_IMG_GAP
+from Pre.constants import ROI,MAX_WIDTH, UP_KEY, DOWN_KEY, TIME_GAP, TOTAL_FRAME, RES_DIR, ONE_IMG_ONLY
 from Pre.utils import preprocessImage, transformPrediction, loadLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 
@@ -25,14 +25,13 @@ parser.add_argument('-o', '--output', help='output file', default='none', type=s
 args = parser.parse_args()
 
 train_labels, val_labels, test_labels, labels = loadLabels(args.folder, args.model)
-ONE_IMG_ONLY = False
 # images = list(labels.keys())
 # TODO: add support for folders without labels
 if True:
     images = [f for f in os.listdir(args.folder) if f.endswith('.png')]
 
 images.sort(key=lambda name: int(name.split('.png')[0]))
-
+# print(images)
 idx_val = set(val_labels.keys())
 idx_test = set(test_labels.keys())
 numChannel = 3
@@ -64,7 +63,7 @@ for current_idx in tqdm(range(len(images))):
         imgs = []
         for i in range(2):
             try:
-                image = images[current_idx+3*i]
+                image = images[current_idx+TWO_IMG_GAP*i]
                 image = cv2.imread('{}/{}'.format(args.folder, images[current_idx]))
                 im = preprocessImage(image, INPUT_WIDTH, INPUT_HEIGHT)
                 imgs.append(im)
