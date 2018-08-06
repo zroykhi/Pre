@@ -7,7 +7,7 @@ import numpy as np
 import torch as th
 from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
-from Pre.constants import MAX_WIDTH, MAX_HEIGHT, ROI, INPUT_HEIGHT, INPUT_WIDTH, SPLIT_SEED
+from Pre.constants import MAX_WIDTH, MAX_HEIGHT, ROI, INPUT_HEIGHT, INPUT_WIDTH, SPLIT_SEED, TWO_IMG_GAP
 from Pre.data_aug import imgTransform
 from PIL import Image
 import scipy.misc
@@ -80,10 +80,10 @@ def loadLabels(folder, modelType):
     # json.dump(labels,open('labels2.json','w'))
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
-    if True:# modelType == "CNN_LSTM":
-        train_keys = images[:int(round(0.8*len(images)))]
-        val_keys = images[int(round(0.8*len(images))):int(round(0.9*len(images)))]
-        test_keys = images[int(round(0.9*len(images))):len(images)]
+    if False:# modelType == "CNN_LSTM":
+        train_keys = images[:int(round(0.9*len(images)))]
+        val_keys = images[int(round(0.9*len(images))):int(round(0.95*len(images)))]
+        test_keys = images[int(round(0.95*len(images))):len(images)]
         # train_keys = images[:int(round(0.3*len(images)))]
         # train_keys += images[int(round(0.5*len(images))):int(round(0.8*len(images)))]
         # val_keys = images[int(round(0.3*len(images))):int(round(0.4*len(images)))]
@@ -91,7 +91,7 @@ def loadLabels(folder, modelType):
         # test_keys = images[int(round(0.9*len(images))):len(images)]
         # test_keys += images[int(round(0.4*len(images))):int(round(0.5*len(images)))]
     else:
-        train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.01, random_state=SPLIT_SEED)
+        train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.1, random_state=SPLIT_SEED)
         val_keys, test_keys = train_test_split(tmp_keys, test_size=0.5, random_state=SPLIT_SEED)
 
     train_labels = {key: labels[key] for key in train_keys}
@@ -100,6 +100,7 @@ def loadLabels(folder, modelType):
 
     print("{} images".format(len(labels)))
     return train_labels, val_labels, test_labels, labels
+
 """
 take one image only as input
 """
@@ -113,9 +114,9 @@ class JsonDatasetOrigin(Dataset):
         self.swap = swap
         self.numChannel = 3
         self.keys = list(labels.keys())
-        if self.sequence:
+        # if self.sequence:
             # keys = list(labels.keys())
-            self.keys.sort(key=lambda name: int(name.strip().replace('"',"")))
+            # self.keys.sort(key=lambda name: int(name.strip().replace('"',"")))
             # setattr(self, 'keys', keys)
             # self.keys = [str(i) for i in self.keys]
 
@@ -146,6 +147,7 @@ class JsonDatasetOrigin(Dataset):
 
     def __len__(self):
         return len(self.keys)
+
 """
 take two images as inputs
 """
@@ -159,9 +161,9 @@ class JsonDataset(Dataset):
         self.swap = swap
         self.numChannel = 6
         self.keys = list(labels.keys())
-        if self.sequence:
+        # if self.sequence:
             # keys = list(labels.keys())
-            self.keys.sort(key=lambda name: int(name.strip().replace('"',"")))
+            # self.keys.sort(key=lambda name: int(name.strip().replace('"',"")))
             # setattr(self, 'keys', keys)
 
     def __getitem__(self, index):
@@ -178,7 +180,7 @@ class JsonDataset(Dataset):
 
         for i in range(2):
             try:
-                image = self.keys[index+i]
+                image = self.keys[index+TWO_IMG_GAP*i]
             except IndexError:
                 # if the index is the last one
                 images.append(images[0])
@@ -203,6 +205,9 @@ class JsonDataset(Dataset):
     def __len__(self):
         return len(self.keys)
 
+"""
+add data augmentation and take two images as input
+"""
 class JsonDataset1(Dataset):
     def __init__(self, labels, folder="", preprocess=False, random_flip=0.0, swap=False, sequence=True):
         self.keys = list(labels.keys())
@@ -229,7 +234,7 @@ class JsonDataset1(Dataset):
 
         for i in range(2):
             try:
-                image = self.keys[index+i]
+                image = self.keys[index+TWO_IMG_GAP*i]
             except IndexError:
                 # if the index is the last one
                 images.append(images[0])

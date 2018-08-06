@@ -89,28 +89,35 @@ def savitzky_golay(y, window_size, order, deriv=0, rate=1):
     y = np.concatenate((firstvals, y, lastvals))
     return np.convolve( m[::-1], y, mode='valid')
 
+# read data
 originData = args.origin_file
 predData = args.prediction_file
 labelsOrigin = json.load(open(originData))
 labelsPred = json.load(open(predData))
 frames1 = list(labelsOrigin.keys())
 frames2 = list(labelsPred.keys())
+
 # sort keys
 frames1.sort(key=lambda name: int(name.strip().replace('"',"")))
 frames2.sort(key=lambda name: int(name.strip().replace('"',"")))
-# obtain x rotation and y rotation list respectively
+
+# obtain roll and pitch lists respectively
 originRoll = [labelsOrigin[str(key)][0] for key in frames1]
 originPitch = [labelsOrigin[str(key)][1] for key in frames1]
 predRoll = [labelsPred[str(key)][0] for key in frames2]
 predPitch = [labelsPred[str(key)][1] for key in frames2]
-# Smoothing
-predRoll = savitzky_golay(np.asarray(predRoll), 31, 7)
-predPitch = savitzky_golay(np.asarray(predPitch), 31, 7)
+
+# Smoothing(optional)
+predRoll = savitzky_golay(np.asarray(predRoll), 31, 5)
+predPitch = savitzky_golay(np.asarray(predPitch), 31, 5)
+
 # frames: str -> int
 frames1 = [int(key) for key in frames1]
 frames2 = [int(key) for key in frames2]
+
 # plot roll
 plt.figure(1)
+# resize pic to see details
 plt.figure(figsize=(30, 12))
 plt.plot(frames1, originRoll, 'r-', label='original roll')
 plt.plot(frames2, predRoll, 'b-', label='prediction roll')
@@ -123,6 +130,7 @@ plt.show()
 
 # plot pitch
 plt.figure(2)
+# resize pic to see details
 plt.figure(figsize=(30, 12))
 plt.plot(frames1, originPitch, 'r-', label='original pitch')
 plt.plot(frames2, predPitch, 'b-', label='prediction pitch')

@@ -16,9 +16,9 @@ TOTAL_FRAME = 5000
 # dataset sample frame interval
 FRAME_INTERVAL = 1
 # concatenate two images as input?
-ONE_IMG_ONLY = True
+ONE_IMG_ONLY = False
 # if yes, what is the frame gap between two images
-TWO_IMG_GAP = 3
+TWO_IMG_GAP = 6
 # Training
 FACTOR = 3  # Resize factor
 INPUT_HEIGHT = ROI[3] // FACTOR
@@ -26,14 +26,3 @@ INPUT_WIDTH = ROI[2] // FACTOR
 SPLIT_SEED = 42  # For train/val/test split
 WEIGHTS_PTH = "cnn_model.pth"  # Path to the trained model
 RES_DIR = "./Pre/results/"
-
-# Arrow keys
-# modified by zhi
-UP_KEY = 82 # 0
-DOWN_KEY = 84 # 1
-RIGHT_KEY = 83 #3
-LEFT_KEY = 81 # 2
-ENTER_KEY = 10
-SPACE_KEY = 32
-EXIT_KEYS = [113, 27]  # Escape and q
-S_KEY = 115  # S key

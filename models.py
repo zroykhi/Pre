@@ -125,7 +125,7 @@ class CNN_RNN(nn.Module):
         return outs
 
 class CNN_LSTM(nn.Module):
-    def __init__(self, num_channel=6, drop_p=0.25, input_size=4032, hidden_size=32, num_layers=2, num_output=2):
+    def __init__(self, num_channel=3, drop_p=0.25, input_size=4032, hidden_size=32, num_layers=2, num_output=2):
         super().__init__()
         self.cnn = nn.Sequential(
             nn.Conv2d(num_channel, 8, kernel_size=5, stride=2, padding=2),

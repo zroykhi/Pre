@@ -9,8 +9,8 @@ CODE_DIR=/Pre/
 IDX=1
 RESULT_FILE=/result.txt
 RES_DIR=results/
+# declare -a model_list=("cnn" "CNN_LSTM")
 declare -a model_list=("cnn")
-# "CNN_LSTM")
 cd $BASE_DIR
 start_tm=`date +%s%N`
 # T is time gap

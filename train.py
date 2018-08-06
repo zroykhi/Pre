@@ -5,13 +5,17 @@ from __future__ import print_function, division, absolute_import
 
 import argparse
 import time
-from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, RES_DIR
+from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, RES_DIR, ONE_IMG_ONLY
 import numpy as np
 import torch as th
 import torch.utils.data
 import torch.nn as nn
 from torch.autograd import Variable
-from Pre.utils import JsonDataset, loadLabels, JsonDataset1, JsonDatasetOrigin
+from Pre.utils import loadLabels
+if ONE_IMG_ONLY:
+    from Pre.utils import JsonDatasetOrigin as JsonDataset
+else:
+    from Pre.utils import JsonDataset, JsonDataset1
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 # run this code under ssh mode, you need to add the following two lines codes.
 # import matplotlib
@@ -26,14 +30,22 @@ import scipy.misc
 
 evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
+lam = 0
+def reg_loss(tensorArray):
+    row, col = tensorArray.shape
+    total_loss = 0.0
+    for i in range(row-1):
+        total_loss = total_loss + abs(tensorArray[i+1][0]-tensorArray[i][0])+abs(tensorArray[i+1][1]-tensorArray[i][1])
+    return total_loss
 
 def main(folder, num_epochs=100, batchsize=16,
-         learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_flip=0.5,
+         learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_flip=0.0,
          model_type="cnn", evaluate_print=1, load_model="", time_gap=25):
 
     if not folder.endswith('/'):
         folder += '/'
 
+    print('has cuda?', cuda)
     train_labels, val_labels, test_labels, _ = loadLabels(folder, model_type)
 
     # Seed the random generator
@@ -60,14 +72,14 @@ def main(folder, num_epochs=100, batchsize=16,
                                            batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
     # train_loader1 = th.utils.data.DataLoader(
-    #     JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
+    #     JsonDataset1(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
     #     batch_size=batchsize, shuffle=False, **kwargs)
     #
     # # Random flip also for val ?
-    # val_loader1 = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=folder),
+    # val_loader1 = th.utils.data.DataLoader(JsonDataset1(val_labels, preprocess=True, folder=folder),
     #                                       batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
     #
-    # test_loader1 = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=folder),
+    # test_loader1 = th.utils.data.DataLoader(JsonDataset1(test_labels, preprocess=True, folder=folder),
     #                                        batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
     numChannel = train_loader.dataset.numChannel
@@ -144,7 +156,11 @@ def main(folder, num_epochs=100, batchsize=16,
             optimizer.zero_grad()
             # print(inputs.shape) # [4, 3, 75, 100]
             predictions = model(inputs)
-            loss = loss_fn(predictions, targets)
+            # print(predictions.shape)
+            loss_tmp = lam*reg_loss(predictions)
+            # print(type(loss_tmp))
+            loss = loss_fn(predictions, targets) + Variable(loss_tmp)
+            # print(type(loss))
             loss.backward()
             train_loss += loss.item()
             optimizer.step()
@@ -156,7 +172,8 @@ def main(folder, num_epochs=100, batchsize=16,
                 inputs, targets = inputs.cuda(), targets.cuda()
             # Set volatile to True because we don't need to compute gradient
             predictions = model(inputs)
-            loss = loss_fn(predictions, targets)
+            loss_tmp = lam*reg_loss(predictions)
+            loss = loss_fn(predictions, targets) + loss_tmp
             val_loss += loss.item()
 
         # Compute error per sample
@@ -202,7 +219,8 @@ def main(folder, num_epochs=100, batchsize=16,
             inputs, targets = inputs.cuda(), targets.cuda()
         inputs, targets = Variable(inputs), Variable(targets)
         predictions = model(inputs)
-        loss = loss_fn(predictions, targets)
+        loss_tmp = lam*reg_loss(predictions)
+        loss = loss_fn(predictions, targets) + loss_tmp
         test_loss += loss.item()
     print("Final results:")
     print("  best validation loss:\t\t{:.6f}".format(best_error))
@@ -233,7 +251,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_epochs', help='Number of epoch', default=30, type=int)
     parser.add_argument('-bs', '--batchsize', help='Batch size', default=4, type=int)
     parser.add_argument('--seed', help='Random Seed', default=42, type=int)
-    parser.add_argument('--no-cuda', action='store_true', default=True, help='Disables CUDA training')
+    parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables CUDA training')
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
     parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','CNN_RNN','CNN_LSTM'])
     parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)
