@@ -117,7 +117,7 @@ frames2 = [int(key) for key in frames2]
 
 # plot roll
 plt.figure(1)
-# resize pic to see details
+# resize pic to show details
 plt.figure(figsize=(30, 12))
 plt.plot(frames1, originRoll, 'r-', label='original roll')
 plt.plot(frames2, predRoll, 'b-', label='prediction roll')
@@ -130,7 +130,7 @@ plt.show()
 
 # plot pitch
 plt.figure(2)
-# resize pic to see details
+# resize pic to show details
 plt.figure(figsize=(30, 12))
 plt.plot(frames1, originPitch, 'r-', label='original pitch')
 plt.plot(frames2, predPitch, 'b-', label='prediction pitch')

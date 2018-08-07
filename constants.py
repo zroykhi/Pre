@@ -8,7 +8,6 @@ CAMERA_RESOLUTION = (486, 270)
 # Regions of interest
 MAX_WIDTH = CAMERA_RESOLUTION[0]
 MAX_HEIGHT = CAMERA_RESOLUTION[1]
-
 ROI = [0, 0, MAX_WIDTH, MAX_HEIGHT]
 # predict how many frames ahead
 TIME_GAP = 25

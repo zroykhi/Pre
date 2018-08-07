@@ -11,16 +11,16 @@ import torch as th
 import torch.utils.data
 import torch.nn as nn
 from torch.autograd import Variable
-from Pre.utils import loadLabels
+from Pre.utils import loadLabels, loadTestLabels, loadTrainLabels
 if ONE_IMG_ONLY:
     from Pre.utils import JsonDatasetOrigin as JsonDataset
 else:
-    from Pre.utils import JsonDataset, JsonDataset1
+    from Pre.utils import JsonDataset
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 # run this code under ssh mode, you need to add the following two lines codes.
 # import matplotlib
 # matplotlib.use('Agg')
-"""if above line didnot work, use following two lines instead"""
+"""if above line didn't work, use following two lines instead"""
 import matplotlib.pyplot as plt
 # plt.switch_backend('agg')
 from tqdm import tqdm
@@ -38,15 +38,25 @@ def reg_loss(tensorArray):
         total_loss = total_loss + abs(tensorArray[i+1][0]-tensorArray[i][0])+abs(tensorArray[i+1][1]-tensorArray[i][1])
     return total_loss
 
-def main(folder, num_epochs=100, batchsize=16,
-         learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_flip=0.0,
+def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
+         learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_trans=0.5,
          model_type="cnn", evaluate_print=1, load_model="", time_gap=25):
 
-    if not folder.endswith('/'):
-        folder += '/'
+    if val_folder == None:
+        print('val_folder is none')
+        val_folder = train_folder
+    if not train_folder.endswith('/'):
+        train_folder += '/'
+    if not val_folder.endswith('/'):
+        val_folder += '/'
 
     print('has cuda?', cuda)
-    train_labels, val_labels, test_labels, _ = loadLabels(folder, model_type)
+    # check whether val folder and train folder are the same
+    if val_folder == train_folder:
+        train_labels, val_labels, test_labels, _ = loadLabels(train_folder, model_type)
+    else:
+        train_labels, _ = loadTrainLabels(train_folder, model_type)
+        val_labels, test_labels, _ = loadTestLabels(val_folder, model_type)
 
     # Seed the random generator
     np.random.seed(seed)
@@ -61,26 +71,15 @@ def main(folder, num_epochs=100, batchsize=16,
     kwargs = {'num_workers': 1, 'pin_memory': False} if cuda else {}
     # Create data loaders
     train_loader = th.utils.data.DataLoader(
-        JsonDataset(train_labels, preprocess=True, folder=folder, random_flip=random_flip, sequence=True),
+        JsonDataset(train_labels, preprocess=True, folder=train_folder, random_trans=random_trans, sequence=False),
         batch_size=batchsize, shuffle=True, **kwargs)
 
     # Random flip also for val ?
-    val_loader = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=folder, sequence=True),
+    val_loader = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=val_folder, sequence=False),
                                           batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
-    test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=folder, sequence=True),
+    test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=val_folder, sequence=False),
                                            batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
-
-    # train_loader1 = th.utils.data.DataLoader(
-    #     JsonDataset1(train_labels, preprocess=True, folder=folder, random_flip=random_flip),
-    #     batch_size=batchsize, shuffle=False, **kwargs)
-    #
-    # # Random flip also for val ?
-    # val_loader1 = th.utils.data.DataLoader(JsonDataset1(val_labels, preprocess=True, folder=folder),
-    #                                       batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
-    #
-    # test_loader1 = th.utils.data.DataLoader(JsonDataset1(test_labels, preprocess=True, folder=folder),
-    #                                        batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
     numChannel = train_loader.dataset.numChannel
     if model_type == "cnn":
@@ -134,16 +133,6 @@ def main(folder, num_epochs=100, batchsize=16,
         train_loss, val_loss = 0.0, 0.0
         # Full pass on training data
         # Update the model after each minibatch
-        # for i, (inputs, targets) in enumerate(train_loader1):
-        #     if cuda:
-        #         inputs, targets = inputs.cuda(), targets.cuda()
-        #     inputs, targets = Variable(inputs), Variable(targets)
-        #     optimizer.zero_grad()
-        #     predictions = model(inputs)
-        #     loss = loss_fn(predictions, targets)
-        #     loss.backward()
-        #     optimizer.step()
-
         for i, (inputs, targets) in enumerate(train_loader):
             # Adjust learning rate
             # adjustLearningRate(optimizer, epoch, num_epochs, lr_init=learning_rate,
@@ -159,7 +148,7 @@ def main(folder, num_epochs=100, batchsize=16,
             # print(predictions.shape)
             loss_tmp = lam*reg_loss(predictions)
             # print(type(loss_tmp))
-            loss = loss_fn(predictions, targets) + Variable(loss_tmp)
+            loss = loss_fn(predictions, targets) + loss_tmp#Variable(loss_tmp)
             # print(type(loss))
             loss.backward()
             train_loss += loss.item()
@@ -247,7 +236,8 @@ def main(folder, num_epochs=100, batchsize=16,
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a line detector')
-    parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
+    parser.add_argument('-tf', '--train_folder', help='Training folder', type=str, required=True)
+    parser.add_argument('-vf', '--val_folder', help='Validation folder', type=str)
     parser.add_argument('--num_epochs', help='Number of epoch', default=30, type=int)
     parser.add_argument('-bs', '--batchsize', help='Batch size', default=4, type=int)
     parser.add_argument('--seed', help='Random Seed', default=42, type=int)
@@ -259,6 +249,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     args.cuda = not args.no_cuda and th.cuda.is_available()
-    main(folder=args.folder, num_epochs=args.num_epochs, batchsize=args.batchsize,
+    main(train_folder=args.train_folder, val_folder=args.val_folder, num_epochs=args.num_epochs, batchsize=args.batchsize,
          learning_rate=args.learning_rate, cuda=args.cuda,
          seed=args.seed, load_model=args.load_model, model_type=args.model_type, time_gap=args.time_gap)
