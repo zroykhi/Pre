@@ -11,16 +11,22 @@ import os
 dirpath = os.getcwd()
 sys.path.append(dirpath)
 # sys.path.append('/home/theo/Pre/Code/horizon-detection/Pre/')
-from constants import TOTAL_FRAME, FRAME_INTERVAL
+from constants import FRAME_INTERVAL
 def transformDate(inputFile, output, TIME_GAP):
     labels = json.load(open(inputFile))
+    TOTAL_FRAME = list(labels.keys())
+    # TOTAL_FRAME = map(int, TOTAL_FRAME)
+    TOTAL_FRAME = list(map(int, TOTAL_FRAME))
+    MAX_FRAME = max(TOTAL_FRAME)
+    MIN_FRAME = min(TOTAL_FRAME)
     print("transforming data ...")
     # add time gap to data
-    for i in range(len(labels)):
-        if labels.get(str(i*FRAME_INTERVAL)) != None and i*FRAME_INTERVAL < (TOTAL_FRAME - TIME_GAP):
+    # for i in range(len(labels)):
+    for i in range(MIN_FRAME,MAX_FRAME+1):
+        if labels.get(str(i*FRAME_INTERVAL)) != None and i*FRAME_INTERVAL < (MAX_FRAME - TIME_GAP):
             labels[str(i*FRAME_INTERVAL)] = labels[str(i*FRAME_INTERVAL+TIME_GAP)]
     # delete frames which exceed total frame
-    for i in range(TOTAL_FRAME - TIME_GAP, TOTAL_FRAME):
+    for i in range(MAX_FRAME - TIME_GAP, MAX_FRAME):
         if labels.get(str(i)) != None:
             labels.pop(str(i))
     # use only pitch and roll to train, delete yaw
