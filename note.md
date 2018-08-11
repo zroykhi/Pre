@@ -76,7 +76,7 @@ could try half for train half for test
 Lstm
 5. loadLabels: sequence; JsonDataset: sequence; predict original data roll good, pitch bad; predict testData predict testData roll pretty good, pitch not good; val_loss not converge
 6. loadLabels: not sequence; JsonDataset: sequence; predict original data  roll good, pitch bad; predict testData roll pretty good, pitch not good;
-7. loadLabels: sequence; JsonDataset: not sequence; predict original data same with above; predict testData roll very good, pitch bad; 
+7. loadLabels: sequence; JsonDataset: not sequence; predict original data same with above; predict testData roll very good, pitch bad;
 8. loadLabels: not sequence; JsonDataset: not sequence; predict original data; predict testData ;
 
 9. one image cnn, prediction of original data is good, bad for prediction of testData
@@ -86,3 +86,8 @@ train epochs less
 1. one image only cnn
 2. one image only cnn_lstm
 3. two images cnn
+
+weight_decay up, delete first F.dropout, more fiters; optimizer?l2, use only cnn no Linear? activation function?
+restnet, random_trans, use different angle together to train!! more pics 3/4 together to train!!
+loss functioin, suitable? every y take into account? batch size, don't use imread!!!
+make sure 'num_workers' in train.py doesn't exceed your cpu core num.
