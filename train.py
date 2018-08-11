@@ -5,7 +5,7 @@ from __future__ import print_function, division, absolute_import
 
 import argparse
 import time
-from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, RES_DIR, ONE_IMG_ONLY
+from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, RES_DIR, ONE_IMG_ONLY, DATASET_SEQUENCE
 import numpy as np
 import torch as th
 import torch.utils.data
@@ -22,7 +22,7 @@ from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 # matplotlib.use('Agg')
 """if above line didn't work, use following two lines instead"""
 import matplotlib.pyplot as plt
-# plt.switch_backend('agg')
+plt.switch_backend('agg')
 from tqdm import tqdm
 from torchvision import transforms
 from Pre.data_aug import imgTransform
@@ -43,7 +43,6 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
          model_type="cnn", evaluate_print=1, load_model="", time_gap=25):
 
     if val_folder == None:
-        print('val_folder is none')
         val_folder = train_folder
     if not train_folder.endswith('/'):
         train_folder += '/'
@@ -67,23 +66,28 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
     # Retrieve number of samples per set
     n_train, n_val, n_test = len(train_labels), len(val_labels), len(test_labels)
 
-    # Keywords for pytorch dataloader
-    kwargs = {'num_workers': 1, 'pin_memory': False} if cuda else {}
+    # Keywords for pytorch dataloader, augment num_workers could work faster
+    kwargs = {'num_workers': 4, 'pin_memory': False} if cuda else {}
     # Create data loaders
     train_loader = th.utils.data.DataLoader(
-        JsonDataset(train_labels, preprocess=True, folder=train_folder, random_trans=random_trans, sequence=False),
+        JsonDataset(train_labels, preprocess=True, folder=train_folder, random_trans=random_trans, sequence=DATASET_SEQUENCE),
         batch_size=batchsize, shuffle=True, **kwargs)
 
-    # Random flip also for val ?
-    val_loader = th.utils.data.DataLoader(JsonDataset(val_labels, preprocess=True, folder=val_folder, sequence=False),
+    # Random transform also for val ?
+    val_loader = th.utils.data.DataLoader(
+        JsonDataset(val_labels, preprocess=True, folder=val_folder, random_trans=0.4, sequence=DATASET_SEQUENCE),
                                           batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
-    test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=val_folder, sequence=False),
+    test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=val_folder, random_trans=0, sequence=DATASET_SEQUENCE),
                                            batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
+
+    # train_loader1 = th.utils.data.DataLoader(
+    #    JsonDataset(train_labels, preprocess=True, folder='Pre/3dmodel/testData719/', random_trans=random_trans, sequence=DATASET_SEQUENCE),
+    #    batch_size=batchsize, shuffle=True, **kwargs)
 
     numChannel = train_loader.dataset.numChannel
     if model_type == "cnn":
-        model = ConvolutionalNetwork(num_channel=numChannel, num_output=num_output, drop_p=0.0)
+        model = ConvolutionalNetwork(num_channel=numChannel, num_output=num_output)
     elif model_type == "CNN_RNN":
         model = CNN_RNN(num_channel=numChannel)
     elif model_type == "CNN_LSTM":
@@ -95,7 +99,7 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
         model.cuda()
 
     # L2 penalty
-    weight_decay = 1e-5
+    weight_decay = 1e-4
     #weight_decay = 0
     # Optimizers
     # optimizer = th.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
@@ -146,9 +150,9 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
             # print(inputs.shape) # [4, 3, 75, 100]
             predictions = model(inputs)
             # print(predictions.shape)
-            loss_tmp = lam*reg_loss(predictions)
+            # loss_tmp = lam*reg_loss(predictions)
             # print(type(loss_tmp))
-            loss = loss_fn(predictions, targets) + loss_tmp#Variable(loss_tmp)
+            loss = loss_fn(predictions, targets)# + loss_tmp#Variable(loss_tmp)
             # print(type(loss))
             loss.backward()
             train_loss += loss.item()
@@ -161,8 +165,8 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
                 inputs, targets = inputs.cuda(), targets.cuda()
             # Set volatile to True because we don't need to compute gradient
             predictions = model(inputs)
-            loss_tmp = lam*reg_loss(predictions)
-            loss = loss_fn(predictions, targets) + loss_tmp
+            # loss_tmp = lam*reg_loss(predictions)
+            loss = loss_fn(predictions, targets)# + loss_tmp
             val_loss += loss.item()
 
         # Compute error per sample
@@ -178,6 +182,61 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
                 model.cuda()
         if (train_loss / n_train) < best_train_error:
             best_train_error = train_loss / n_train
+
+
+        # Switch to training mode
+        # model.train()
+        # train_loss1, val_loss1 = 0.0, 0.0
+        # # Full pass on training data
+        # # Update the model after each minibatch
+        # for i, (inputs, targets) in enumerate(train_loader1):
+        #     # Adjust learning rate
+        #     # adjustLearningRate(optimizer, epoch, num_epochs, lr_init=learning_rate,
+        #     #                         batch=i, n_batch=len(train_loader), method='multistep')
+        #     # Move variables to gpu
+        #     if cuda:
+        #         inputs, targets = inputs.cuda(), targets.cuda()
+        #     # Convert to pytorch variables
+        #     inputs, targets = Variable(inputs), Variable(targets)
+        #     optimizer.zero_grad()
+        #     # print(inputs.shape) # [4, 3, 75, 100]
+        #     predictions = model(inputs)
+        #     # print(predictions.shape)
+        #     # loss_tmp = lam*reg_loss(predictions)
+        #     # print(type(loss_tmp))
+        #     loss = loss_fn(predictions, targets)# + loss_tmp#Variable(loss_tmp)
+        #     # print(type(loss))
+        #     loss.backward()
+        #     train_loss1 += loss.item()
+        #     optimizer.step()
+        #
+        # # Do a full pass on validation data
+        # model.eval()
+        # for inputs, targets in val_loader:
+        #     if cuda:
+        #         inputs, targets = inputs.cuda(), targets.cuda()
+        #     # Set volatile to True because we don't need to compute gradient
+        #     predictions = model(inputs)
+        #     # loss_tmp = lam*reg_loss(predictions)
+        #     loss = loss_fn(predictions, targets)# + loss_tmp
+        #     val_loss1 += loss.item()
+        #
+        # # Compute error per sample
+        # val_error1 = val_loss1 / n_val
+        # if val_error1 < best_error:
+        #     best_error = val_error1
+        #     # Move back weights to cpu
+        #     if cuda:
+        #         model.cpu()
+        #     # Save Weights
+        #     th.save(model.state_dict(), best_model_path)
+        #     if cuda:
+        #         model.cuda()
+        # if (train_loss1 / n_train) < best_train_error:
+        #     best_train_error = train_loss1 / n_train
+        # train_loss = min(train_loss, train_loss1)
+        # val_error = min(val_error, val_error1)
+
 
         if (epoch + 1) % evaluate_print == 0:
             # Then we print the results for this epoch:
@@ -208,11 +267,12 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
             inputs, targets = inputs.cuda(), targets.cuda()
         inputs, targets = Variable(inputs), Variable(targets)
         predictions = model(inputs)
-        loss_tmp = lam*reg_loss(predictions)
-        loss = loss_fn(predictions, targets) + loss_tmp
+        # loss_tmp = lam*reg_loss(predictions)
+        loss = loss_fn(predictions, targets)# + loss_tmp
         test_loss += loss.item()
     print("Final results:")
-    print("  best validation loss:\t\t{:.6f}".format(best_error))
+    # print("  best validation loss:\t\t{:.6f}".format(best_error))
+    print("  best validation loss:\t\t{:.6f}".format(min(val_err_list)))
     print("  test loss:\t\t\t{:.6f}".format(test_loss / n_test))
     # write result into result.txt
     # format fixed because we use this file later in pltModelTimegap.py

@@ -7,7 +7,8 @@ import numpy as np
 import torch as th
 from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
-from Pre.constants import MAX_WIDTH, MAX_HEIGHT, ROI, INPUT_HEIGHT, INPUT_WIDTH, SPLIT_SEED, TWO_IMG_GAP
+from Pre.constants import MAX_WIDTH, MAX_HEIGHT, ROI, INPUT_HEIGHT, INPUT_WIDTH
+from Pre.constants import SPLIT_SEED, TWO_IMG_GAP, LOADLABELS_SEQUENCE
 from Pre.data_aug import imgTransform
 from PIL import Image
 import scipy.misc
@@ -81,10 +82,11 @@ def loadLabels(folder, modelType):
     # json.dump(labels,open('labels2.json','w'))
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
-    if False:# modelType == "CNN_LSTM":
-        train_keys = images[:int(round(0.9*len(images)))]
-        val_keys = images[int(round(0.9*len(images))):int(round(0.95*len(images)))]
-        test_keys = images[int(round(0.95*len(images))):len(images)]
+    if LOADLABELS_SEQUENCE:# modelType == "CNN_LSTM":
+        images.sort(key=lambda name: int(name.strip().replace('"',"")))
+        train_keys = images[:int(round(0.7*len(images)))]
+        val_keys = images[int(round(0.7*len(images))):int(round(0.85*len(images)))]
+        test_keys = images[int(round(0.85*len(images))):len(images)]
         # train_keys = images[:int(round(0.3*len(images)))]
         # train_keys += images[int(round(0.5*len(images))):int(round(0.8*len(images)))]
         # val_keys = images[int(round(0.3*len(images))):int(round(0.4*len(images)))]
@@ -92,7 +94,7 @@ def loadLabels(folder, modelType):
         # test_keys = images[int(round(0.9*len(images))):len(images)]
         # test_keys += images[int(round(0.4*len(images))):int(round(0.5*len(images)))]
     else:
-        train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.1, random_state=SPLIT_SEED)
+        train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.4, random_state=SPLIT_SEED)
         val_keys, test_keys = train_test_split(tmp_keys, test_size=0.5, random_state=SPLIT_SEED)
 
     train_labels = {key: labels[key] for key in train_keys}
@@ -109,10 +111,13 @@ def loadTrainLabels(folder, modelType):
     labels = json.load(open(folder + 'labels.json'))
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
-    if False:
-        train_keys = images[:int(round(len(images)))]
-    else:
-        train_keys, test_keys = train_test_split(list(labels.keys()), test_size=0.01, random_state=SPLIT_SEED)
+    train_keys = images
+    if LOADLABELS_SEQUENCE:
+        images.sort(key=lambda name: int(name.strip().replace('"',"")))
+        train_keys = images
+    #     # train_keys = images[:int(round(len(images)))]
+    # else:
+    #     train_keys, test_keys = train_test_split(list(labels.keys()), test_size=0.01, random_state=SPLIT_SEED)
     train_labels = {key: labels[key] for key in train_keys}
 
     print("train {} images".format(len(labels)))
@@ -125,7 +130,8 @@ def loadTestLabels(folder, modelType):
     labels = json.load(open(folder + 'labels.json'))
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
-    if False:
+    if LOADLABELS_SEQUENCE:
+        images.sort(key=lambda name: int(name.strip().replace('"',"")))
         val_keys = images[:int(round(0.5*len(images)))]
         test_keys = images[int(round(0.5*len(images))):len(images)]
     else:
@@ -169,7 +175,7 @@ class JsonDatasetOrigin(Dataset):
         # scipy.misc.imsave('test'+str(index)+'.png', im)
         if np.random.random() < self.random_trans:
             im = Image.fromarray(im)
-            im = imgTransform(im)
+            im = imgTransform(im, factor=self.random_trans)
             im = np.array(im)
         # Crop the image and normalize it
         if self.preprocess:
@@ -212,8 +218,10 @@ class JsonDataset(Dataset):
         """
         images = []
         image = self.keys[index]
+        # print('image is', image)
         labels = np.array(self.labels[image]).astype(np.float32)
         y = labels.flatten().astype(np.float32)
+        # print('y is', y)
 
         for i in range(2):
             try:
@@ -225,12 +233,17 @@ class JsonDataset(Dataset):
             image += ".png"
             margin_left, margin_top = 0, 0
             im = cv2.imread(self.folder + image)
+            # scipy.misc.imsave('before'+str(index+TWO_IMG_GAP*i)+'.png', im)
+            # print('before')
+            # print(im)
             if np.random.random() < self.random_trans:
                 im = Image.fromarray(im)
-                im = imgTransform(im)
+                im = imgTransform(im, factor=self.random_trans)
                 im = np.array(im)
+            # print('after')
+            # print(im)
             # print('hhhhh')
-            # scipy.misc.imsave('test'+str(index+i)+'.png', im)
+            # scipy.misc.imsave('after'+str(index+TWO_IMG_GAP*i)+'.png', im)
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI

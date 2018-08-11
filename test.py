@@ -11,8 +11,8 @@ import numpy as np
 import torch as th
 from torch.autograd import Variable
 from tqdm import tqdm
-from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, RIGHT_KEY, LEFT_KEY, EXIT_KEYS, TWO_IMG_GAP
-from Pre.constants import ROI,MAX_WIDTH, UP_KEY, DOWN_KEY, TIME_GAP, TOTAL_FRAME, RES_DIR, ONE_IMG_ONLY
+from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, TWO_IMG_GAP
+from Pre.constants import ROI,MAX_WIDTH, TIME_GAP, TOTAL_FRAME, RES_DIR, ONE_IMG_ONLY
 from Pre.utils import preprocessImage, transformPrediction, loadLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 
@@ -24,7 +24,7 @@ parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)
 parser.add_argument('-o', '--output', help='output file', default='none', type=str)
 args = parser.parse_args()
 
-train_labels, val_labels, test_labels, labels = loadLabels(args.folder, args.model)
+# train_labels, val_labels, test_labels, labels = loadLabels(args.folder, args.model)
 # images = list(labels.keys())
 # TODO: add support for folders without labels
 if True:
@@ -32,8 +32,8 @@ if True:
 
 images.sort(key=lambda name: int(name.split('.png')[0]))
 # print(images)
-idx_val = set(val_labels.keys())
-idx_test = set(test_labels.keys())
+# idx_val = set(val_labels.keys())
+# idx_test = set(test_labels.keys())
 numChannel = 3
 if ONE_IMG_ONLY:
     numChannel = 3

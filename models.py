@@ -66,28 +66,104 @@ class ConvolutionalNetwork(nn.Module):
         super(ConvolutionalNetwork, self).__init__()
         # self.numChannel = num_channel
         self.conv_layers = nn.Sequential(
-            nn.Conv2d(num_channel, 8, kernel_size=5, stride=1, padding=2),
-            nn.BatchNorm2d(8),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
-
-            nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(num_channel, 16, kernel_size=5, stride=1, padding=2),
+            # nn.Dropout(0.5),
             nn.BatchNorm2d(16),
+            # nn.Dropout(0.35),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2, padding = 1)
+            nn.MaxPool2d(kernel_size=4, stride=2, padding=1),
+            # nn.Dropout(0.5),
+            # nn.BatchNorm2d(16),
+
+            nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
+            # nn.Dropout(0.35),
+            nn.BatchNorm2d(32),
+            # nn.Dropout(0.35),
+            # nn.MaxPool2d(kernel_size=4, stride=2, padding = 1),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=4, stride=2, padding = 1),
+            # nn.Dropout(0.35),
+            # nn.BatchNorm2d(16),
+
+            # nn.Conv2d(32, 32, kernel_size=3, stride=1, padding=1),
+            # nn.Dropout(0.35),
+            # nn.BatchNorm2d(32),
+            # nn.Dropout(0.35),
+            # nn.ReLU(inplace=True),
+            # nn.MaxPool2d(kernel_size=4, stride=2, padding = 1),
+            # nn.BatchNorm2d(32),
+
+            # nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
+            # nn.Dropout(0.35),
+            # nn.BatchNorm2d(64),
+            # nn.Dropout(0.35),
+            # nn.ReLU(inplace=True),
+            # nn.MaxPool2d(kernel_size=4, stride=2, padding = 1),
+            # nn.Dropout(0.25),
+            # # nn.BatchNorm2d(32),
+            #
+            # nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
+            # # nn.Dropout(0.35),
+            # nn.BatchNorm2d(64),
+            # # nn.Dropout(0.35),
+            # nn.ReLU(inplace=True)
+            # nn.Tanh(),
+            # nn.MaxPool2d(kernel_size=3, stride=2, padding = 1),
         )
 
-        self.fc1 = nn.Linear(15088, 64)
-        self.fc2 = nn.Linear(64, num_output)
+        self.fc1 = nn.Linear(28160, 128)
+        self.fc2 = nn.Linear(128, num_output)
         self.drop_p = drop_p
 
     def forward(self, x):
-        # x = self.bn1(x)
         x = F.dropout(x, p=self.drop_p, training=self.training)
+        # print('self training is:', self.training)
         x = self.conv_layers(x)
         x = x.view(x.size(0), -1)
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
+        return x
+
+class ConvolutionalNetwork1(nn.Module):
+    def __init__(self, num_channel=6, drop_p=0.25, num_output=2):
+        super(ConvolutionalNetwork, self).__init__()
+        # self.numChannel = num_channel
+        self.conv_layers = nn.Sequential(
+            nn.Conv2d(num_channel, 32, kernel_size=5, stride=2, padding=2),
+            # nn.Dropout(0.35),
+            nn.BatchNorm2d(32),
+            # nn.Dropout(0.35),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=1, padding=1),
+            nn.Dropout(0.35),
+
+            nn.Conv2d(32, 64, kernel_size=5, stride=2, padding=1),
+            # nn.Dropout(0.35),
+            nn.BatchNorm2d(64),
+            # nn.Dropout(0.35),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2, padding = 1),
+            nn.Dropout(0.35),
+
+            nn.Conv2d(64, 128, kernel_size=5, stride=2, padding=1),
+            # nn.Dropout(0.35),
+            nn.BatchNorm2d(128),
+            # nn.Dropout(0.35),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2, padding = 1),
+            nn.Dropout(0.35),
+
+            nn.Conv2d(128, 2, kernel_size=5, stride=2, padding=1),
+            nn.Tanh(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2, padding = 1)
+        )
+        self.drop_p = drop_p
+
+    def forward(self, x):
+        x = F.dropout(x, p=self.drop_p, training=self.training)
+        x = self.conv_layers(x)
+        x = x.view(x.size(0), -1)
+        x = F.relu(x)
         return x
 
 class CNN_RNN(nn.Module):
