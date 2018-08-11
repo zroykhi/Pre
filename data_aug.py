@@ -242,16 +242,22 @@ class ColorJitter(transforms.ColorJitter):
         format_string += ', hue={0})'.format(self.hue)
         return format_string
 
-def imgTransform(img):
-    tfs = torchvision.transforms.Compose([
-        # transforms.Resize((224,224)),
-        # transforms.ColorJitter(hue=.05, saturation=.05),
-        ColorJitter(saturation=0.8),
-        # transforms.RandomHorizontalFlip(),
-        # transforms.RandomRotation(20, resample=PIL.Image.BILINEAR),
-        # transforms.ToTensor()
-    ])
-    return tfs(img)
+def imgTransform(img, factor):
+    # tfs = torchvision.transforms.Compose([
+    #     # transforms.Resize((224,224)),
+    #     # transforms.ColorJitter(hue=.05, saturation=.05),
+    #     ColorJitter(saturation=factor),
+    #     adjust_brightness(img, brightness_factor=factor),
+    #     adjust_contrast(img, contrast_factor=factor)
+    #     # transforms.RandomHorizontalFlip(),
+    #     # transforms.RandomRotation(20, resample=PIL.Image.BILINEAR),
+    #     # transforms.ToTensor()
+    # ])
+    # img = ColorJitter(img, saturation=factor),
+    factor = random.uniform(0.6, 1) 
+    img = adjust_brightness(img, brightness_factor=factor)
+    img = adjust_contrast(img, contrast_factor=factor)
+    return img #tfs(img)
 
 def imgTransform2(img):
     img = np.asarray(img)
