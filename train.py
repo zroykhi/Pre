@@ -39,7 +39,7 @@ def reg_loss(tensorArray):
     return total_loss
 
 def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
-         learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_trans=0.5,
+         learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_trans=0.4,
          model_type="cnn", evaluate_print=1, load_model="", time_gap=25):
 
     if val_folder == None:
@@ -75,7 +75,7 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
 
     # Random transform also for val ?
     val_loader = th.utils.data.DataLoader(
-        JsonDataset(val_labels, preprocess=True, folder=val_folder, random_trans=0.4, sequence=DATASET_SEQUENCE),
+        JsonDataset(val_labels, preprocess=True, folder=val_folder, random_trans=0, sequence=DATASET_SEQUENCE),
                                           batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
     test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=val_folder, random_trans=0, sequence=DATASET_SEQUENCE),

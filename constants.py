@@ -19,7 +19,7 @@ FRAME_INTERVAL = 1
 # concatenate two images as input?
 ONE_IMG_ONLY = False
 # if yes, what is the frame gap between two images
-TWO_IMG_GAP = 3
+TWO_IMG_GAP = 6
 # Training
 FACTOR = 3  # Resize factor
 INPUT_HEIGHT = ROI[3] // FACTOR
