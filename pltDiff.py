@@ -108,8 +108,8 @@ predRoll = [labelsPred[str(key)][0] for key in frames2]
 predPitch = [labelsPred[str(key)][1] for key in frames2]
 
 # Smoothing(optional)
-predRoll = savitzky_golay(np.asarray(predRoll), 31, 5)
-predPitch = savitzky_golay(np.asarray(predPitch), 31, 5)
+# predRoll = savitzky_golay(np.asarray(predRoll), 31, 5)
+# predPitch = savitzky_golay(np.asarray(predPitch), 31, 5)
 
 # frames: str -> int
 frames1 = [int(key) for key in frames1]
