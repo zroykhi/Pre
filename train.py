@@ -12,14 +12,10 @@ import torch.utils.data
 import torch.nn as nn
 from torch.autograd import Variable
 from Pre.utils import loadLabels, loadTestLabels, loadTrainLabels
-if ONE_IMG_ONLY:
-    from Pre.utils import JsonDatasetOrigin as JsonDataset
-else:
-    from Pre.utils import JsonDataset
-from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 # run this code under ssh mode, you need to add the following two lines codes.
 # import matplotlib
 # matplotlib.use('Agg')
+from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 """if above line didn't work, use following two lines instead"""
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
@@ -41,6 +37,11 @@ def reg_loss(tensorArray):
 def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
          learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_trans=0.4,
          model_type="cnn", evaluate_print=1, load_model="", time_gap=25):
+    
+    if ONE_IMG_ONLY or model_type=='CNN_LSTM':
+        from Pre.utils import JsonDatasetOrigin as JsonDataset
+    else:
+        from Pre.utils import JsonDataset
 
     if val_folder == None:
         val_folder = train_folder

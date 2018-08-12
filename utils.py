@@ -62,7 +62,6 @@ def preprocessImage(image, width, height):
     return x
 
 def transformPrediction(y):
-    margin_left, margin_top, _, _ = ROI
     points = y.flatten()
     x = points[0]
     y = points[1]
@@ -169,7 +168,7 @@ class JsonDatasetOrigin(Dataset):
         """
         image = self.keys[index]
         image += ".png"
-        margin_left, margin_top = 0, 0
+        #margin_left, margin_top = 0, 0
         im = cv2.imread(self.folder + image)
         # print('hhhhh')
         # scipy.misc.imsave('test'+str(index)+'.png', im)
@@ -179,7 +178,7 @@ class JsonDatasetOrigin(Dataset):
             im = np.array(im)
         # Crop the image and normalize it
         if self.preprocess:
-            margin_left, margin_top, _, _ = ROI
+            #margin_left, margin_top, _, _ = ROI
             im = preprocessImage(im, INPUT_WIDTH, INPUT_HEIGHT)
         image = image.replace(".png","")
         labels = np.array(self.labels[image]).astype(np.float32)

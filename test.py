@@ -35,7 +35,7 @@ images.sort(key=lambda name: int(name.split('.png')[0]))
 # idx_val = set(val_labels.keys())
 # idx_test = set(test_labels.keys())
 numChannel = 3
-if ONE_IMG_ONLY:
+if ONE_IMG_ONLY or args.model=='CNN_LSTM':
     numChannel = 3
 else:
     numChannel = 6
@@ -53,8 +53,7 @@ res = {}
 print("start testing ...")
 for current_idx in tqdm(range(len(images))):
     # if take only one image for prediction
-    if ONE_IMG_ONLY:
-        name = images[current_idx]
+    if ONE_IMG_ONLY or args.model=='CNN_LSTM':
         image = cv2.imread('{}/{}'.format(args.folder, images[current_idx]))
         imgs = preprocessImage(image, INPUT_WIDTH, INPUT_HEIGHT)
         imgs = imgs.transpose((2, 0, 1)).astype(np.float32)
@@ -73,7 +72,10 @@ for current_idx in tqdm(range(len(images))):
         imgs = np.dstack(imgs)
         imgs = imgs.transpose((2, 0, 1)).astype(np.float32)
     predictions = model(Variable(th.from_numpy(imgs[None])))[0].data.numpy()
+    # print(type(predictions))
+    # print('predictions is:', predictions)
     x, y = transformPrediction(predictions)
+    # print('x, y is:', x, y)
     ls = []
     ls.append(float(x))
     ls.append(float(y))
