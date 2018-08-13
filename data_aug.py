@@ -253,8 +253,7 @@ def imgTransform(img, factor):
     #     # transforms.RandomRotation(20, resample=PIL.Image.BILINEAR),
     #     # transforms.ToTensor()
     # ])
-    # img = ColorJitter(img, saturation=factor),
-    factor = random.uniform(0.6, 1) 
+    factor = random.uniform(0.6, 1)
     img = adjust_brightness(img, brightness_factor=factor)
     img = adjust_contrast(img, contrast_factor=factor)
     return img #tfs(img)

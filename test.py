@@ -1,96 +1,113 @@
 """
-Test the trained model on images
+predict dataset
 """
 from __future__ import print_function, division, absolute_import
-
-import argparse
-import os
 import json
-import cv2
+import argparse
+import time
+from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, RES_DIR, ONE_IMG_ONLY, DATASET_SEQUENCE
 import numpy as np
 import torch as th
+import torch.utils.data
+import torch.nn as nn
 from torch.autograd import Variable
-from tqdm import tqdm
-from Pre.constants import INPUT_WIDTH, INPUT_HEIGHT, TWO_IMG_GAP
-from Pre.constants import ROI,MAX_WIDTH, TIME_GAP, TOTAL_FRAME, RES_DIR, ONE_IMG_ONLY
-from Pre.utils import preprocessImage, transformPrediction, loadLabels
+from Pre.utils import loadLabels, loadTestLabels, loadTrainLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
+from tqdm import tqdm
+from torchvision import transforms
+from Pre.data_aug import imgTransform
+import scipy.misc
+import os
 
-parser = argparse.ArgumentParser(description='Test a line detector')
-parser.add_argument('-f', '--folder', help='Training folder', type=str, required=True)
-parser.add_argument('-w', '--weights', help='Saved weights', default=RES_DIR+"cnn_model_25_tmp.pth", type=str)
-parser.add_argument('-m', '--model', help='Model type', default="cnn", type=str)
-parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)
-parser.add_argument('-o', '--output', help='output file', default='none', type=str)
-args = parser.parse_args()
+def main(test_folder, batchsize=8,
+         seed=42, cuda=True, random_trans=0.0,
+         model_type="CNN_LSTM", weights='', time_gap=25, output='none'):
 
-# train_labels, val_labels, test_labels, labels = loadLabels(args.folder, args.model)
-# images = list(labels.keys())
-# TODO: add support for folders without labels
-if True:
-    images = [f for f in os.listdir(args.folder) if f.endswith('.png')]
-
-images.sort(key=lambda name: int(name.split('.png')[0]))
-# print(images)
-# idx_val = set(val_labels.keys())
-# idx_test = set(test_labels.keys())
-numChannel = 3
-if ONE_IMG_ONLY or args.model=='CNN_LSTM':
-    numChannel = 3
-else:
-    numChannel = 6
-current_idx = 0
-if args.model == "CNN_RNN":
-    model = CNN_RNN(num_channel=numChannel)
-elif args.model == "CNN_LSTM":
-    model = CNN_LSTM(num_channel=numChannel)
-else: model = ConvolutionalNetwork(num_channel=numChannel, num_output=2)
-model.load_state_dict(th.load(args.weights))
-model.eval()# IMPORTANT, if drop rate is not 0, without this prediction is bad
-# TODO: compute val and test error
-res = {}
-
-print("start testing ...")
-for current_idx in tqdm(range(len(images))):
-    # if take only one image for prediction
-    if ONE_IMG_ONLY or args.model=='CNN_LSTM':
-        image = cv2.imread('{}/{}'.format(args.folder, images[current_idx]))
-        imgs = preprocessImage(image, INPUT_WIDTH, INPUT_HEIGHT)
-        imgs = imgs.transpose((2, 0, 1)).astype(np.float32)
-    # take two images as input
+    if ONE_IMG_ONLY or model_type=='CNN_LSTM':
+        from Pre.utils import JsonDatasetOne as JsonDataset
     else:
-        imgs = []
-        for i in range(2):
-            try:
-                image = images[current_idx+TWO_IMG_GAP*i]
-                image = cv2.imread('{}/{}'.format(args.folder, images[current_idx]))
-                im = preprocessImage(image, INPUT_WIDTH, INPUT_HEIGHT)
-                imgs.append(im)
-            except IndexError:
-                imgs.append(imgs[0])
-                continue
-        imgs = np.dstack(imgs)
-        imgs = imgs.transpose((2, 0, 1)).astype(np.float32)
-    predictions = model(Variable(th.from_numpy(imgs[None])))[0].data.numpy()
-    # print(type(predictions))
-    # print('predictions is:', predictions)
-    x, y = transformPrediction(predictions)
-    # print('x, y is:', x, y)
-    ls = []
-    ls.append(float(x))
-    ls.append(float(y))
-    # print(args.time_gap)
-    res.update({str(int(images[current_idx].replace('.png',""))+args.time_gap):ls})
+        from Pre.utils import JsonDatasetTwo as JsonDataset
 
-# print(res)
-print("test finished !")
-jsObj = json.dumps(res)
-out = ''
-if args.output == 'none':
-    out = './Pre/results/predictions_'+args.model+"_"+str(args.time_gap)+'.json'
-else:
-    out = args.output
-fileObject = open(out, 'w')
-fileObject.write(jsObj)
-fileObject.close()
-print('Done!')
+    if not test_folder.endswith('/'):
+        test_folder += '/'
+
+    print('has cuda?', cuda)
+    #images = [f for f in os.listdir(test_folder) if f.endswith('.png')]
+    #images.sort(key=lambda name: int(name.split('.png')[0]))
+    # loadtest lables function
+    test_labels = json.load(open(test_folder + 'labels.json'))
+    images = list(test_labels.keys())
+    images.sort(key=lambda name: int(name.strip().replace('"',"")))
+    # Keywords for pytorch dataloader, augment num_workers could work faster
+    kwargs = {'num_workers': 4, 'pin_memory': False} if cuda else {}
+    test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=test_folder, random_trans=random_trans, sequence=True),
+                                           batch_size=batchsize, shuffle=False, **kwargs)
+
+    numChannel = test_loader.dataset.numChannel
+    if model_type == "cnn":
+       model = ConvolutionalNetwork(num_channel=numChannel)
+    elif model_type == "CNN_RNN":
+       model = CNN_RNN(num_channel=numChannel)
+    elif model_type == "CNN_LSTM":
+       model = CNN_LSTM(num_channel=numChannel)
+    else:
+       raise ValueError("Model type not supported")
+
+    model.load_state_dict(th.load(weights))
+    # IMPORTANT, if drop rate isn't 0, without this prediction is bad
+    model.eval()
+    # Move variables to gpu
+    if cuda:
+       model.cuda()
+
+    predictions = {}
+    idx = 0
+    test_loss = 0.0
+    # Loss functions
+    loss_fn = nn.MSELoss(size_average=False)
+    test_size = len(images)
+    start_time = time.time()
+    print(test_size, 'images')
+    print('start testing ...')
+    for i, (inputs, targets) in enumerate(test_loader):
+        # Move variables to gpu
+        if cuda:
+            inputs, targets = inputs.cuda(), targets.cuda()
+        inputs, targets = Variable(inputs), Variable(targets)
+        prediction = model(inputs)
+        loss = loss_fn(prediction, targets)
+        test_loss += loss.item()
+        row = prediction.shape[0]
+        for i in range(row):
+            if cuda:
+                ls = prediction[i].cpu().detach().numpy().tolist()
+            else: ls = prediction[i].detach().numpy().tolist()
+            predictions.update({str(int(images[idx])+time_gap):ls})
+            idx += 1
+    print('test error is:', test_loss / test_size)
+    jsObj = json.dumps(predictions)
+
+    out = ''
+    if output == 'none':
+        out = './Pre/results/predictions_'+model_type+"_"+str(time_gap)+'.json'
+    else:
+        out = output
+    fileObject = open(out, 'w')
+    fileObject.write(jsObj)
+    fileObject.close()
+    print("Total train time: {:.2f} s".format((time.time() - start_time)))
+    print('Done!')
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Test model')
+    parser.add_argument('-f', '--test_folder', help='Test folder', type=str, default='Pre/3model/mixData')
+    parser.add_argument('-bs', '--batch_size', help='batch size', type=int, default=8)
+    parser.add_argument('-w', '--weight', help='Model weight', default='Pre/results/cnn_model_25_tmp.pth')
+    parser.add_argument('-m', '--model', help='Model type', type=str, default='cnn', choices=['cnn','CNN_RNN','CNN_LSTM'])
+    parser.add_argument('-o', '--output', help='output file', default='none')
+    parser.add_argument('-t', '--time_gap', help='time gap', default=25, type=int)
+    parser.add_argument('-cuda', '--cuda', action='store_true', help='enable cuda', default=True)
+    args = parser.parse_args()
+
+    main(test_folder=args.test_folder, batchsize=args.batch_size, weights=args.weight,
+         cuda=args.cuda, model_type=args.model, output=args.output, time_gap=args.time_gap)

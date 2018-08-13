@@ -72,26 +72,12 @@ def loadLabels(folder, modelType):
     if not folder.endswith('/'):
         folder += '/'
     labels = json.load(open(folder + 'labels.json'))
-    # labels2 = labels.copy()
-    # lenght = len(labels2)
-    # change keys' number in the new labels2
-    # labels2 = dict((str(int(key.replace('"',''))+lenght),value) for (key, value) in labels2.items())
-    # update labels(combine labels and labels2)
-    # labels.update(labels2)
-    # json.dump(labels,open('labels2.json','w'))
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
-    if LOADLABELS_SEQUENCE:# modelType == "CNN_LSTM":
-        images.sort(key=lambda name: int(name.strip().replace('"',"")))
-        train_keys = images[:int(round(0.7*len(images)))]
-        val_keys = images[int(round(0.7*len(images))):int(round(0.85*len(images)))]
-        test_keys = images[int(round(0.85*len(images))):len(images)]
-        # train_keys = images[:int(round(0.3*len(images)))]
-        # train_keys += images[int(round(0.5*len(images))):int(round(0.8*len(images)))]
-        # val_keys = images[int(round(0.3*len(images))):int(round(0.4*len(images)))]
-        # val_keys += images[int(round(0.8*len(images))):int(round(0.9*len(images)))]
-        # test_keys = images[int(round(0.9*len(images))):len(images)]
-        # test_keys += images[int(round(0.4*len(images))):int(round(0.5*len(images)))]
+    if LOADLABELS_SEQUENCE:
+        train_keys = images[:int(round(0.6*len(images)))]
+        val_keys = images[int(round(0.6*len(images))):int(round(0.8*len(images)))]
+        test_keys = images[int(round(0.8*len(images))):len(images)]
     else:
         train_keys, tmp_keys = train_test_split(list(labels.keys()), test_size=0.4, random_state=SPLIT_SEED)
         val_keys, test_keys = train_test_split(tmp_keys, test_size=0.5, random_state=SPLIT_SEED)
@@ -111,18 +97,12 @@ def loadTrainLabels(folder, modelType):
     images = list(labels.keys())
     images.sort(key=lambda name: int(name.strip().replace('"',"")))
     train_keys = images
-    if LOADLABELS_SEQUENCE:
-        images.sort(key=lambda name: int(name.strip().replace('"',"")))
-        train_keys = images
-    #     # train_keys = images[:int(round(len(images)))]
-    # else:
-    #     train_keys, test_keys = train_test_split(list(labels.keys()), test_size=0.01, random_state=SPLIT_SEED)
     train_labels = {key: labels[key] for key in train_keys}
 
     print("train {} images".format(len(labels)))
     return train_labels, labels
 
-# load train data and test data from different directories
+# load train data and test/validation data from different directories
 def loadTestLabels(folder, modelType):
     if not folder.endswith('/'):
         folder += '/'
@@ -145,7 +125,7 @@ def loadTestLabels(folder, modelType):
 """
 take one image only as input
 """
-class JsonDatasetOrigin(Dataset):
+class JsonDatasetOne(Dataset):
     def __init__(self, labels, folder="", preprocess=False, random_trans=0.0, swap=False, sequence=False):
         self.sequence = sequence
         self.labels = labels.copy()
@@ -156,10 +136,7 @@ class JsonDatasetOrigin(Dataset):
         self.numChannel = 3
         self.keys = list(labels.keys())
         if self.sequence:
-            # keys = list(labels.keys())
             self.keys.sort(key=lambda name: int(name.strip().replace('"',"")))
-            # setattr(self, 'keys', keys)
-            # self.keys = [str(i) for i in self.keys]
 
     def __getitem__(self, index):
         """
@@ -168,22 +145,17 @@ class JsonDatasetOrigin(Dataset):
         """
         image = self.keys[index]
         image += ".png"
-        #margin_left, margin_top = 0, 0
         im = cv2.imread(self.folder + image)
-        # print('hhhhh')
-        # scipy.misc.imsave('test'+str(index)+'.png', im)
         if np.random.random() < self.random_trans:
             im = Image.fromarray(im)
             im = imgTransform(im, factor=self.random_trans)
             im = np.array(im)
         # Crop the image and normalize it
         if self.preprocess:
-            #margin_left, margin_top, _, _ = ROI
             im = preprocessImage(im, INPUT_WIDTH, INPUT_HEIGHT)
         image = image.replace(".png","")
         labels = np.array(self.labels[image]).astype(np.float32)
         y = labels.flatten().astype(np.float32)
-        self.numChannel = im.shape[2]
         # swap color axis because
         # numpy image: H x W x C
         # torch image: C X H X W
@@ -196,7 +168,7 @@ class JsonDatasetOrigin(Dataset):
 """
 take two images as input and use data augmentation
 """
-class JsonDataset(Dataset):
+class JsonDatasetTwo(Dataset):
     def __init__(self, labels, folder="", preprocess=False, random_trans=0.0, swap=False, sequence=False):
         self.keys = list(labels.keys())
         self.sequence = sequence
@@ -207,7 +179,6 @@ class JsonDataset(Dataset):
         self.swap = swap
         self.numChannel = 6
         if self.sequence:
-            # keys = list(labels.keys())
             self.keys.sort(key=lambda name: int(name.strip().replace('"',"")))
 
     def __getitem__(self, index):
@@ -217,10 +188,8 @@ class JsonDataset(Dataset):
         """
         images = []
         image = self.keys[index]
-        # print('image is', image)
         labels = np.array(self.labels[image]).astype(np.float32)
         y = labels.flatten().astype(np.float32)
-        # print('y is', y)
 
         for i in range(2):
             try:
@@ -232,26 +201,16 @@ class JsonDataset(Dataset):
             image += ".png"
             margin_left, margin_top = 0, 0
             im = cv2.imread(self.folder + image)
-            # scipy.misc.imsave('before'+str(index+TWO_IMG_GAP*i)+'.png', im)
-            # print('before')
-            # print(im)
             if np.random.random() < self.random_trans:
                 im = Image.fromarray(im)
                 im = imgTransform(im, factor=self.random_trans)
                 im = np.array(im)
-            # print('after')
-            # print(im)
-            # print('hhhhh')
-            # scipy.misc.imsave('after'+str(index+TWO_IMG_GAP*i)+'.png', im)
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI
                 im = preprocessImage(im, INPUT_WIDTH, INPUT_HEIGHT)
             images.append(im)
-        # swap color axis
         images = np.dstack(images)
-        # print(images.shape)
-        self.numChannel = images.shape[2]
         images = images.transpose((2, 0, 1)).astype(np.float32)
         return th.from_numpy(images), th.from_numpy(y)
 

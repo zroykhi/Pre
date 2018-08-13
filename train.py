@@ -18,7 +18,7 @@ from Pre.utils import loadLabels, loadTestLabels, loadTrainLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 """if above line didn't work, use following two lines instead"""
 import matplotlib.pyplot as plt
-plt.switch_backend('agg')
+# plt.switch_backend('agg')
 from tqdm import tqdm
 from torchvision import transforms
 from Pre.data_aug import imgTransform
@@ -37,11 +37,11 @@ def reg_loss(tensorArray):
 def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
          learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_trans=0.4,
          model_type="cnn", evaluate_print=1, load_model="", time_gap=25):
-    
+
     if ONE_IMG_ONLY or model_type=='CNN_LSTM':
-        from Pre.utils import JsonDatasetOrigin as JsonDataset
+        from Pre.utils import JsonDatasetOne as JsonDataset
     else:
-        from Pre.utils import JsonDataset
+        from Pre.utils import JsonDatasetTwo as JsonDataset
 
     if val_folder == None:
         val_folder = train_folder
@@ -82,10 +82,6 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
     test_loader = th.utils.data.DataLoader(JsonDataset(test_labels, preprocess=True, folder=val_folder, random_trans=0, sequence=DATASET_SEQUENCE),
                                            batch_size=VAL_BATCH_SIZE, shuffle=False, **kwargs)
 
-    # train_loader1 = th.utils.data.DataLoader(
-    #    JsonDataset(train_labels, preprocess=True, folder='Pre/3dmodel/testData719/', random_trans=random_trans, sequence=DATASET_SEQUENCE),
-    #    batch_size=batchsize, shuffle=True, **kwargs)
-
     numChannel = train_loader.dataset.numChannel
     if model_type == "cnn":
         model = ConvolutionalNetwork(num_channel=numChannel, num_output=num_output)
@@ -101,7 +97,6 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
 
     # L2 penalty
     weight_decay = 1e-4
-    #weight_decay = 0
     # Optimizers
     # optimizer = th.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     optimizer = th.optim.SGD(model.parameters(), lr=learning_rate,
@@ -148,13 +143,9 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
             # Convert to pytorch variables
             inputs, targets = Variable(inputs), Variable(targets)
             optimizer.zero_grad()
-            # print(inputs.shape) # [4, 3, 75, 100]
             predictions = model(inputs)
-            # print(predictions.shape)
             # loss_tmp = lam*reg_loss(predictions)
-            # print(type(loss_tmp))
             loss = loss_fn(predictions, targets)# + loss_tmp#Variable(loss_tmp)
-            # print(type(loss))
             loss.backward()
             train_loss += loss.item()
             optimizer.step()
@@ -183,61 +174,6 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
                 model.cuda()
         if (train_loss / n_train) < best_train_error:
             best_train_error = train_loss / n_train
-
-
-        # Switch to training mode
-        # model.train()
-        # train_loss1, val_loss1 = 0.0, 0.0
-        # # Full pass on training data
-        # # Update the model after each minibatch
-        # for i, (inputs, targets) in enumerate(train_loader1):
-        #     # Adjust learning rate
-        #     # adjustLearningRate(optimizer, epoch, num_epochs, lr_init=learning_rate,
-        #     #                         batch=i, n_batch=len(train_loader), method='multistep')
-        #     # Move variables to gpu
-        #     if cuda:
-        #         inputs, targets = inputs.cuda(), targets.cuda()
-        #     # Convert to pytorch variables
-        #     inputs, targets = Variable(inputs), Variable(targets)
-        #     optimizer.zero_grad()
-        #     # print(inputs.shape) # [4, 3, 75, 100]
-        #     predictions = model(inputs)
-        #     # print(predictions.shape)
-        #     # loss_tmp = lam*reg_loss(predictions)
-        #     # print(type(loss_tmp))
-        #     loss = loss_fn(predictions, targets)# + loss_tmp#Variable(loss_tmp)
-        #     # print(type(loss))
-        #     loss.backward()
-        #     train_loss1 += loss.item()
-        #     optimizer.step()
-        #
-        # # Do a full pass on validation data
-        # model.eval()
-        # for inputs, targets in val_loader:
-        #     if cuda:
-        #         inputs, targets = inputs.cuda(), targets.cuda()
-        #     # Set volatile to True because we don't need to compute gradient
-        #     predictions = model(inputs)
-        #     # loss_tmp = lam*reg_loss(predictions)
-        #     loss = loss_fn(predictions, targets)# + loss_tmp
-        #     val_loss1 += loss.item()
-        #
-        # # Compute error per sample
-        # val_error1 = val_loss1 / n_val
-        # if val_error1 < best_error:
-        #     best_error = val_error1
-        #     # Move back weights to cpu
-        #     if cuda:
-        #         model.cpu()
-        #     # Save Weights
-        #     th.save(model.state_dict(), best_model_path)
-        #     if cuda:
-        #         model.cuda()
-        # if (train_loss1 / n_train) < best_train_error:
-        #     best_train_error = train_loss1 / n_train
-        # train_loss = min(train_loss, train_loss1)
-        # val_error = min(val_error, val_error1)
-
 
         if (epoch + 1) % evaluate_print == 0:
             # Then we print the results for this epoch:
