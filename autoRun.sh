@@ -14,7 +14,7 @@ declare -a model_list=("cnn" "CNN_LSTM")
 cd $BASE_DIR
 start_tm=`date +%s%N`
 # T is time gap
-for T in {0..30..3} ; do
+for T in {10..30..2} ; do
 # for T in {20..30..1} ; do
     cd $BASE_DIR$CODE_DIR
     python3 3dmodel/transformData.py -i $IMG_DIR"/paras_origin.json" -o $IMG_DIR"/labels.json" -t ${T};
@@ -25,7 +25,7 @@ for T in {0..30..3} ; do
         echo "loop No:"$IDX
         echo "current model:"${model}"; time gap: "$T
         # change to a suitable epochs number(50 is ok, 1 for test)
-        python3 -m Pre.train -tf $BASE_DIR$CODE_DIR$IMG_DIR --model_type ${model} -t ${T} --num_epochs 60
+        python3 -m Pre.train -tf $BASE_DIR$CODE_DIR$IMG_DIR --model_type ${model} -t ${T} --num_epochs 100 -bs 8
         python3 -m Pre.test -f $BASE_DIR$CODE_DIR$TEST_DIR -m ${model} -w $BASE_DIR$CODE_DIR$RES_DIR${model}"_model_"${T}"_tmp.pth" -t $T -bs 8
         python3 $BASE_DIR$CODE_DIR"pltDiff.py" -m ${model} -t $T -o $BASE_DIR$CODE_DIR$TEST_DIR"/paras_origin.json" -p $BASE_DIR$CODE_DIR$RES_DIR"predictions_"${model}"_"${T}".json"
     let IDX+=1
@@ -35,6 +35,6 @@ done
 cd $BASE_DIR$CODE_DIR
 python pltModelTimegap.py -f $BASE_DIR$CODE_DIR$RESULT_FILE
 end_tm=`date +%s%N`
-use_tm=`echo $end_tm $start_tm | awk '{print($1-$2)/1000000000}'`
-echo "time used:"$use_tm" s"
+use_tm=`echo $end_tm $start_tm | awk '{print($1-$2)/3600000000000}'`
+echo "time used:"$use_tm" h"
 echo "All finished !"

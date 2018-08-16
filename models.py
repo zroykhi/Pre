@@ -62,27 +62,27 @@ class MlpNetwork(nn.Module):
         return x, x1, x2
 
 class ConvolutionalNetwork(nn.Module):
-    def __init__(self, num_channel=6, drop_p=0.3, num_output=2):
+    def __init__(self, num_channel=6, drop_p=0.2, num_output=2):
         super(ConvolutionalNetwork, self).__init__()
         # self.numChannel = num_channel
         self.conv_layers = nn.Sequential(
             nn.Conv2d(num_channel, 8, kernel_size=5, stride=1, padding=2),
-            # nn.Dropout(0.5),
+            # nn.Dropout2d(0.25),
             nn.BatchNorm2d(8),
-            # nn.Dropout(0.35),
+            # nn.Dropout2d(0.25),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
-            # nn.Dropout(0.5),
+            # nn.Dropout2d(0.3),
             # nn.BatchNorm2d(16),
 
             nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=1),
-            # nn.Dropout(0.35),
+            # nn.Dropout2d(0.25),
             nn.BatchNorm2d(16),
-            # nn.Dropout(0.35),
+            # nn.Dropout2d(0.25),
             # nn.MaxPool2d(kernel_size=4, stride=2, padding = 1),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2, padding = 1),
-            # nn.Dropout(0.35),
+            # nn.Dropout2d(0.35),
             # nn.BatchNorm2d(16),
 
             # nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
@@ -113,14 +113,18 @@ class ConvolutionalNetwork(nn.Module):
 
         self.fc1 = nn.Linear(15088, 128)
         self.fc2 = nn.Linear(128, num_output)
+        self.dropout2 = nn.Dropout2d(p=0.25)
+        self.dropout1 = nn.Dropout(p=0.25)
         self.drop_p = drop_p
 
     def forward(self, x):
-        x = F.dropout(x, p=self.drop_p, training=self.training)
+        # x = F.dropout(x, p=self.drop_p, training=self.training) # without this works better
         # print('self training is:', self.training)
         x = self.conv_layers(x)
         x = x.view(x.size(0), -1)
+        x = self.dropout1(x)
         x = F.relu(self.fc1(x))
+        x = self.dropout1(x)
         x = self.fc2(x)
         return x
 
@@ -218,12 +222,13 @@ class CNN_LSTM(nn.Module):
         # self.fc = nn.Linear(15088, input_size)
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_size, num_output)
-        # self.dropout = nn.Dropout(p=0.25)
+        self.dropout = nn.Dropout(p=0.25)
 
     def forward(self, inputs):
-        inputs = F.dropout(inputs, p=self.drop_p, training=self.training)
+        # inputs = F.dropout(inputs, p=self.drop_p, training=self.training)
         features = self.cnn(inputs)
         features = features.view(features.size(0), -1)
+        # features = self.dropout(features)
         features = features[None, :, :]
         outputs, _ = self.lstm(features)
         # outputs = self.dropout(outputs)

@@ -86,7 +86,16 @@ def main(test_folder, batchsize=8,
             idx += 1
     print('test error is:', test_loss / test_size)
     jsObj = json.dumps(predictions)
-
+    with open("./Pre/testError.txt", "a") as f:
+        f.write("current model: ")
+        f.write(model_type)
+        f.write("\n")
+        f.write("time gap is:")
+        f.write(str(time_gap))
+        f.write("\ntest error:")
+        f.write(str(test_loss / test_size))
+        f.write("\n\n")
+    f.close()
     out = ''
     if output == 'none':
         out = './Pre/results/predictions_'+model_type+"_"+str(time_gap)+'.json'

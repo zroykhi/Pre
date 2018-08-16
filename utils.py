@@ -145,7 +145,11 @@ class JsonDatasetOne(Dataset):
         """
         image = self.keys[index]
         image += ".png"
-        im = cv2.imread(self.folder + image)
+        # im = cv2.imread(self.folder + image)
+        im = Image.open(self.folder + image).convert("RGB") # RGB(270, 486, 3)
+        im = np.asarray(im)
+        # im.flags.writeable = True
+        # im[...,[0,2]] = im[...,[2,0]] # RGB-> BGR
         if np.random.random() < self.random_trans:
             im = Image.fromarray(im)
             im = imgTransform(im, factor=self.random_trans)
@@ -200,17 +204,28 @@ class JsonDatasetTwo(Dataset):
                 continue
             image += ".png"
             margin_left, margin_top = 0, 0
-            im = cv2.imread(self.folder + image)
+            # im = cv2.imread(self.folder + image) # BGR(270, 486, 3)
+            im = Image.open(self.folder + image).convert("RGB") # RGB(270, 486, 3)
+            # print(im.mode)
+            im = np.asarray(im)
+            # im.flags.writeable = True
+            # im[...,[0,2]] = im[...,[2,0]] # RGB-> BGR
+            # scipy.misc.imsave('before'+str(index)+'.png', im)
             if np.random.random() < self.random_trans:
                 im = Image.fromarray(im)
                 im = imgTransform(im, factor=self.random_trans)
                 im = np.array(im)
+                # scipy.misc.imsave('after'+str(index)+'.png', im)
             # Crop the image and normalize it
             if self.preprocess:
                 margin_left, margin_top, _, _ = ROI
                 im = preprocessImage(im, INPUT_WIDTH, INPUT_HEIGHT)
             images.append(im)
         images = np.dstack(images)
+        # print(images.shape) # (90, 162, 6)
+        # swap color axis because
+        # numpy image: H x W x C
+        # torch image: C X H X W
         images = images.transpose((2, 0, 1)).astype(np.float32)
         return th.from_numpy(images), th.from_numpy(y)
 

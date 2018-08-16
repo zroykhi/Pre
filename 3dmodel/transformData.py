@@ -10,10 +10,11 @@ sys.path.append(dirpath)
 FRAME_INTERVAL = 1
 def transformDate(inputFile, output, TIME_GAP):
     labels = json.load(open(inputFile))
+    # string list
     TOTAL_FRAME = list(labels.keys())
-    # for python2
+    # for python2 string->int
     # TOTAL_FRAME = map(int, TOTAL_FRAME)
-    # for python3
+    # for python3 string->int
     TOTAL_FRAME = list(map(int, TOTAL_FRAME))
     MAX_FRAME = max(TOTAL_FRAME)
     MIN_FRAME = min(TOTAL_FRAME)

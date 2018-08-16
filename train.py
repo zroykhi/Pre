@@ -35,7 +35,7 @@ def reg_loss(tensorArray):
     return total_loss
 
 def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
-         learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_trans=0.4,
+         learning_rate=0.0001, seed=42, cuda=True, num_output=2, random_trans=0.5,
          model_type="cnn", evaluate_print=1, load_model="", time_gap=25):
 
     if ONE_IMG_ONLY or model_type=='CNN_LSTM':
@@ -97,6 +97,8 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
 
     # L2 penalty
     weight_decay = 1e-4
+    if model_type == 'CNN_LSTM':
+        learning_rate = 5e-5
     # Optimizers
     # optimizer = th.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     optimizer = th.optim.SGD(model.parameters(), lr=learning_rate,
@@ -241,7 +243,8 @@ if __name__ == '__main__':
     parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables CUDA training')
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
     parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','CNN_RNN','CNN_LSTM'])
-    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)
+    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)# for sgd optimize
+    # parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=5e-5, type=float)# for Adam optimize
     parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)
     args = parser.parse_args()
 
