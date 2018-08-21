@@ -18,7 +18,7 @@ from Pre.utils import loadLabels, loadTestLabels, loadTrainLabels
 from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
 """if above line didn't work, use following two lines instead"""
 import matplotlib.pyplot as plt
-# plt.switch_backend('agg')
+plt.switch_backend('agg')
 from tqdm import tqdm
 from torchvision import transforms
 from Pre.data_aug import imgTransform
@@ -94,11 +94,8 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
 
     if cuda:
         model.cuda()
-
     # L2 penalty
-    weight_decay = 1e-4
-    if model_type == 'CNN_LSTM':
-        learning_rate = 5e-5
+    weight_decay = 1e-3
     # Optimizers
     # optimizer = th.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     optimizer = th.optim.SGD(model.parameters(), lr=learning_rate,
@@ -195,8 +192,8 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
             fig.show()
             # print("Epoch {} of {} took {:.3f}s".format(
             #     epoch + 1, num_epochs, time.time() - start_time))
-            # print("  training loss:\t\t{:.6f}".format(train_loss / n_train))
-            # print("  validation loss:\t\t{:.6f}".format(val_error))
+            print("  training loss:\t\t{:.6f}".format(train_loss / n_train))
+            print("  validation loss:\t\t{:.6f}".format(val_error))
     plt.savefig(RES_DIR+args.model_type+'_'+str(args.time_gap)+'_loss'+'.png')
     # After training, we compute and print the test error:
     model.load_state_dict(th.load(best_model_path))

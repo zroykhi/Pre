@@ -9,12 +9,12 @@ CODE_DIR=/Pre/
 IDX=1
 RESULT_FILE=/result.txt
 RES_DIR=results/
-declare -a model_list=("cnn" "CNN_LSTM")
-# declare -a model_list=("cnn")
+#declare -a model_list=("cnn" "CNN_LSTM")
+declare -a model_list=("CNN_LSTM")
 cd $BASE_DIR
 start_tm=`date +%s%N`
 # T is time gap
-for T in {10..30..2} ; do
+for T in {10..40..3} ; do
 # for T in {20..30..1} ; do
     cd $BASE_DIR$CODE_DIR
     python3 3dmodel/transformData.py -i $IMG_DIR"/paras_origin.json" -o $IMG_DIR"/labels.json" -t ${T};
