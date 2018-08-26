@@ -15,7 +15,7 @@ from Pre.utils import loadLabels, loadTestLabels, loadTrainLabels
 # run this code under ssh mode, you need to add the following two lines codes.
 # import matplotlib
 # matplotlib.use('Agg')
-from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
+from Pre.models import ConvolutionalNetwork, CNN_LSTM
 """if above line didn't work, use following two lines instead"""
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
@@ -85,8 +85,6 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
     numChannel = train_loader.dataset.numChannel
     if model_type == "cnn":
         model = ConvolutionalNetwork(num_channel=numChannel, num_output=num_output)
-    elif model_type == "CNN_RNN":
-        model = CNN_RNN(num_channel=numChannel)
     elif model_type == "CNN_LSTM":
         model = CNN_LSTM(num_channel=numChannel)
     else:
@@ -239,7 +237,7 @@ if __name__ == '__main__':
     parser.add_argument('--seed', help='Random Seed', default=42, type=int)
     parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables CUDA training')
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
-    parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn','CNN_RNN','CNN_LSTM'])
+    parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn', 'CNN_LSTM'])
     parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)# for sgd optimize
     # parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=5e-5, type=float)# for Adam optimize
     parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)

@@ -12,7 +12,7 @@ import torch.utils.data
 import torch.nn as nn
 from torch.autograd import Variable
 from Pre.utils import loadLabels, loadTestLabels, loadTrainLabels
-from Pre.models import ConvolutionalNetwork, CNN_RNN, CNN_LSTM
+from Pre.models import ConvolutionalNetwork, CNN_LSTM
 from tqdm import tqdm
 from torchvision import transforms
 from Pre.data_aug import imgTransform
@@ -46,8 +46,6 @@ def main(test_folder, batchsize=8,
     numChannel = test_loader.dataset.numChannel
     if model_type == "cnn":
        model = ConvolutionalNetwork(num_channel=numChannel)
-    elif model_type == "CNN_RNN":
-       model = CNN_RNN(num_channel=numChannel)
     elif model_type == "CNN_LSTM":
        model = CNN_LSTM(num_channel=numChannel)
     else:
