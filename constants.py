@@ -13,17 +13,17 @@ ROI = [0, 0, MAX_WIDTH, MAX_HEIGHT]
 TIME_GAP = 25
 TOTAL_FRAME = 5000
 LOADLABELS_SEQUENCE = False
-DATASET_SEQUENCE = False # must be true
+DATASET_SEQUENCE = False 
 # dataset sample frame interval
 FRAME_INTERVAL = 1
 # concatenate two images as input?
 ONE_IMG_ONLY = False
-# if yes, what is the frame gap between two images
+# if take two images as input, what is the frame gap between two images
 TWO_IMG_GAP = 6
 # Training
 FACTOR = 3  # Resize factor
 INPUT_HEIGHT = ROI[3] // FACTOR
 INPUT_WIDTH = ROI[2] // FACTOR
 SPLIT_SEED = 42 # For train/val/test split
-WEIGHTS_PTH = "cnn_model.pth"  # Path to the trained model
+WEIGHTS_PTH = "cnn_model_25_tmp.pth"  # Path to the trained model
 RES_DIR = "./Pre/results/"

@@ -1,16 +1,14 @@
 #!/bin/bash
-# change your path here(path to Pre's parent folder,without '/' at the end)
+# change your path here(path to BASE_DIR, i.e. Pre's parent folder,without '/' at the end)
 BASE_DIR=/home/interns/zhi
-# BASE_DIR=/home/theo/Pre/Code/horizon-detection
-# BASE_DIR=/home/interns/Documents/ZHI/horizon-detection
 IMG_DIR=3dmodel/mixData
 TEST_DIR=3dmodel/mixData
 CODE_DIR=/Pre/
 IDX=1
 RESULT_FILE=/result.txt
 RES_DIR=results/
-#declare -a model_list=("cnn" "CNN_LSTM")
-declare -a model_list=("CNN_LSTM")
+declare -a model_list=("cnn" "CNN_LSTM")
+#declare -a model_list=("cnn")
 cd $BASE_DIR
 start_tm=`date +%s%N`
 # T is time gap

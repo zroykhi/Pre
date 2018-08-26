@@ -91,3 +91,5 @@ weight_decay up, delete first F.dropout, more fiters; optimizer?l2, use only cnn
 restnet, random_trans, use different angle together to train!! more pics 3/4 together to train!!
 loss functioin, suitable? every y take into account? batch size, don't use imread!!!
 make sure 'num_workers' in train.py doesn't exceed your cpu core num.
+
+适当增大weight decay可以让pitch的prediction更准确
