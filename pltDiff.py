@@ -5,7 +5,7 @@ this code is used to plot figure comparing the original boat parameters and pred
 import matplotlib
 # matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-plt.switch_backend('agg')
+#plt.switch_backend('agg')
 import json
 import argparse
 from constants import RES_DIR
@@ -102,18 +102,62 @@ frames1.sort(key=lambda name: int(name.strip().replace('"',"")))
 frames2.sort(key=lambda name: int(name.strip().replace('"',"")))
 
 # obtain roll and pitch lists respectively
-originRoll = [labelsOrigin[str(key)][0] for key in frames1]
-originPitch = [labelsOrigin[str(key)][1] for key in frames1]
-predRoll = [labelsPred[str(key)][0] for key in frames2]
-predPitch = [labelsPred[str(key)][1] for key in frames2]
+originRoll = [labelsOrigin[str(key)][0] for key in frames1 if int(key) < 10000]
+originPitch = [labelsOrigin[str(key)][1] for key in frames1 if int(key) < 10000]
+predRoll = [labelsPred[str(key)][0] for key in frames2 if int(key) < 10000]
+predPitch = [labelsPred[str(key)][1] for key in frames2 if int(key) < 10000]
 
 # Smoothing(optional)
-# predRoll = savitzky_golay(np.asarray(predRoll), 31, 5)
-# predPitch = savitzky_golay(np.asarray(predPitch), 31, 5)
+predRoll = savitzky_golay(np.asarray(predRoll), 31, 5)
+predPitch = savitzky_golay(np.asarray(predPitch), 31, 5)
 
 # frames: str -> int
-frames1 = [int(key) for key in frames1]
-frames2 = [int(key) for key in frames2]
+frames1 = [int(key) for key in frames1 if int(key) < 10000]
+frames2 = [int(key) for key in frames2 if int(key) < 10000]
+# calculate MAE
+rollMAE=0
+pitchMAE=0
+idx = 0
+for i in frames2:
+    rollMAE += abs(labelsOrigin[str(i)][0]-predRoll[idx]) 
+    pitchMAE += abs(labelsOrigin[str(i)][1]-predPitch[idx])
+    idx += 1
+print('MAE of roll is', rollMAE/len(frames2))
+print('MAE error of pitch is', pitchMAE/len(frames2))
+
+# calculate MAPE
+rollMAPE=0
+pitchMAPE=0
+idx = 0
+for i in frames2:
+    rollMAPE += abs((labelsOrigin[str(i)][0]-predRoll[idx])/labelsOrigin[str(i)][0])
+    pitchMAPE += abs((labelsOrigin[str(i)][1]-predPitch[idx])/labelsOrigin[str(i)][1])
+    idx += 1
+print('MAPE of roll is', rollMAPE/len(frames2))
+print('MAPE of pitch is', pitchMAPE/len(frames2))
+
+# calculate MSE	
+rollMSE=0
+pitchMSE=0
+idx = 0
+for i in frames2:
+    rollMSE += abs((labelsOrigin[str(i)][0]-predRoll[idx])**2) 
+    pitchMSE += abs((labelsOrigin[str(i)][1]-predPitch[idx])**2) 
+    idx += 1
+print('MSE of roll is', rollMSE/len(frames2))
+print('MSE of pitch is', pitchMSE/len(frames2))
+
+# calculate number of local extremum
+roll_max_local=0
+for u in range (1,len(originRoll)-1):
+    if ((originRoll[u]>originRoll[u-1])&(originRoll[u]>originRoll[u+1])):
+        roll_max_local=roll_max_local+1
+print('roll peak time:', roll_max_local)
+pitch_max_local=0
+for u in range (1,len(originPitch)-1):
+    if ((originPitch[u]>originPitch[u-1])&(originPitch[u]>originPitch[u+1])):
+        pitch_max_local=pitch_max_local+1
+print('pitch peak time:', pitch_max_local)
 
 # plot roll
 plt.figure(1)
@@ -125,7 +169,7 @@ plt.title("roll - frame")
 plt.xlabel("Frames")
 plt.ylabel("Roll")
 plt.legend(loc='upper right')
-plt.savefig(RES_DIR+args.model+'_'+str(args.time_gap)+'_roll'+'.png')
+plt.savefig(RES_DIR+args.model+'_'+str(args.time_gap)+'_roll_final'+'.png')
 plt.show()
 
 # plot pitch
@@ -138,5 +182,5 @@ plt.title("pitch - frame")
 plt.xlabel("Frames")
 plt.ylabel("Pitch")
 plt.legend(loc='upper right')
-plt.savefig(RES_DIR+args.model+'_'+str(args.time_gap)+'_pitch'+'.png')
+plt.savefig(RES_DIR+args.model+'_'+str(args.time_gap)+'_pitch_final'+'.png')
 plt.show()
