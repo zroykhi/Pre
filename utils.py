@@ -152,7 +152,7 @@ class JsonDatasetOne(Dataset):
         # im[...,[0,2]] = im[...,[2,0]] # RGB-> BGR
         if np.random.random() < self.random_trans:
             im = Image.fromarray(im)
-            im = imgTransform(im, factor=self.random_trans)
+            im = imgTransform(im)
             im = np.array(im)
         # Crop the image and normalize it
         if self.preprocess:
@@ -213,7 +213,7 @@ class JsonDatasetTwo(Dataset):
             # scipy.misc.imsave('before'+str(index)+'.png', im)
             if np.random.random() < self.random_trans:
                 im = Image.fromarray(im)
-                im = imgTransform(im, factor=self.random_trans)
+                im = imgTransform(im)
                 im = np.array(im)
                 # scipy.misc.imsave('after'+str(index)+'.png', im)
             # Crop the image and normalize it

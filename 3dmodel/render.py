@@ -9,14 +9,12 @@ import sys
 import os
 dirpath = os.getcwd()
 sys.path.append(dirpath)
-# change your path here(path to 'Pre' folder)
-# sys.path.append('/home/theo/test/Pre/')
 FRAME_INTERVAL = 1
 START_FRAME = 1
 END_FRAME = 5000
 BOAT = 'boat'
 CAMERA = 'Camera_fixtoboat_stable'
-IMG_DIR="./render706/"
+IMG_DIR="./render/"
 
 """
 setup gpu render if your computer supports
@@ -46,6 +44,7 @@ scene.camera = currentCameraObj
 # for i in range(10):
 for i in range(START_FRAME,int(END_FRAME/FRAME_INTERVAL)+1):
     print('current frame:', i)
+    # set current frame
     scene.frame_set(i*FRAME_INTERVAL)
     scene.render.filepath = IMG_DIR + str(i*FRAME_INTERVAL)
     bpy.ops.render.render(write_still=True)

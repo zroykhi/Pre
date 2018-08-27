@@ -27,6 +27,7 @@ import scipy.misc
 evaluate_print = 1  # Print info every 1 epoch
 VAL_BATCH_SIZE = 64  # Batch size for validation and test data
 lam = 0
+# total variance lossing
 def reg_loss(tensorArray):
     row, col = tensorArray.shape
     total_loss = 0.0
@@ -104,12 +105,15 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
     # loss_fn = nn.SmoothL1Loss(size_average=False)
     best_error = np.inf
     best_train_error = np.inf
+    # error list for updata loss figure
     train_err_list = []
     val_err_list = []
+    # epoch list
     xdata = []
     model_name = "{}_model_{}_tmp".format(model_type, time_gap)
     best_model_path = "{}.pth".format(model_name)
     best_model_path = RES_DIR + best_model_path
+    # setup figure parameters
     fig = plt.figure()
     ax = fig.add_subplot(111)
     li, = ax.plot(xdata, train_err_list, 'b-', label='train loss')
@@ -173,8 +177,7 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
             best_train_error = train_loss / n_train
 
         if (epoch + 1) % evaluate_print == 0:
-            # Then we print the results for this epoch:
-            # Losses are averaged over the samples
+            # update figure value and drawing
             train_l = train_loss / n_train
             xdata.append(epoch+1)
             train_err_list.append(train_l)
@@ -188,6 +191,8 @@ def main(train_folder, val_folder=None, num_epochs=100, batchsize=16,
             fig.canvas.draw()
             time.sleep(0.01)
             fig.show()
+            # Then we print the results for this epoch:
+            # Losses are averaged over the samples
             # print("Epoch {} of {} took {:.3f}s".format(
             #     epoch + 1, num_epochs, time.time() - start_time))
             print("  training loss:\t\t{:.6f}".format(train_loss / n_train))
@@ -238,8 +243,7 @@ if __name__ == '__main__':
     parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables CUDA training')
     parser.add_argument('--load_model', help='Start from a saved model', default="", type=str)
     parser.add_argument('--model_type', help='Model type: cnn', default="cnn", type=str, choices=['cnn', 'CNN_LSTM'])
-    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)# for sgd optimize
-    # parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=5e-5, type=float)# for Adam optimize
+    parser.add_argument('-lr', '--learning_rate', help='Learning rate', default=1e-5, type=float)
     parser.add_argument('-t', '--time_gap', help='Time gap', default=25, type=int)
     args = parser.parse_args()
 
