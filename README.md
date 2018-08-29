@@ -9,7 +9,7 @@
    *plan*
 </div>
 ### Blender simulation
-For these first experiments I am using a simple simulation that is only representative of the fact that the boat will respond to sea motion, without looking for physical accuracy or very realistic wave images. I therefore simulated a moving sea with two boats approximated by simple cubes floating on it with a simple physical [model](3dmodel/model.blend). Here are two tutorials about how to [set\ up\ the\ movement](https://www.youtube.com/watch?v=sfi7HW8qHAo) and [apply\ textures](https://www.youtube.com/watch?v=-GW8jMsQhEU) to objects.
+For these first experiments I am using a simple simulation that is only representative of the fact that the boat will respond to sea motion, without looking for physical accuracy or very realistic wave images. I therefore simulated a moving sea with two boats approximated by simple cubes floating on it with a simple physical [model](3dmodel/model.blend). Here are two tutorials about how to set up the [movement](https://www.youtube.com/watch?v=sfi7HW8qHAo) and apply [textures](https://www.youtube.com/watch?v=-GW8jMsQhEU) to objects.
 
 3D simulation in Blender  |  Example of sea surface image generated
 :-------------------------:|:-------------------------:
@@ -83,7 +83,7 @@ or copy the code to blender's text editor and press "run script"
 # Step guidance:
 1. download the code and add environment path by changing the code in `autoRun.sh`
 
-2. download the images dataset [here](https://drive.google.com/file/d/1b-tfj4IHAxxSP8viAECJu7rmg6tbCTft/view?usp=sharing) if you have not yet and put the dataset under the directory **3dmodel** (frame 1~5000 are of object "boat", frame 5000~10000 are of object "boat1"), make sure the dataset folder's name is **mixData** and has file **labels.json** inside it
+2. download the images dataset [here](https://drive.google.com/file/d/1b-tfj4IHAxxSP8viAECJu7rmg6tbCTft/view?usp=sharing) if you have not yet and put the dataset under the directory **3dmodel** (frame 1--5000 are of object "boat", frame 5000--10000 are of object "boat1"), make sure the dataset folder's name is **mixData** and has file **labels.json** inside it
 
 3. for train, goto Pre's parent folder and run command:
 ```
