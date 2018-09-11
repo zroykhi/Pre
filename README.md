@@ -1,5 +1,5 @@
 # Pre Project: Predicting Ship's Motion Based on Machine Learning
-
+***Author:*** [Zhi ZHOU](https://github.com/zroykhi)
 # Overview
 
 <div align='center'\>
@@ -37,6 +37,9 @@ CNN architecture  |  CNN-LSTM architecture
 Project report: [[Google drive]](https://drive.google.com/file/d/1A0Jgqq1ElIiHYhDEImBzrKtDDpGBwnfp/view?usp=sharing) [[Baidu]](https://pan.baidu.com/s/1IRUlwZM_SWJOdQjNbv2OjQ)
 
 Demo video: [[Youtube]](https://youtu.be/zLs0_C_pLLE)
+
+# Acknowledgement
+I received a lot of help from M. David Filliat and M. [Antonin RAFFIN](https://github.com/araffin). This work could not be done without their support. Merci beaucoup!
 
 # License
 
