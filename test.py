@@ -113,7 +113,7 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--model', help='Model type', type=str, default='cnn', choices=['cnn','CNN_RNN','CNN_LSTM'])
     parser.add_argument('-o', '--output', help='output file', default='none')
     parser.add_argument('-t', '--time_gap', help='time gap', default=25, type=int)
-    parser.add_argument('-cuda', '--cuda', action='store_true', help='enable cuda', default=True)
+    parser.add_argument('-cuda', '--cuda', action='store_true', help='enable cuda', default=False)
     args = parser.parse_args()
 
     main(test_folder=args.test_folder, batchsize=args.batch_size, weights=args.weight,
